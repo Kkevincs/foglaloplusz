@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Nails - Book Appointment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>💅 Luxury Nails</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="profiles.html">Our Team</a></li>
+                <li><a href="scheduler.html" class="active">Book Appointment</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Book Your Appointment</h1>
+                <p>Schedule your visit and experience luxury nail care</p>
+            </div>
+        </section>
+
+        <section class="scheduler-content">
+            <div class="container">
+                <div class="booking-form-container">
+                    <form class="booking-form" id="bookingForm">
+                        <div class="form-section">
+                            <h2>Select Service</h2>
+                            <div class="form-group">
+                                <label for="service">Service Type *</label>
+                                <select id="service" name="service" required>
+                                    <option value="">Choose a service...</option>
+                                    <option value="classic-manicure">Classic Manicure - $35</option>
+                                    <option value="gel-manicure">Gel Manicure - $45</option>
+                                    <option value="classic-pedicure">Classic Pedicure - $45</option>
+                                    <option value="spa-pedicure">Spa Pedicure - $65</option>
+                                    <option value="nail-art">Nail Art - $50+</option>
+                                    <option value="extensions">Nail Extensions - $80+</option>
+                                    <option value="repair">Nail Repair - $25</option>
+                                    <option value="treatment">Hand & Foot Treatment - $55</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2>Select Artist</h2>
+                            <div class="form-group">
+                                <label for="artist">Preferred Artist (Optional)</label>
+                                <select id="artist" name="artist">
+                                    <option value="">Any available artist</option>
+                                    <option value="sarah">Sarah Johnson - Master Artist</option>
+                                    <option value="emma">Emma Martinez - Senior Technician</option>
+                                    <option value="mia">Mia Chen - Nail Art Specialist</option>
+                                    <option value="olivia">Olivia Rodriguez - Nail Technician</option>
+                                    <option value="sophia">Sophia Williams - Junior Technician</option>
+                                    <option value="isabella">Isabella Taylor - Spa Specialist</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2>Select Date & Time</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="date">Date *</label>
+                                    <input type="date" id="date" name="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="time">Time *</label>
+                                    <select id="time" name="time" required>
+                                        <option value="">Select time...</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="09:30">9:30 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="10:30">10:30 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="11:30">11:30 AM</option>
+                                        <option value="12:00">12:00 PM</option>
+                                        <option value="12:30">12:30 PM</option>
+                                        <option value="13:00">1:00 PM</option>
+                                        <option value="13:30">1:30 PM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="14:30">2:30 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="15:30">3:30 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                        <option value="16:30">4:30 PM</option>
+                                        <option value="17:00">5:00 PM</option>
+                                        <option value="17:30">5:30 PM</option>
+                                        <option value="18:00">6:00 PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2>Your Information</h2>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">First Name *</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name *</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone *</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2>Additional Notes</h2>
+                            <div class="form-group">
+                                <label for="notes">Special Requests or Notes</label>
+                                <textarea id="notes" name="notes" rows="4" placeholder="Any special requests, allergies, or notes for our team..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Book Appointment</button>
+                            <button type="reset" class="btn-secondary">Clear Form</button>
+                        </div>
+
+                        <p class="form-note">* Required fields. You will receive a confirmation email once your appointment is confirmed.</p>
+                    </form>
+                </div>
+
+                <div class="booking-info">
+                    <h2>Booking Information</h2>
+                    <div class="info-card">
+                        <h3>⏰ Business Hours</h3>
+                        <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM</p>
+                        <p><strong>Saturday:</strong> 9:00 AM - 5:00 PM</p>
+                        <p><strong>Sunday:</strong> Closed</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>📞 Need Help?</h3>
+                        <p>If you have questions or need to modify your appointment, please call us at <strong>(555) 123-4567</strong> or visit our <a href="contact.html">contact page</a>.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>ℹ️ Important Notes</h3>
+                        <ul>
+                            <li>Please arrive 5 minutes early for your appointment</li>
+                            <li>Cancellations should be made at least 24 hours in advance</li>
+                            <li>We accept cash and all major credit cards</li>
+                            <li>Gift certificates available for purchase</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
