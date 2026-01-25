@@ -8,7 +8,7 @@ namespace FinalProject
         static void Main(string[] args)
         {
             var builder = new MySqlConnectionStringBuilder();
-            builder.Server = "kkevinhouse.ddns.net";
+            builder.Server = "81.182.153.15";
             builder.UserID = "dori";
             builder.Password = "Kiskutya3";
             builder.Database = "Salonic";
