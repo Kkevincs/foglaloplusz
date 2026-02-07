@@ -36,9 +36,53 @@ document.addEventListener('DOMContentLoaded', function() {
     // Booking Form Handler (prevent default for now)
     const bookingForm = document.getElementById('bookingForm');
     if (bookingForm) {
-        bookingForm.addEventListener('submit', function(e) {
+        bookingForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            const timeDropdown = document.getElementById('time').value;
+            const [hourStr, minuteStr] = timeDropdown.split(':');
+            const hour = parseInt(hourStr);
+            const minute = parseInt(minuteStr);
+
+            const dateInput = document.getElementById('date').value;
+
+            const [yearStr, monthStr, dayStr] = dateInput.split('-')
+
+            const year = parseInt(yearStr, 10);
+            const month = parseInt(monthStr, 10);
+            const day = parseInt(dayStr, 10);
             alert('Thank you for your booking request! This is a demo form. In a real application, this would be sent to the server.');
+            const firstName = document.getElementById("firstName").value;
+            const lastName = document.getElementById("lastName").value;
+            const name = `${lastName} ${firstName}`
+            const notes = document.getElementById("notes").value;
+            const newAppointment = {
+                year: year,
+                month: month,
+                day: day,
+                hour: hour,
+                minute: minute,
+                customerName: name,
+                notes: notes,
+                durationInMinutes: 60  // default 1 hour; change or get from form if needed
+            }
+
+            const response = await fetch('https://localhost:7156/api/appointment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newAppointment)
+            })
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Booking created:', data);
+                alert('Your appointment has been booked successfully!');
+            } else {
+                const err = await response.text();
+                console.error('Booking failed:', response.status, err);
+                alert('Booking failed. Please try again.');
+            }
             
             // Optional: Show a success message
             const formData = new FormData(bookingForm);
@@ -80,4 +124,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
