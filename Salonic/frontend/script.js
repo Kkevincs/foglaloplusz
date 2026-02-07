@@ -1,4 +1,4 @@
-// Mobile Navigation Toggle
+
 document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
         hamburger.addEventListener('click', function() {
             navMenu.classList.toggle('active');
             
-            // Animate hamburger
             const spans = hamburger.querySelectorAll('span');
             if (navMenu.classList.contains('active')) {
                 spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Close menu when clicking on a link
         const navLinks = document.querySelectorAll('.nav-menu a');
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
@@ -33,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Booking Form Handler (prevent default for now)
     const bookingForm = document.getElementById('bookingForm');
     if (bookingForm) {
         bookingForm.addEventListener('submit', async function(e) {
@@ -63,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 minute: minute,
                 customerName: name,
                 notes: notes,
-                durationInMinutes: 60  // default 1 hour; change or get from form if needed
+                durationInMinutes: 60
             }
 
             const response = await fetch('https://localhost:7156/api/appointment', {
@@ -84,33 +81,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Booking failed. Please try again.');
             }
             
-            // Optional: Show a success message
-            const formData = new FormData(bookingForm);
-            console.log('Form data:', Object.fromEntries(formData));
         });
     }
 
-    // Contact Form Handler (prevent default for now)
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             alert('Thank you for your message! This is a demo form. In a real application, this would be sent to the server.');
             
-            // Optional: Show a success message
             const formData = new FormData(contactForm);
             console.log('Form data:', Object.fromEntries(formData));
         });
     }
 
-    // Set minimum date for booking form to today
     const dateInput = document.getElementById('date');
     if (dateInput) {
         const today = new Date().toISOString().split('T')[0];
         dateInput.setAttribute('min', today);
     }
-
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
