@@ -22,7 +22,7 @@ namespace Salonic.Controllers
         public IActionResult get()
         {
             var users = _context.Users
-                   .Select(u => new { u.ID, u.Email })
+                   .Select(u => new { u.ID, u.Name, u.Email })
                    .ToList();
             return Ok(users);
         }

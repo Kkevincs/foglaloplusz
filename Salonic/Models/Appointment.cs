@@ -5,6 +5,9 @@ namespace Salonic.Models
     public class Appointment
     {
         public int ID { get; set; }
+
+        public int ServiceID {get; set;}
+        public int wokerID {get; set;}
         public int year { get; set; }
         public int month { get; set; }
         public int day { get; set; }
@@ -12,6 +15,9 @@ namespace Salonic.Models
         public int minute { get; set; }
 
         public string customerName { get; set; }
+
+        public string emailAddress { get; set; }
+        public string phoneNumber { get; set; }
 
         public string notes { get; set; }
 

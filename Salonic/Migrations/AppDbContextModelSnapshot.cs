@@ -29,6 +29,9 @@ namespace Salonic.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<int>("ServiceID")
+                        .HasColumnType("int");
+
                     b.Property<string>("customerName")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -38,6 +41,10 @@ namespace Salonic.Migrations
 
                     b.Property<int>("durationInMinutes")
                         .HasColumnType("int");
+
+                    b.Property<string>("emailAddress")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("hour")
                         .HasColumnType("int");
@@ -51,6 +58,13 @@ namespace Salonic.Migrations
                     b.Property<string>("notes")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<string>("phoneNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("wokerID")
+                        .HasColumnType("int");
 
                     b.Property<int>("year")
                         .HasColumnType("int");
@@ -96,6 +110,10 @@ namespace Salonic.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -114,6 +132,10 @@ namespace Salonic.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 

@@ -17,7 +17,7 @@ namespace Salonic
             {
                 options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.AllowAnyOrigin() // For development only, you can use .WithOrigins("your-url")
+                    policy.AllowAnyOrigin() 
                           .AllowAnyMethod()
                           .AllowAnyHeader();
                 });

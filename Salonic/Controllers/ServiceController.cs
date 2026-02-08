@@ -20,6 +20,7 @@ namespace Salonic.Controllers
         {
             var apps = _context.Services.Select(x => new
             {
+                x.ID,
                 x.name,
                 x.description,
                 x.price

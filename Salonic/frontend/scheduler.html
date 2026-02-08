@@ -47,14 +47,6 @@
                                 <label for="service">Service Type *</label>
                                 <select id="service" name="service" required>
                                     <option value="">Choose a service...</option>
-                                    <option value="classic-manicure">Classic Manicure - $35</option>
-                                    <option value="gel-manicure">Gel Manicure - $45</option>
-                                    <option value="classic-pedicure">Classic Pedicure - $45</option>
-                                    <option value="spa-pedicure">Spa Pedicure - $65</option>
-                                    <option value="nail-art">Nail Art - $50+</option>
-                                    <option value="extensions">Nail Extensions - $80+</option>
-                                    <option value="repair">Nail Repair - $25</option>
-                                    <option value="treatment">Hand & Foot Treatment - $55</option>
                                 </select>
                             </div>
                         </div>
@@ -64,13 +56,7 @@
                             <div class="form-group">
                                 <label for="artist">Preferred Artist (Optional)</label>
                                 <select id="artist" name="artist">
-                                    <option value="">Any available artist</option>
-                                    <option value="sarah">Sarah Johnson - Master Artist</option>
-                                    <option value="emma">Emma Martinez - Senior Technician</option>
-                                    <option value="mia">Mia Chen - Nail Art Specialist</option>
-                                    <option value="olivia">Olivia Rodriguez - Nail Technician</option>
-                                    <option value="sophia">Sophia Williams - Junior Technician</option>
-                                    <option value="isabella">Isabella Taylor - Spa Specialist</option>
+                                     <option value="">Choose a service...</option>
                                 </select>
                             </div>
                         </div>
@@ -182,7 +168,40 @@
             <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
         </div>
     </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            getServicesScheduler();
+            getWorkersScheduler();
+        });
+        
+        async function getServicesScheduler()
+        {
+            const response = await fetch('https://localhost:7156/api/service');
+            const services = await response.json();
+            const select = document.getElementById('service');
+            (services || []).forEach(x => {
+                const id = x.id ?? x.ID;
+                const name = x.name ?? '';
+                if (id != null && id !== '')
+                    select.innerHTML += `<option value="${id}">${name}</option>`;
+            });
+        }
 
+        async function getWorkersScheduler()
+        {
+            const response = await fetch('https://localhost:7156/api/worker');
+            const workers = await response.json();
+            const select = document.getElementById('artist');
+            select.innerHTML = '<option value="">Any available artist</option>';
+            (workers || []).forEach(x => {
+                const id = x.id ?? x.ID;
+                const name = x.name ?? x.Name ?? '';
+                if (id != null && id !== '')
+                    select.innerHTML += `<option value="${id}">${name}</option>`;
+            });
+        }
+
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
