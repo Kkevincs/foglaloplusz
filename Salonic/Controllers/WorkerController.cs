@@ -18,7 +18,7 @@ namespace Salonic.Controllers
         public IActionResult Get()
         { 
             var workers = _context.Workers.Select(x => new { 
-                x.ID,
+                x.Id,
                 x.Name,
                 x.Email
             }).ToList();

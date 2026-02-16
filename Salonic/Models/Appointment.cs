@@ -1,26 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Salonic.Models
 {
     public class Appointment
     {
-        public int ID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public int ServiceId {get; set;}
+        public int UserId {get; set;}
+        [Required]
+        public int Year { get; set; }
+        [Required]
+        public int Month { get; set; }
+        [Required]
+        public int Day { get; set; }
+        [Required]
+        public int Hour { get; set; }
+        [Required]
+        public int Minute { get; set; }
+        [Required]
+        public string Notes { get; set; }
+        [Required]
+        public int DurationInMinutes { get; set; }
 
-        public int ServiceID {get; set;}
-        public int wokerID {get; set;}
-        public int year { get; set; }
-        public int month { get; set; }
-        public int day { get; set; }
-        public int hour { get; set; }
-        public int minute { get; set; }
-
-        public string customerName { get; set; }
-
-        public string emailAddress { get; set; }
-        public string phoneNumber { get; set; }
-
-        public string notes { get; set; }
-
-        public int durationInMinutes { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
+        [ForeignKey(nameof(ServiceId))]
+        public Service Service { get; set; }
     }
 }
