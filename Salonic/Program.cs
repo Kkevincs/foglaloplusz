@@ -9,9 +9,9 @@ namespace Salonic
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var con = builder.Configuration.GetConnectionString("AppConnectionString");
+            var connectionString = builder.Configuration.GetConnectionString("AppConnectionString");
             // Add services to the container.
-            builder.Services.AddDbContext<AppDbContext>(x => x.UseMySql(con, ServerVersion.AutoDetect(con)));
+            builder.Services.AddDbContext<AppDbContext>(builder => builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddControllers();
             builder.Services.AddCors(options =>
             {
