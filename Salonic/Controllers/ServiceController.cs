@@ -20,10 +20,11 @@ namespace Salonic.Controllers
         {
             var apps = _context.Services.Select(x => new
             {
-                x.ID,
-                x.name,
-                x.description,
-                x.price
+                x.Id,
+                x.Name,
+                x.Description,
+                x.Price,
+                //x.WorkerId
             }).ToList();
             return Ok(apps);
         }
