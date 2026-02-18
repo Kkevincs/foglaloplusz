@@ -13,8 +13,8 @@ namespace Salonic.Models
         public string Description { get; set; }
         [Required]
         public int? Price { get; set; }        
-        public int WorkerId { get; set; }
-        [ForeignKey(nameof(WorkerId))]
+        //public int WorkerId { get; set; }
+        //[ForeignKey(nameof(WorkerId))]
         [InverseProperty(nameof(Worker.Services))]
         public List<Worker> Workers {  get; set; }
     }

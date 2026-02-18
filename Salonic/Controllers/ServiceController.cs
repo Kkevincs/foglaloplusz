@@ -24,7 +24,7 @@ namespace Salonic.Controllers
                 x.Name,
                 x.Description,
                 x.Price,
-                x.WorkerId
+                //x.WorkerId
             }).ToList();
             return Ok(apps);
         }
