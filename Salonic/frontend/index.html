@@ -12,8 +12,8 @@
             <div class="logo">
                 <h1>💅 Luxury Nails</h1>
 
-                <button onclick="getUsers()">getUsers</button>
-                <button onclick="createUser(userData)">sendUser</button>
+                <button id="getUsersBtn">getUsers</button>
+                <button id="createUserBtn">sendUser</button>
             </div>
             <ul class="nav-menu">
                 <li><a href="index.html" class="active">Home</a></li>
@@ -23,6 +23,8 @@
                 <li><a href="profiles.html">Our Team</a></li>
                 <li><a href="scheduler.html">Book Appointment</a></li>
                 <li><a href="contact.html">Contact</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
             </ul>
             <div class="hamburger">
                 <span></span>
@@ -100,72 +102,9 @@
             <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
         </div>
     </footer>
-    <script>
-    async function getUsers() {
-    try {
-        const response = await fetch('https://localhost:7156/api/user', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-
-        // 1. Check if the server actually sent a successful response
-        if (!response.ok) {
-            // This will help us see if it's a 500 (Server Crash) or 404 (Not Found)
-            const errorBody = await response.text();
-            console.error(`Server Error (${response.status}):`, errorBody);
-            return;
-        }
-
-        // 2. Try to parse the data
-        const users = await response.json();
-        console.log("Fetched users successfully:", users);
-        
-        // Example: logic to display users on your page
-        // displayUsers(users); 
-        
-        return users;
-
-    } catch (error) {
-        // This catches network issues or if the browser blocks the request (CORS)
-        console.error("The fetch itself failed:", error);
-    }
-}
-
-
-const userData = {
-    Email : "kevin",
-    Password : "asd"
-
-}
-async function createUser(userData) {
-    try {
-        const response = await fetch('https://localhost:7156/api/user', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(userData) 
-    });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Server Error: ${errorText}`);
-        }
-
-        const newUser = await response.json();
-        console.log("User created successfully:", newUser);
-        return newUser;
-    } catch (error) {
-        console.error("Post failed:", error);
-    }
-}
-
-// Example usage:
-// createUser({ email: "test@example.com", password: "securePassword123" });
-    </script>
+    <script src="api.js"></script>
     <script src="script.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
 

@@ -20,6 +20,8 @@
                 <li><a href="profiles.html">Our Team</a></li>
                 <li><a href="scheduler.html">Book Appointment</a></li>
                 <li><a href="contact.html">Contact</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
             </ul>
             <div class="hamburger">
                 <span></span>
@@ -56,61 +58,9 @@
             <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
         </div>
     </footer>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM is ready!");
-    getService();
-    
-});
-
-    const newService = {
-        name : "Anyad",
-        description : "asda",
-        price : parseInt(34)
-
-    }
-     async function getService() {
-            const response = await fetch('https://localhost:7156/api/service')
-            const service = await response.json();
-            console.log(service)
-            service.forEach(x => 
-                document.getElementById("serviceContainer").innerHTML +=  
-                `
-                <div class="service-detail">
-                    <div class="service-icon">💅</div>
-                    <h2>${x.name}</h2>
-                    <p>${x.description}</p>
-                    <p>${x.price} Ft</p>
-                </div>
-                `
-            )
-        }
-    async function Addservice(service) {
-       const response = await fetch('https://localhost:7156/api/service', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(service) 
-    });
-
-    const newService = await response.json();
-    console.log(newService);
-    document.getElementById("serviceContainer").innerHTML += 
-    `
-        <div class="service-detail">
-                    <div class="service-icon">💅</div>
-                    <h2>${newService.name}</h2>
-                    <p>${newService.description}</p>
-                    <p>${newService.price}</p>
-                </div>
-    `
-    }
-</script>
-    <script src="script.js">
-        
-
-    </script>
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="services.js"></script>
 </body>
 </html>
 
