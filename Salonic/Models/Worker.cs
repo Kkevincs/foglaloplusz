@@ -7,13 +7,14 @@ namespace Salonic.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required]
         public string Name { get; set; }
-        [Required]
         public string Email { get; set; }
-        [Required]
-        public string Password { get; set; }
-        [InverseProperty(nameof(Service.Workers))]
-        public List<Service>? Services { get; set; }
+        public string Pwd { get; set; }
+
+        // Navigation: one Worker has many Appointments (1 : N)
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        // Navigation: many-to-many with Service (EF creates the junction table automatically)
+        public ICollection<Service> Services { get; set; } = new List<Service>();
     }
 }

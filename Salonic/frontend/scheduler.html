@@ -176,30 +176,71 @@
         
         async function getServicesScheduler()
         {
-            const response = await fetch('https://localhost:7156/api/service');
+
+            const response = await fetch("https://localhost:7156/api/service")
             const services = await response.json();
-            const select = document.getElementById('service');
-            (services || []).forEach(x => {
-                const id = x.id ?? x.ID;
-                const name = x.name ?? '';
-                if (id != null && id !== '')
-                    select.innerHTML += `<option value="${id}">${name}</option>`;
-            });
+            services.forEach( x => document.getElementById("service").innerHTML += 
+            `<option value="${x.id}">${x.name}</option>`
+        )
+            
+            //TODO
+            
         }
 
         async function getWorkersScheduler()
         {
-            const response = await fetch('https://localhost:7156/api/worker');
+            //TODO
+
+            const response = await fetch("https://localhost:7156/api/worker")
             const workers = await response.json();
-            const select = document.getElementById('artist');
-            select.innerHTML = '<option value="">Any available artist</option>';
-            (workers || []).forEach(x => {
-                const id = x.id ?? x.ID;
-                const name = x.name ?? x.Name ?? '';
-                if (id != null && id !== '')
-                    select.innerHTML += `<option value="${id}">${name}</option>`;
-            });
+            workers.forEach(x => 
+                document.getElementById("artist").innerHTML += `<option value="${x.id}">${x.name}</option>`
+            )
+
         }
+
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const service = parseInt(document.getElementById("service").value);
+            const artist = parseInt(document.getElementById("artist").value);
+            let [year, month, day] = (document.getElementById('date').value.split('-'));
+            let [hour, minute] = (document.getElementById("time").value.split(':'))
+            year = parseInt(year)
+            month = parseInt(month)
+            day = parseInt(day)
+            hour = parseInt(hour)
+            minute = parseInt(minute)
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const notes = document.getElementById('notes').value;
+            const newBooking = {
+                ServiceId : service,
+                UserId : 1,
+                workerId : artist,
+                Year : year,
+                Month : month,
+                Day : day,
+                Hour : hour,
+                Minute : minute,
+                Notes : notes,
+                DurationInMinutes : 2
+            }
+
+            const response = await fetch("https://localhost:7156/api/appointment", {
+                method : "POST",
+                headers: {
+                    "Content-Type": "application/json" 
+                },
+                body : JSON.stringify(newBooking)
+
+            })
+            console.log(response.json());
+            
+
+
+        })
 
     </script>
     <script src="script.js"></script>

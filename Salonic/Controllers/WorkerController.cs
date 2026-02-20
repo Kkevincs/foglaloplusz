@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.Data;
+using Salonic.Models;
 
 namespace Salonic.Controllers
 {
@@ -17,12 +18,22 @@ namespace Salonic.Controllers
         [HttpGet]
         public IActionResult Get()
         { 
-            var workers = _context.Workers.Select(x => new { 
+        var workers = _context.Workers.Select(x => new { 
                 x.Id,
                 x.Name,
                 x.Email
             }).ToList();
             return(Ok (workers));
         }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] Models.Worker worker)
+        {
+            _context.Workers.Add(worker);
+            _context.SaveChanges();
+            return Ok(worker);
+        }
+
+
     }
 }

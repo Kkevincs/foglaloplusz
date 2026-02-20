@@ -23,5 +23,13 @@ namespace Salonic.Controllers
             _context.SaveChanges();
             return Ok(app);
         }
+
+        [HttpGet]
+
+        public IActionResult Get()
+        {
+            var bookings = _context.Appointments.Select(x => x);
+            return Ok(bookings);
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema; 
 using System.Security.Cryptography.X509Certificates;
 
 namespace Salonic.Models
@@ -8,14 +8,17 @@ namespace Salonic.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+
         public string Description { get; set; }
-        [Required]
-        public int? Price { get; set; }        
-        //public int WorkerId { get; set; }
-        //[ForeignKey(nameof(WorkerId))]
-        [InverseProperty(nameof(Worker.Services))]
-        public List<Worker> Workers {  get; set; }
+
+        public int Price { get; set; }
+
+        // Navigation: one Service has many Appointments (1 : N)
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        // Navigation: many-to-many with Worker (EF creates the junction table automatically)
+        public ICollection<Worker> Workers { get; set; } = new List<Worker>();
     }
 }
+

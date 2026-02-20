@@ -21,15 +21,15 @@ namespace Salonic.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var users = _context.Users
+            var users = _context.Guests
                    .Select(u => new { u.Id, u.Name, u.Email })
                    .ToList();
             return Ok(users);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Models.User user) {
-            _context.Users.Add(user);
+        public IActionResult Post([FromBody] Models.Guest user) {
+            _context.Guests.Add(user);
             _context.SaveChanges();
             return Ok(user);    
         }
@@ -37,8 +37,8 @@ namespace Salonic.Controllers
         [HttpDelete]
 
         public IActionResult Delete(int id) {
-            var user = _context.Users.Where(x => x.Id == id).First();
-            _context.Users.Remove(user);
+            var user = _context.Guests.Where(x => x.Id == id).First();
+            _context.Guests.Remove(user);
             return Ok(user);
         }
         
