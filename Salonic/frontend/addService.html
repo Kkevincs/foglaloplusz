@@ -85,32 +85,7 @@
         </div>
     </footer>
 
-    <script>
-        document.getElementById('addServiceForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const serviceName = document.getElementById('serviceName').value;
-            const description = document.getElementById('serviceDescription').value;
-            const servicePrice = parseInt(document.getElementById('servicePrice').value);
-            const newService = {
-                Name : serviceName,
-                Description : description,
-                Price : servicePrice
-            }
-
-            const response =  await('https://localhost:7156/api/service', {
-                method: "POST",
-                body: JSON.stringify(newService)
-                
-
-            })
-
-            console.log(response.JSON);
-            
-
-            
-            
-        });
-    </script>
+    <script src="api.js"></script>
     <script src="script.js"></script>
     <script src="addService.js"></script>
 </body>

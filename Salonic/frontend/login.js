@@ -1,16 +1,8 @@
 // Login page functionality
 document.addEventListener("DOMContentLoaded", () => {
     setupLoginForm();
-    checkIfAlreadyLoggedIn();
 });
 
-function checkIfAlreadyLoggedIn() {
-    const currentUser = getCurrentUser();
-    if (currentUser) {
-        // Redirect to user page if already logged in
-        window.location.href = 'user.html';
-    }
-}
 
 function setupLoginForm() {
     const loginForm = document.getElementById('loginForm');
@@ -39,7 +31,6 @@ function setupLoginForm() {
             const user = await loginUser(email, password);
             
             // Store user in localStorage
-            localStorage.setItem('currentUser', JSON.stringify(user));
             
             if (messageEl) {
                 messageEl.textContent = 'Login successful! Redirecting...';
@@ -58,10 +49,4 @@ function setupLoginForm() {
             }
         }
     });
-}
-
-// Helper function to get current user from localStorage
-function getCurrentUser() {
-    const userStr = localStorage.getItem('currentUser');
-    return userStr ? JSON.parse(userStr) : null;
 }

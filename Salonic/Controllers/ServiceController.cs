@@ -23,8 +23,7 @@ namespace Salonic.Controllers
                 x.Id,
                 x.Name,
                 x.Description,
-                x.Price,
-                //x.WorkerId
+                x.Price
             }).ToList();
             return Ok(apps);
         }
@@ -32,6 +31,7 @@ namespace Salonic.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Models.Service service)
         {
+            
             _context.Services.Add(service);
             _context.SaveChanges();
             return Ok(service);

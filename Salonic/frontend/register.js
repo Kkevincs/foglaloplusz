@@ -1,16 +1,8 @@
 // Register page functionality
 document.addEventListener("DOMContentLoaded", () => {
     setupRegisterForm();
-    checkIfAlreadyLoggedIn();
 });
 
-function checkIfAlreadyLoggedIn() {
-    const currentUser = getCurrentUser();
-    if (currentUser) {
-        // Redirect to user page if already logged in
-        window.location.href = 'user.html';
-    }
-}
 
 function setupRegisterForm() {
     const registerForm = document.getElementById('registerForm');
@@ -54,33 +46,50 @@ function setupRegisterForm() {
             return;
         }
 
-        const userData = {
-            Name: name,
-            Email: email,
-            Password: password
-        };
+        const accountType = document.querySelector('input[name="accountType"]:checked').value;
 
         try {
-            const newUser = await createUser(userData);
-            console.log("User created:", newUser);
-            
-            // Store user in localStorage
-            const userToStore = {
-                Id: newUser.id ?? newUser.Id,
-                Name: newUser.name ?? newUser.Name,
-                Email: newUser.email ?? newUser.Email
-            };
-            localStorage.setItem('currentUser', JSON.stringify(userToStore));
-            
-            if (messageEl) {
-                messageEl.textContent = 'Account created successfully! Redirecting...';
-                messageEl.style.color = 'green';
+            if (accountType === 'worker') {
+                // Create worker account - stores in Workers table
+                const workerData = {
+                    Name: name,
+                    Email: email,
+                    Pwd: password  // Worker model uses Pwd field
+                };
+
+                const newWorker = await createWorker(workerData);
+                console.log("Worker created:", newWorker);
+                
+                if (messageEl) {
+                    messageEl.textContent = 'Account created successfully! Redirecting...';
+                    messageEl.style.color = 'green';
+                }
+                
+                // Redirect to login page
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } else {
+                // Create user/guest account - stores in Users table
+                const userData = {
+                    Name: name,
+                    Email: email,
+                    Password: password  // User model uses Password field
+                };
+
+                const newUser = await createUser(userData);
+                console.log("User created:", newUser);
+                
+                if (messageEl) {
+                    messageEl.textContent = 'Account created successfully! Redirecting...';
+                    messageEl.style.color = 'green';
+                }
+                
+                // Redirect to login page
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
             }
-            
-            // Redirect to user page
-            setTimeout(() => {
-                window.location.href = 'user.html';
-            }, 1500);
         } catch (error) {
             console.error("Registration failed:", error);
             if (messageEl) {
@@ -91,8 +100,4 @@ function setupRegisterForm() {
     });
 }
 
-// Helper function to get current user from localStorage
-function getCurrentUser() {
-    const userStr = localStorage.getItem('currentUser');
-    return userStr ? JSON.parse(userStr) : null;
-}
+

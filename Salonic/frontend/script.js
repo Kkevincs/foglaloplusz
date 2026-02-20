@@ -1,7 +1,6 @@
 // Navigation and common UI functionality
 document.addEventListener('DOMContentLoaded', function() {
     setupNavigation();
-    setupContactForm();
     setupSmoothScrolling();
 });
 
