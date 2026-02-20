@@ -1,5 +1,11 @@
-
+// Navigation and common UI functionality
 document.addEventListener('DOMContentLoaded', function() {
+    setupNavigation();
+    setupContactForm();
+    setupSmoothScrolling();
+});
+
+function setupNavigation() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
 
@@ -52,12 +58,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Form data:', Object.fromEntries(formData));
         });
     }
+}
 
-    const dateInput = document.getElementById('date');
-    if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
-    }
+function setupSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -70,6 +73,5 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
-
+}
 
