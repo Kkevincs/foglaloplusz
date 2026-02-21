@@ -1,4 +1,3 @@
-// Add Service page functionality
 document.addEventListener("DOMContentLoaded", () => {
     setupAddServiceForm();
 });
@@ -10,10 +9,7 @@ function setupAddServiceForm() {
     addServiceForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const messageEl = document.getElementById('addServiceMessage');
-        if (messageEl) {
-            messageEl.textContent = '';
-            messageEl.style.color = '';
-        }
+        if (messageEl) { messageEl.textContent = ''; messageEl.style.color = ''; }
 
         const serviceName = document.getElementById('serviceName').value.trim();
         const serviceDescription = document.getElementById('serviceDescription').value.trim();
@@ -21,10 +17,7 @@ function setupAddServiceForm() {
         const servicePrice = parseInt(priceInput, 10);
 
         if (!serviceName || !serviceDescription || isNaN(servicePrice) || servicePrice < 0) {
-            if (messageEl) {
-                messageEl.textContent = 'Please fill in all fields with valid values.';
-                messageEl.style.color = 'red';
-            }
+            if (messageEl) { messageEl.textContent = 'Please fill in all fields with valid values.'; messageEl.style.color = 'red'; }
             return;
         }
 
@@ -35,26 +28,13 @@ function setupAddServiceForm() {
         };
 
         try {
-            const createdService = await createService(newService);
-            console.log("Service created:", createdService);
-            
-            if (messageEl) {
-                messageEl.textContent = 'Service added successfully!';
-                messageEl.style.color = 'green';
-            }
-            
+            await createService(newService);
+            if (messageEl) { messageEl.textContent = 'Service added successfully!'; messageEl.style.color = 'green'; }
             addServiceForm.reset();
-            
-            // Optionally redirect to services page after a delay
-            setTimeout(() => {
-                window.location.href = 'services.html';
-            }, 1500);
+            setTimeout(() => { window.location.href = 'services.html'; }, 1500);
         } catch (error) {
             console.error("Failed to create service:", error);
-            if (messageEl) {
-                messageEl.textContent = 'Failed to add service: ' + (error.message || 'Unknown error');
-                messageEl.style.color = 'red';
-            }
+            if (messageEl) { messageEl.textContent = 'Failed to add service: ' + (error.message || 'Unknown error'); messageEl.style.color = 'red'; }
         }
     });
 }

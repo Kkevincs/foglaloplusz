@@ -9,21 +9,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">
-                <h1>💅 Luxury Nails</h1>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="addService.html">Add Service</a></li>
-                <li><a href="profiles.html">Our Team</a></li>
-                <li><a href="scheduler.html">Book Appointment</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-                <li><a href="user.html" class="active">Profile</a></li>
-            </ul>
+            <ul id="nav-bar" class="nav-menu"></ul>
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -48,7 +34,6 @@
                             <div class="profile-placeholder">👤</div>
                         </div>
                         <h2>User Information</h2>
-                        
                         <div class="user-info-section">
                             <div class="info-row">
                                 <span class="info-label">Name:</span>
@@ -63,13 +48,11 @@
                                 <span class="info-value" id="userId">Loading...</span>
                             </div>
                         </div>
-
                         <div class="user-actions">
                             <button class="btn-primary" onclick="window.location.href='scheduler.html'">Book Appointment</button>
-                            <button class="btn-secondary" id="logoutBtn">Logout</button>
+                            <button onclick="logout()" class="btn-secondary" id="logoutBtn">Logout</button>
                         </div>
                     </div>
-
                     <div class="user-details-section">
                         <div class="detail-card">
                             <h3>📅 Upcoming Appointments</h3>
@@ -78,10 +61,9 @@
                             </div>
                             <a href="scheduler.html" class="btn-primary" style="margin-top: 1rem; display: inline-block; text-decoration: none;">Book New Appointment</a>
                         </div>
-
                         <div class="detail-card">
                             <h3>ℹ️ Account Information</h3>
-                            <p style="color: var(--text-light);">Your account is active and ready to use. You can book appointments, view your history, and manage your profile.</p>
+                            <p style="color: var(--text-light);">Your account is active and ready to use.</p>
                         </div>
                     </div>
                 </div>
@@ -94,9 +76,8 @@
             <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
         </div>
     </footer>
-
-    <script src="api.js"></script>
     <script src="script.js"></script>
+    <script src="api.js"></script>
     <script src="user.js"></script>
 </body>
 </html>

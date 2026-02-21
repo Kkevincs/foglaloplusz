@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.Data;
 using Salonic.Models;
@@ -21,7 +21,8 @@ namespace Salonic.Controllers
         var workers = _context.Workers.Select(x => new { 
                 x.Id,
                 x.Name,
-                x.Email
+                x.Email,
+                x.Appointments
             }).ToList();
             return(Ok (workers));
         }

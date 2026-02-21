@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Salonic.Models
 {
@@ -9,13 +11,19 @@ namespace Salonic.Models
         public int Id { get; set; }
 
         public int GuestId { get; set; }
-        public Guest Guest { get; set; } = null!;
+        [JsonIgnore]
+        [BindNever]
+        public Guest? Guest { get; set; }
 
         public int WorkerId { get; set; }
-        public Worker Worker { get; set; } = null!;
+        [JsonIgnore]
+        [BindNever]
+        public Worker? Worker { get; set; }
 
         public int ServiceId { get; set; }
-        public Service Service { get; set; } = null!;
+        [JsonIgnore]
+        [BindNever]
+        public Service? Service { get; set; }
         [Required]
         public int Year { get; set; }
         [Required]
@@ -26,8 +34,7 @@ namespace Salonic.Models
         public int Hour { get; set; }
         [Required]
         public int Minute { get; set; }
-        [Required]
-        public string Notes { get; set; }
+        public string Notes { get; set; } = string.Empty;
         [Required]
         public int DurationInMinutes { get; set; }
 

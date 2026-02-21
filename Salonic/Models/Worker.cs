@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Salonic.Models
@@ -10,6 +10,8 @@ namespace Salonic.Models
         public string Name { get; set; }
         public string Email { get; set; }
         public string Pwd { get; set; }
+
+        public string Description { get; set; }
 
         // Navigation: one Worker has many Appointments (1 : N)
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
