@@ -9,20 +9,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">
-                <h1>💅 Luxury Nails</h1>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="services.html" class="active">Services</a></li>
-                <li><a href="addService.html">Add Service</a></li>
-                <li><a href="profiles.html">Our Team</a></li>
-                <li><a href="scheduler.html">Book Appointment</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-            </ul>
+            <ul id="nav-bar" class="nav-menu"></ul>
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -40,8 +27,7 @@
         </section>
 
         <section class="services-content">
-            <div id="serviceContainer" class="container">      
-            </div>
+            <div id="serviceContainer" class="container"></div>
         </section>
 
         <section class="cta-section">
@@ -58,32 +44,8 @@
             <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
         </div>
     </footer>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-    getService();
-    
-});
-    async function getService() {
-
-        const response = await fetch("https://localhost:7156/api/service");
-        const services = await response.json();
-        services.forEach(
-            x => document.getElementById("serviceContainer").innerHTML += 
-        
-        `<div class="service-detail">
-            <div class="service-icon">💅</div>
-            <h2>${x.name}</h2>
-            <p>${x.description}</p>
-            <p>${x.price} Ft</p>
-        </div>`)
-
-    }
-</script>
-    <script src="script.js">
-        
-
-    </script>
+    <script src="script.js"></script>
+    <script src="api.js"></script>
+    <script src="services.js"></script>
 </body>
 </html>
-
-

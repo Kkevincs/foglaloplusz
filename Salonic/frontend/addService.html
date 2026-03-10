@@ -9,20 +9,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">
-                <h1>💅 Luxury Nails</h1>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="addService.html" class="active">Add Service</a></li>
-                <li><a href="profiles.html">Our Team</a></li>
-                <li><a href="scheduler.html">Book Appointment</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-            </ul>
+            <ul id="nav-bar" class="nav-menu"></ul>
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -58,21 +45,18 @@
                                 <input type="number" id="servicePrice" name="price" required min="0" step="1" placeholder="e.g. 35">
                             </div>
                         </div>
-
                         <div class="form-actions">
                             <button type="submit" class="btn-primary">Add Service</button>
                             <button type="reset" class="btn-secondary">Clear Form</button>
                         </div>
-
                         <p id="addServiceMessage" class="form-note" style="margin-top: 1rem;"></p>
                     </form>
                 </div>
-
                 <div class="booking-info">
                     <h2>Info</h2>
                     <div class="info-card">
                         <h3>📋 Service Catalog</h3>
-                        <p>New services will appear on the <a href="services.html">Services</a> page. Use a clear name and description so clients know what to expect.</p>
+                        <p>New services will appear on the <a href="services.html">Services</a> page.</p>
                     </div>
                 </div>
             </div>
@@ -84,34 +68,8 @@
             <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
         </div>
     </footer>
-
-    <script>
-        document.getElementById('addServiceForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const serviceName = document.getElementById('serviceName').value;
-            const description = document.getElementById('serviceDescription').value;
-            const servicePrice = parseInt(document.getElementById('servicePrice').value);
-            const newService = {
-                Name : serviceName,
-                Description : description,
-                Price : servicePrice
-            }
-
-            const response =  await('https://localhost:7156/api/service', {
-                method: "POST",
-                body: JSON.stringify(newService)
-                
-
-            })
-
-            console.log(response.JSON);
-            
-
-            
-            
-        });
-    </script>
     <script src="script.js"></script>
+    <script src="api.js"></script>
     <script src="addService.js"></script>
 </body>
 </html>

@@ -1,8 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; 
-using System.Security.Cryptography.X509Certificates;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
-namespace Salonic.Models
+namespace Salonic.DAL.Models
 {
     public class Service
     {
@@ -18,7 +22,6 @@ namespace Salonic.Models
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
         // Navigation: many-to-many with Worker (EF creates the junction table automatically)
-        public ICollection<Worker> Workers { get; set; } = new List<Worker>();
-    }
+        public ICollection<Artist> Artists { get; set; } = new List<Artist>();
+    }   
 }
-

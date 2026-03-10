@@ -1,41 +1,48 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Salonic.Data;
+using Salonic.BLL.DTOs.ServiceDTOs;
+using Salonic.BLL.Services.Interfaces;
+using Salonic.DAL.Models;
+using System.Security.Cryptography.X509Certificates;
 
-namespace Salonic.Controllers
+namespace Salonic.presentation.Controllers
 {
     [Route("api/service")]
     [ApiController]
     public class ServiceController : ControllerBase
     {
-        private readonly AppDbContext _context;
 
-        public ServiceController(AppDbContext context)
+        private readonly IServiceService _serviceService;
+
+        public ServiceController(IServiceService service)
         {
-            _context = context;
+            _serviceService = service;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetService>> GetById(int id) {
+            return await _serviceService.GetById(id);
+        }
         [HttpGet]
-        public IActionResult Get()
-        {
-            var apps = _context.Services.Select(x => new
-            {
-                x.Id,
-                x.Name,
-                x.Description,
-                x.Price,
-                //x.WorkerId
-            }).ToList();
-            return Ok(apps);
+
+        public async Task<ActionResult<List<GetService>>> GetAll() {
+            return await _serviceService.GetAll();
+        }
+        [HttpPost]
+        public async Task<ActionResult<GetService>> Create(GetService service) {
+            return await _serviceService.Create(service);
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] Models.Service service)
-        {
-            _context.Services.Add(service);
-            _context.SaveChanges();
-            return Ok(service);
+        [HttpPut]
+
+        public async Task Update(GetService service) {
+            await _serviceService.Update(service);
+        }
+
+        [HttpDelete]
+
+        public async Task DeleteById(int id) { 
+            await _serviceService.DeleteById(id);
         }
     }
 }
-    

@@ -1,39 +1,70 @@
 // Navigation and common UI functionality
 document.addEventListener('DOMContentLoaded', function() {
     setupNavigation();
-    setupContactForm();
     setupSmoothScrolling();
 });
 
+
 function setupNavigation() {
+
+    if(!localStorage.getItem("email")){
+    document.getElementById('nav-bar').innerHTML = `
+            <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="profiles.html">Our Team</a></li>
+                <li><a href="scheduler.html">Book Appointment</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="nonloggedinuser.html">User</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
+
+        `;
+    }
+    else{
+        document.getElementById('nav-bar').innerHTML = `
+            <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="addService.html">Add Service</a></li>
+                <li><a href="profiles.html">Our Team</a></li>
+                <li><a href="user.html">User</a></li>
+                <li><a href="scheduler.html">Book Appointment</a></li>
+                <li><a href="contact.html">Contact</a></li>
+
+        `;
+    }
+
+    
+    //
+
+
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
-
     if (hamburger && navMenu) {
         hamburger.addEventListener('click', function() {
             navMenu.classList.toggle('active');
-            
-            const spans = hamburger.querySelectorAll('span');
-            if (navMenu.classList.contains('active')) {
-                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-                spans[1].style.opacity = '0';
-                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-            } else {
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
-            }
+            hamburger.classList.toggle('active');
         });
 
+        // Close menu when clicking on a link
         const navLinks = document.querySelectorAll('.nav-menu a');
         navLinks.forEach(link => {
             link.addEventListener('click', function() {
                 navMenu.classList.remove('active');
-                const spans = hamburger.querySelectorAll('span');
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
+                hamburger.classList.remove('active');
             });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInsideNav = navMenu.contains(event.target);
+            const isClickOnHamburger = hamburger.contains(event.target);
+            
+            if (!isClickInsideNav && !isClickOnHamburger && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            }
         });
     }
 

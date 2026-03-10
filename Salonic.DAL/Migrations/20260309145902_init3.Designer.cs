@@ -4,33 +4,51 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Salonic.Data;
+using Salonic.DAL.Data;
 
 #nullable disable
 
-namespace Salonic.Migrations
+namespace Salonic.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260220081701_init")]
-    partial class init
+    [Migration("20260309145902_init3")]
+    partial class init3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.23")
+                .HasAnnotation("ProductVersion", "8.0.24")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Salonic.Models.Appointment", b =>
+            modelBuilder.Entity("ArtistService", b =>
+                {
+                    b.Property<int>("ArtistsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServicesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ArtistsId", "ServicesId");
+
+                    b.HasIndex("ServicesId");
+
+                    b.ToTable("ArtistService");
+                });
+
+            modelBuilder.Entity("Salonic.DAL.Models.Appointment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArtistId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Day")
                         .HasColumnType("int");
@@ -52,13 +70,9 @@ namespace Salonic.Migrations
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("varchar(2000)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkerId")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
@@ -66,16 +80,45 @@ namespace Salonic.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ArtistId");
+
                     b.HasIndex("GuestId");
 
                     b.HasIndex("ServiceId");
 
-                    b.HasIndex("WorkerId");
-
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("Salonic.Models.Guest", b =>
+            modelBuilder.Entity("Salonic.DAL.Models.Artist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Pwd")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Artists");
+                });
+
+            modelBuilder.Entity("Salonic.DAL.Models.Guest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,25 +128,22 @@ namespace Salonic.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Pwd")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.ToTable("Guests");
                 });
 
-            modelBuilder.Entity("Salonic.Models.Service", b =>
+            modelBuilder.Entity("Salonic.DAL.Models.Service", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,8 +157,7 @@ namespace Salonic.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
@@ -128,102 +167,59 @@ namespace Salonic.Migrations
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("Salonic.Models.Worker", b =>
+            modelBuilder.Entity("ArtistService", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("Pwd")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Workers");
-                });
-
-            modelBuilder.Entity("ServiceWorker", b =>
-                {
-                    b.Property<int>("ServicesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ServicesId", "WorkersId");
-
-                    b.HasIndex("WorkersId");
-
-                    b.ToTable("ServiceWorker");
-                });
-
-            modelBuilder.Entity("Salonic.Models.Appointment", b =>
-                {
-                    b.HasOne("Salonic.Models.Guest", "Guest")
-                        .WithMany("Appointments")
-                        .HasForeignKey("GuestId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Salonic.DAL.Models.Artist", null)
+                        .WithMany()
+                        .HasForeignKey("ArtistsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Salonic.Models.Service", "Service")
-                        .WithMany("Appointments")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Salonic.Models.Worker", "Worker")
-                        .WithMany("Appointments")
-                        .HasForeignKey("WorkerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Guest");
-
-                    b.Navigation("Service");
-
-                    b.Navigation("Worker");
-                });
-
-            modelBuilder.Entity("ServiceWorker", b =>
-                {
-                    b.HasOne("Salonic.Models.Service", null)
+                    b.HasOne("Salonic.DAL.Models.Service", null)
                         .WithMany()
                         .HasForeignKey("ServicesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.HasOne("Salonic.Models.Worker", null)
-                        .WithMany()
-                        .HasForeignKey("WorkersId")
+            modelBuilder.Entity("Salonic.DAL.Models.Appointment", b =>
+                {
+                    b.HasOne("Salonic.DAL.Models.Artist", "Artist")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Salonic.DAL.Models.Guest", "Guest")
+                        .WithMany("Appointments")
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Salonic.DAL.Models.Service", "Service")
+                        .WithMany("Appointments")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artist");
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("Salonic.Models.Guest", b =>
+            modelBuilder.Entity("Salonic.DAL.Models.Artist", b =>
                 {
                     b.Navigation("Appointments");
                 });
 
-            modelBuilder.Entity("Salonic.Models.Service", b =>
+            modelBuilder.Entity("Salonic.DAL.Models.Guest", b =>
                 {
                     b.Navigation("Appointments");
                 });
 
-            modelBuilder.Entity("Salonic.Models.Worker", b =>
+            modelBuilder.Entity("Salonic.DAL.Models.Service", b =>
                 {
                     b.Navigation("Appointments");
                 });

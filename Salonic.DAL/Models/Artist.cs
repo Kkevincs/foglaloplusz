@@ -1,15 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Salonic.Models
+namespace Salonic.DAL.Models
 {
-    public class Worker
+    public class Artist
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Pwd { get; set; }
+
+        public string Description { get; set; }
 
         // Navigation: one Worker has many Appointments (1 : N)
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();

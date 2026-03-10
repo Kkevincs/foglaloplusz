@@ -1,7 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Salonic.Models
+namespace Salonic.DAL.Models
 {
     public class Guest
     {
@@ -11,8 +15,6 @@ namespace Salonic.Models
         public string Email { get; set; } = string.Empty;
         public string Pwd { get; set; } = string.Empty;
 
-        // Navigation: one Guest has many Appointments (1 : N)
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 }
-
