@@ -22,7 +22,7 @@ namespace Salonic.BLL.Services
             _artistRepository = repo;
         }
 
-        public async Task<AddArtist> Create(AddArtist artist) {
+        public async Task<ArtistWithoutIdDTO> Create(ArtistWithoutIdDTO artist) {
             var newArtist = _mapper.Map<Artist>(artist);
             await _artistRepository.Create(newArtist);
             return artist;
@@ -32,19 +32,19 @@ namespace Salonic.BLL.Services
            await _artistRepository.DeleteById(id);
         }
 
-        public async Task<List<GetArtist>> GetAll() { 
+        public async Task<List<ArtistWithIdDTO>> GetAll() { 
             var artists = await _artistRepository.GetAll();
-            var ArtistsDTO = _mapper.Map<List<GetArtist>>(artists);
+            var ArtistsDTO = _mapper.Map<List<ArtistWithIdDTO>>(artists);
             return ArtistsDTO;
         }
 
-        public async Task<GetArtist> GetById(int id) { 
+        public async Task<ArtistWithIdDTO> GetById(int id) { 
             var artist = await _artistRepository.GetById(id);
-            var artistDTO = _mapper.Map<GetArtist>(artist);
+            var artistDTO = _mapper.Map<ArtistWithIdDTO>(artist);
             return artistDTO;
         }
 
-        public async Task Update(GetArtist artist) {
+        public async Task Update(ArtistWithIdDTO artist) {
             var artistDTO = _mapper.Map<Artist>(artist);
             var newArtist = _artistRepository.Update(artistDTO);
         }

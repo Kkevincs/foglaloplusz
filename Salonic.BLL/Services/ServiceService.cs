@@ -26,14 +26,14 @@ namespace Salonic.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<GetService> Create(GetService service)
+        public async Task<ServiceWithIdDTO> Create(ServiceWithIdDTO service)
         {
             var Service = _mapper.Map<Service>(service);
             Service newService = await _serviceRepository.Create(Service);
             return service;
         }
 
-        public async Task<AddService> Create(AddService service)
+        public async Task<ServiceWithoutIdDTO> Create(ServiceWithoutIdDTO service)
         {
             var serviceEntity = _mapper.Map<Service>(service);
             Service newService = await _serviceRepository.Create(serviceEntity);
@@ -45,21 +45,21 @@ namespace Salonic.BLL.Services
             await _serviceRepository.DeleteById(id);
         }
 
-        public async Task<List<GetService>> GetAll()
+        public async Task<List<ServiceWithIdDTO>> GetAll()
         {
             var services = await _serviceRepository.GetAll();
-            var serviceDTO = _mapper.Map<List<GetService>>(services);
+            var serviceDTO = _mapper.Map<List<ServiceWithIdDTO>>(services);
             return serviceDTO;
         }
 
-        public async Task<GetService> GetById(int id)
+        public async Task<ServiceWithIdDTO> GetById(int id)
         {
             var service = await _serviceRepository.GetById(id);
-            var serviceDTO = _mapper.Map<GetService>(service);
+            var serviceDTO = _mapper.Map<ServiceWithIdDTO>(service);
             return serviceDTO;
         }
 
-        public async Task Update(GetService service)
+        public async Task Update(ServiceWithIdDTO service)
         {
             var serviceEntity = _mapper.Map<Service>(service);
             await _serviceRepository.Update(serviceEntity);

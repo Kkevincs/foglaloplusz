@@ -22,7 +22,7 @@ namespace Salonic.BLL.Services
             _guestRepository = repo;
         }
 
-        public async Task<AddGuest> Create(AddGuest guest)
+        public async Task<GuestWithoutIdDTO> Create(GuestWithoutIdDTO guest)
         {
             var Guest = _mapper.Map<Guest>(guest);
             Guest newGuest = await _guestRepository.Create(Guest);
@@ -33,19 +33,19 @@ namespace Salonic.BLL.Services
             await _guestRepository.DeleteById(id);
         }
 
-        public async Task<List<GetGuest>> GetAll() { 
+        public async Task<List<GuestWithIdDTO>> GetAll() { 
             var guests = await _guestRepository.GetAll();
-            var guestDTO = _mapper.Map<List<GetGuest>>(guests);
+            var guestDTO = _mapper.Map<List<GuestWithIdDTO>>(guests);
             return guestDTO;
         }
 
-        public async Task<GetGuest> GetById(int id) { 
+        public async Task<GuestWithIdDTO> GetById(int id) { 
             var guest = await _guestRepository.GetById(id);
-            var guestDTO = _mapper.Map<GetGuest>(guest);
+            var guestDTO = _mapper.Map<GuestWithIdDTO>(guest);
             return guestDTO;
         }
 
-        public async Task Update(GetGuest guest) {
+        public async Task Update(GuestWithIdDTO guest) {
             var oldGuest = _mapper.Map<Guest>(guest);
             await _guestRepository.Update(oldGuest);
         }

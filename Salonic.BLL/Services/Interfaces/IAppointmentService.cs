@@ -10,10 +10,10 @@ namespace Salonic.BLL.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        public Task<List<GetAppointment>> GetAll();
-        public Task<GetAppointment> GetById(int id);
-        public Task<AddAppointment> Create(AddAppointment appointment);
-        public Task Update(GetAppointment appointment);
+        public Task<List<AppointmentsWithIdDTO>> GetAll();
+        public Task<AppointmentsWithIdDTO> GetById(int id);
+        public Task<AppointmentsWithoutIdDTO> Create(AppointmentsWithoutIdDTO appointment);
+        public Task Update(AppointmentsWithIdDTO appointment);
         public Task DeleteById(int id);
     }
 }

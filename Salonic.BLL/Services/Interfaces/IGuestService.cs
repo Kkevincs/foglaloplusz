@@ -10,10 +10,10 @@ namespace Salonic.BLL.Services.Interfaces
 {
     public interface IGuestService
     {
-        public Task<List<GetGuest>> GetAll();
-        public Task<GetGuest> GetById(int id);
-        public Task<AddGuest> Create(AddGuest guest);
-        public Task Update(GetGuest guest);
+        public Task<List<GuestWithIdDTO>> GetAll();
+        public Task<GuestWithIdDTO> GetById(int id);
+        public Task<GuestWithoutIdDTO> Create(GuestWithoutIdDTO guest);
+        public Task Update(GuestWithIdDTO guest);
         public Task DeleteById(int id);
     }
 }

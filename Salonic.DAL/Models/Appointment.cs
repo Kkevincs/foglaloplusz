@@ -23,6 +23,9 @@ namespace Salonic.DAL.Models
         public int ServiceId { get; set; }
         public Service Service { get; set; }
 
+        public int SalonId { get; set; }
+        public Salon Salon { get; set; }
+
         public int Year { get; set; }
         public int Month { get; set; }
         public int Day { get; set; }

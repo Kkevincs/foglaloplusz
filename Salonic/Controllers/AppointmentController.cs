@@ -18,26 +18,26 @@ namespace Salonic.presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<GetAppointment>>> GetAll()
+        public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetAll()
         { 
             return await _appointmentService.GetAll();
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetAppointment>> GetById(int id)
+        public async Task<ActionResult<AppointmentsWithIdDTO>> GetById(int id)
         { 
             return await _appointmentService.GetById(id);
         }
 
         [HttpPost]
 
-        public async Task<ActionResult<AddAppointment>> Create(AddAppointment app)
+        public async Task<ActionResult<AppointmentsWithoutIdDTO>> Create(AppointmentsWithoutIdDTO app)
         {
             return await _appointmentService.Create(app);
         }
 
         [HttpPut]
 
-        public async Task Update(GetAppointment app) { 
+        public async Task Update(AppointmentsWithIdDTO app) { 
             await _appointmentService.Update(app);
         }
 

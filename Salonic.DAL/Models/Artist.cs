@@ -16,11 +16,12 @@ namespace Salonic.DAL.Models
         public string Pwd { get; set; }
 
         public string Description { get; set; }
-
-        // Navigation: one Worker has many Appointments (1 : N)
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
-        // Navigation: many-to-many with Service (EF creates the junction table automatically)
         public ICollection<Service> Services { get; set; } = new List<Service>();
+        public int SalonId { get; set; }
+        public Salon Salon { get; set; }
+
+        public Role Role { get; set; } = Role.Artist;
     }
 }

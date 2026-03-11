@@ -27,25 +27,25 @@ namespace Salonic.presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetArtist>> GetById(int id)
+        public async Task<ActionResult<ArtistWithIdDTO>> GetById(int id)
         {
             return await _artistService.GetById(id);
         }
         [HttpGet]
 
-        public async Task<ActionResult<List<GetArtist>>> GetAll()
+        public async Task<ActionResult<List<ArtistWithIdDTO>>> GetAll()
         {
             return await _artistService.GetAll();
         }
         [HttpPost]
-        public async Task<ActionResult<AddArtist>> Create(AddArtist artist)
+        public async Task<ActionResult<ArtistWithoutIdDTO>> Create(ArtistWithoutIdDTO artist)
         {
             return await _artistService.Create(artist);
         }
 
         [HttpPut]
 
-        public async Task Update(GetArtist artist)
+        public async Task Update(ArtistWithIdDTO artist)
         {
             await _artistService.Update(artist);
         }
