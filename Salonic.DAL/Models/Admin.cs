@@ -14,6 +14,7 @@ namespace Salonic.DAL.Models
         public string Email { get; set; }
         string Name { get; set; }
         string Pwd { get; set; }
+        Role Role { get; set; } = Role.Kevin;
 
     }
 }
