@@ -15,6 +15,10 @@ namespace Salonic.DAL.Data
         public DbSet<Artist> Artists { get; set; }
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+        public DbSet<Owner> Owners { get; set; }
+        public DbSet<Salon> Salons { get; set; }
+
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

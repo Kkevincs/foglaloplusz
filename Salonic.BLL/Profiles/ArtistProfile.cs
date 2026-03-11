@@ -13,10 +13,10 @@ namespace Salonic.BLL.Profiles
     {
         public ArtistProfile()
         {
-            CreateMap<AddArtist, Artist>();
-            CreateMap<Artist, AddArtist>();
-            CreateMap<GetArtist, Artist>();
-            CreateMap<Artist, GetArtist>();
+            CreateMap<ArtistWithoutIdDTO, Artist>();
+            CreateMap<Artist, ArtistWithoutIdDTO>();
+            CreateMap<ArtistWithIdDTO, Artist>();
+            CreateMap<Artist, ArtistWithIdDTO>();
         }
     }
 }

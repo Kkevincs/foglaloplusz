@@ -14,10 +14,10 @@ namespace Salonic.BLL.Profiles
     {
         public GuestProfile()
         {
-            CreateMap<AddGuest, Guest>();
-            CreateMap<Guest, AddGuest>();
-            CreateMap<GetGuest, Guest>();
-            CreateMap<Guest, GetGuest>();
+            CreateMap<GuestWithoutIdDTO, Guest>();
+            CreateMap<Guest, GuestWithoutIdDTO>();
+            CreateMap<GuestWithIdDTO, Guest>();
+            CreateMap<Guest, GuestWithIdDTO>();
         }
     }
 }

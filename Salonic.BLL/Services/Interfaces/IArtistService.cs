@@ -11,10 +11,10 @@ namespace Salonic.BLL.Services.Interfaces
 {
     public interface IArtistService
     {
-        public Task<List<GetArtist>> GetAll();
-        public Task<GetArtist> GetById(int id);
-        public Task<AddArtist> Create(AddArtist artist);
-        public Task Update(GetArtist artist);
+        public Task<List<ArtistWithIdDTO>> GetAll();
+        public Task<ArtistWithIdDTO> GetById(int id);
+        public Task<ArtistWithoutIdDTO> Create(ArtistWithoutIdDTO artist);
+        public Task Update(ArtistWithIdDTO artist);
         public Task DeleteById(int id);
     }
 }

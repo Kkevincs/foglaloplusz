@@ -20,22 +20,22 @@ namespace Salonic.presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetService>> GetById(int id) {
+        public async Task<ActionResult<ServiceWithIdDTO>> GetById(int id) {
             return await _serviceService.GetById(id);
         }
         [HttpGet]
 
-        public async Task<ActionResult<List<GetService>>> GetAll() {
+        public async Task<ActionResult<List<ServiceWithIdDTO>>> GetAll() {
             return await _serviceService.GetAll();
         }
         [HttpPost]
-        public async Task<ActionResult<GetService>> Create(GetService service) {
+        public async Task<ActionResult<ServiceWithIdDTO>> Create(ServiceWithIdDTO service) {
             return await _serviceService.Create(service);
         }
 
         [HttpPut]
 
-        public async Task Update(GetService service) {
+        public async Task Update(ServiceWithIdDTO service) {
             await _serviceService.Update(service);
         }
 

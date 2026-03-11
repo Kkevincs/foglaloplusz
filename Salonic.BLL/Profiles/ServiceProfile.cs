@@ -13,10 +13,10 @@ namespace Salonic.BLL.Profiles
     {
         public ServiceProfile()
         {
-            CreateMap<AddService, Service>();
-            CreateMap<Service, AddService>();
-            CreateMap<GetService, Service>();
-            CreateMap<Service, GetService>();
+            CreateMap<ServiceWithoutIdDTO, Service>();
+            CreateMap<Service, ServiceWithoutIdDTO>();
+            CreateMap<ServiceWithIdDTO, Service>();
+            CreateMap<Service, ServiceWithIdDTO>();
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Salonic.BLL.DTOs.ServiceDTOs
 {
-    public class AddService
+    public class ServiceWithoutIdDTO
     {
         public string Name { get; set; }
         public string Description { get; set; }

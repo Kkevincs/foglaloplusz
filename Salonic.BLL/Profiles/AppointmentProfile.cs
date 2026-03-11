@@ -13,10 +13,10 @@ namespace Salonic.BLL.Profiles
     {
         public AppointmentProfile()
         {
-            CreateMap<AddAppointment, AppointmentProfile>();
-            CreateMap<AppointmentProfile, AddAppointment>();
-            CreateMap<GetAppointment, AppointmentProfile>();
-            CreateMap<AppointmentProfile, GetAppointment>();
+            CreateMap<AppointmentsWithoutIdDTO, AppointmentProfile>();
+            CreateMap<AppointmentProfile, AppointmentsWithoutIdDTO>();
+            CreateMap<AppointmentsWithIdDTO, AppointmentProfile>();
+            CreateMap<AppointmentProfile, AppointmentsWithIdDTO>();
         }
     }
 }

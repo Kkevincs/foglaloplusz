@@ -16,5 +16,7 @@ namespace Salonic.DAL.Models
         public string Pwd { get; set; } = string.Empty;
 
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        public Role Role { get; set; } = Role.Guest;
     }
 }

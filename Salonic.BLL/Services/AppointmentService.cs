@@ -23,7 +23,7 @@ namespace Salonic.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<AddAppointment> Create(AddAppointment app) {
+        public async Task<AppointmentsWithoutIdDTO> Create(AppointmentsWithoutIdDTO app) {
             Appointment appointment = _mapper.Map<Appointment>(app);
             await _appointmentRepository.Create(appointment);
             return app;
@@ -33,18 +33,18 @@ namespace Salonic.BLL.Services
             await _appointmentRepository.DeleteById(id);       
         }
 
-        public async Task<List<GetAppointment>> GetAll() {
+        public async Task<List<AppointmentsWithIdDTO>> GetAll() {
             var appointments = await _appointmentRepository.GetAll();
-            var AppointmentDTOs = _mapper.Map<List<GetAppointment>>(appointments);
+            var AppointmentDTOs = _mapper.Map<List<AppointmentsWithIdDTO>>(appointments);
             return AppointmentDTOs;
         }
 
-        public async Task<GetAppointment> GetById(int id) { 
+        public async Task<AppointmentsWithIdDTO> GetById(int id) { 
             var appointment = await _appointmentRepository.GetById(id);
-            var appointmentDTO = _mapper.Map<GetAppointment>(appointment);
+            var appointmentDTO = _mapper.Map<AppointmentsWithIdDTO>(appointment);
             return appointmentDTO;
         }
-        public async Task Update(GetAppointment app) {
+        public async Task Update(AppointmentsWithIdDTO app) {
             var appointment = _mapper.Map<Appointment>(app);
             await _appointmentRepository.Update(appointment);
         }

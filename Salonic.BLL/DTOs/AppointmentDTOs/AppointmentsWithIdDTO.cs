@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Salonic.BLL.DTOs.AppointmentDTOs
 {
-    public class AddAppointment
+    public class AppointmentsWithIdDTO
     {
+        public int Id { get; set; }
         public int GuestId { get; set; }
 
         public int ArtistId { get; set; }
