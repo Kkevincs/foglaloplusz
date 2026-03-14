@@ -1,5 +1,7 @@
-
+﻿
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Salonic.BLL.Profiles;
 using Salonic.BLL.Services;
 using Salonic.BLL.Services.Interfaces;
@@ -56,7 +58,57 @@ namespace Salonic
             });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Enter your JWT token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new List<string>()
+        }
+    });
+            });
+
+            builder.Services.AddAuthentication("Bearer")
+                .AddJwtBearer(options =>            
+                {
+                    options.TokenValidationParameters = new()
+                    {
+                        ValidateIssuer = true,       
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Authentication:Issuer"], 
+                        ValidAudience = builder.Configuration["Authentication:Audience"],  
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"])),
+                    };
+                    //timer is automatically validated
+                }
+
+                );
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = null; // ← no global policy
+            });
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -68,15 +120,9 @@ namespace Salonic
 
 
             app.UseRouting();
-
-
-
-            
-
-            app.UseAuthorization();
-
-            app.UseCors("AllowAll");
-
+            app.UseCors("AllowAll");        
+            app.UseAuthentication();        
+            app.UseAuthorization();         
             app.MapControllers();
 
             app.Run();

@@ -27,7 +27,7 @@ namespace Salonic.DAL.Repositories
 
         public async Task DeleteById(int id)
         {
-            Guest Guest = _context.Guests.Where(x => x.Id == id).FirstOrDefault();
+            Guest Guest =  _context.Guests.Where(x => x.Id == id).FirstOrDefault();
             _context.Remove(Guest);
             _context.SaveChanges();
         }

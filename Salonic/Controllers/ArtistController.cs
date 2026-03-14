@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Salonic.BLL.DTOs.ArtistDTOs;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 namespace Salonic.presentation.Controllers
 {
     [Route("api/Artist")]
+    [Authorize(Roles ="artist,admin")]
     [ApiController]
     public class ArtistController : ControllerBase
     {
