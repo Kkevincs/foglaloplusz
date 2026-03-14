@@ -25,6 +25,9 @@ namespace Salonic
 
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+            builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             //IServiceRepo
             //mapper
             builder.Services.AddAutoMapper(cfg =>

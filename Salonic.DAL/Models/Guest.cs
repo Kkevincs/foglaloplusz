@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Salonic.DAL.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Salonic.DAL.Models
 {
-    public class Guest
+    public class Guest: IUserModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -17,6 +18,6 @@ namespace Salonic.DAL.Models
 
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
-        public Role Role { get; set; } = Role.Guest;
+        public String Role { get; set; } = "Guest";
     }
 }

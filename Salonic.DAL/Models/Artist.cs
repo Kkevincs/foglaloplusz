@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Salonic.DAL.Models.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Salonic.DAL.Models
 {
-    public class Artist
+    public class Artist : IUserModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -22,6 +23,6 @@ namespace Salonic.DAL.Models
         public int SalonId { get; set; }
         public Salon Salon { get; set; }
 
-        public Role Role { get; set; } = Role.Artist;
+        public string Role { get; set; } = "Artist";
     }
 }
