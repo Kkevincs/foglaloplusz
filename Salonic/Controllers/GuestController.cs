@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.GuestDTOs;
 using Salonic.BLL.DTOs.ServiceDTOs;
@@ -7,6 +8,7 @@ using Salonic.BLL.Services.Interfaces;
 namespace Salonic.presentation.Controllers
 {
     [Route("api/guest")]
+    [Authorize(Roles = "guest,admin")]
     [ApiController]
     public class GuestController : ControllerBase
     {

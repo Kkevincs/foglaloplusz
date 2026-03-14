@@ -15,5 +15,10 @@ namespace Salonic.DAL.Models
         public ICollection<Artist> Artists { get; set; } = new List<Artist>();
 
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        public int OwnerId { get; set; }
+        public Owner Owner { get; set; }
+
+        
     }
 }
