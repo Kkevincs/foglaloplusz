@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Salonic.BLL.DTOs.GuestDTOs;
+using Salonic.BLL.DTOs.SalonDTOs;
 using Salonic.BLL.DTOs.ServiceDTOs;
 using Salonic.BLL.Services.Interfaces;
 using Salonic.DAL.Models;
