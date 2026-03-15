@@ -3,49 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury Nails - Services</title>
+    <title>Salonic — Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <ul id="nav-bar" class="nav-menu"></ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
+    <nav>
+        <a href="HomePage.html" class="logo">Salonic</a>
+        <ul class="nav-links">
+            <li><a href="HomePage.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="artists.html">Artists</a></li>
+            <li><a href="#">Book</a></li>
+            <li><a href="user.html">User</a></li>
+            <li><a href="login.html">Login</a></li>
+        </ul>
     </nav>
-
-    <main>
-        <section class="page-header">
-            <div class="container">
-                <h1>Our Services</h1>
-                <p>Comprehensive nail care and beauty treatments</p>
-            </div>
-        </section>
-
-        <section class="services-content">
-            <div id="serviceContainer" class="container"></div>
-        </section>
-
-        <section class="cta-section">
-            <div class="container">
-                <h2>Ready to Book?</h2>
-                <p>Schedule your appointment today and experience the Luxury Nails difference</p>
-                <a href="scheduler.html" class="btn-primary">Book Now</a>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
+    <main class="services-page">
+        <h1>Services</h1>
+        <p class="subtitle">Choose a service to book.</p>
+        <div id="services-list" class="services-list">
+            <div class="service-card"><div class="name">Haircut & finish</div><div class="desc">Wash, cut and styling. 45 min.</div></div>
+            <div class="service-card"><div class="name">Full colour</div><div class="desc">Full head colour with toner. 90 min.</div></div>
+            <div class="service-card"><div class="name">Manicure</div><div class="desc">Classic or gel manicure. 45 min.</div></div>
         </div>
-    </footer>
+    </main>
     <script src="script.js"></script>
-    <script src="api.js"></script>
-    <script src="services.js"></script>
 </body>
 </html>

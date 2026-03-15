@@ -3,81 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury Nails - User Profile</title>
+    <title>Salonic — User</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <ul id="nav-bar" class="nav-menu"></ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
+    <nav>
+        <a href="HomePage.html" class="logo">Salonic</a>
+        <ul class="nav-links">
+            <li><a href="HomePage.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="artists.html">Artists</a></li>
+            <li><a href="#">Book</a></li>
+            <li><a href="user.html">User</a></li>
+            <li><a href="login.html">Login</a></li>
+        </ul>
     </nav>
-
-    <main>
-        <section class="page-header">
-            <div class="container">
-                <h1>User Profile</h1>
-                <p>Manage your account and view your information</p>
+    <main class="user-page">
+        <h1>My account</h1>
+        <p class="subtitle">Your profile and bookings.</p>
+        <div id="user-profile" class="user-profile">
+            <div class="user-info">
+                <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">Alex Morgan</span></div>
+                <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">alex.morgan@example.com</span></div>
+                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
             </div>
-        </section>
-
-        <section class="user-content">
-            <div class="container">
-                <div class="user-profile-container">
-                    <div class="user-profile-card">
-                        <div class="profile-image">
-                            <div class="profile-placeholder">👤</div>
-                        </div>
-                        <h2>User Information</h2>
-                        <div class="user-info-section">
-                            <div class="info-row">
-                                <span class="info-label">Name:</span>
-                                <span class="info-value" id="userName">Loading...</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Email:</span>
-                                <span class="info-value" id="userEmail">Loading...</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">User ID:</span>
-                                <span class="info-value" id="userId">Loading...</span>
-                            </div>
-                        </div>
-                        <div class="user-actions">
-                            <button class="btn-primary" onclick="window.location.href='scheduler.html'">Book Appointment</button>
-                            <button onclick="logout()" class="btn-secondary" id="logoutBtn">Logout</button>
-                        </div>
-                    </div>
-                    <div class="user-details-section">
-                        <div class="detail-card">
-                            <h3>📅 Upcoming Appointments</h3>
-                            <div class="appointment-list" id="appointmentsList">
-                                <p style="text-align: center; color: var(--text-light);">No upcoming appointments</p>
-                            </div>
-                            <a href="scheduler.html" class="btn-primary" style="margin-top: 1rem; display: inline-block; text-decoration: none;">Book New Appointment</a>
-                        </div>
-                        <div class="detail-card">
-                            <h3>ℹ️ Account Information</h3>
-                            <p style="color: var(--text-light);">Your account is active and ready to use.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
         </div>
-    </footer>
+        <h2 class="section-title">Upcoming appointments</h2>
+        <div id="user-appointments" class="services-list">
+            <div class="service-card">
+                <div class="name">Haircut & finish</div>
+                <div class="desc">Mon 18 Mar, 10:00 — with Maya Chen</div>
+            </div>
+            <div class="service-card">
+                <div class="name">Manicure</div>
+                <div class="desc">Thu 21 Mar, 14:30 — with Elena Rossi</div>
+            </div>
+        </div>
+    </main>
     <script src="script.js"></script>
-    <script src="api.js"></script>
-    <script src="user.js"></script>
 </body>
 </html>

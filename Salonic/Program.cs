@@ -39,6 +39,8 @@ namespace Salonic
 
             builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            builder.Services.AddScoped<IRegisterService, RegisterService>();
             //IServiceRepo
             //mapper
             builder.Services.AddAutoMapper(cfg =>
@@ -50,6 +52,7 @@ namespace Salonic
                 cfg.AddProfile(new OwnerProfile());
                 cfg.AddProfile(new SalonProfile());
                 cfg.AddProfile(new ServiceProfile());
+                cfg.AddProfile(new UserProfile());
             });
             var connectionString = builder.Configuration.GetConnectionString("AppConnectionString");
             builder.Services.AddDbContext<AppDbContext>(options =>
