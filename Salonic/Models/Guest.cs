@@ -13,6 +13,8 @@ namespace Salonic.Models
 
         // Navigation: one Guest has many Appointments (1 : N)
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        public string Role { get; set; } = "Guest";
     }
 }
 

@@ -20,4 +20,8 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Frontend\" />
+  </ItemGroup>
+
 </Project>

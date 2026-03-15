@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.Data;
@@ -28,13 +29,10 @@ namespace Salonic.Controllers
             }).ToList();
             return Ok(apps);
         }
-
-        [HttpPost]
-        public IActionResult Post([FromBody] Models.Service service)
-        {
-            _context.Services.Add(service);
-            _context.SaveChanges();
-            return Ok(service);
+        [HttpGet]
+        
+        public async Task<ActionResult<List<ServiceWithIdDTO>>> GetAll() {
+            return await _serviceService.GetAll();
         }
     }
 }

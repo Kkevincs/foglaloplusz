@@ -1,77 +1,43 @@
-// Navigation and common UI functionality
-document.addEventListener('DOMContentLoaded', function() {
-    setupNavigation();
-    setupContactForm();
-    setupSmoothScrolling();
+document.addEventListener("DOMContentLoaded", () => {
+    LoadServices();
+
+})
+
+document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', e => {
+        if (a.getAttribute('href') === '#') e.preventDefault();
+    });
 });
 
-function setupNavigation() {
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
+document.getElementById('login-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.querySelector('#Name').value;
+    const password = form.querySelector('#Password').value;
+    const role = form.querySelector('input[name="role"]:checked')?.value;
+    const user = { name, role, pwd: password };
+    login(user)
+});
 
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            
-            const spans = hamburger.querySelectorAll('span');
-            if (navMenu.classList.contains('active')) {
-                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-                spans[1].style.opacity = '0';
-                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-            } else {
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
-            }
-        });
+document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.querySelector('#Name').value;
+    const email = form.querySelector('#Email').value;
+    const password = form.querySelector('#Password').value;
+    const role = form.querySelector('input[name="role"]:checked')?.value;
+    const user = { name, role, pwd: password };
+    Register(user)
+});
 
-        const navLinks = document.querySelectorAll('.nav-menu a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                navMenu.classList.remove('active');
-                const spans = hamburger.querySelectorAll('span');
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
-            });
-        });
-    }
-
-
-
-    const bookingForm = document.getElementById('bookingForm');
-    if (bookingForm) {
-        bookingForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-           //TODO logic
-        });
-    }
-
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thank you for your message! This is a demo form. In a real application, this would be sent to the server.');
-            
-            const formData = new FormData(contactForm);
-            console.log('Form data:', Object.fromEntries(formData));
-        });
-    }
+async function LoadServices(){
+    const services = await GetServices()
+    services.forEach(x => 
+        document.getElementById("services-list").innerHTML += `
+            <div class="service-card"><div class="name">${x.name}</div><div class="desc">${x.description}</div></div>
+        `
+        
+    )
 }
 
-function setupSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-}
 

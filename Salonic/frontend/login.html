@@ -3,78 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury Nails - Login</title>
+    <title>Salonic — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <h1>💅 Luxury Nails</h1>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="addService.html">Add Service</a></li>
-                <li><a href="profiles.html">Our Team</a></li>
-                <li><a href="scheduler.html">Book Appointment</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="login.html" class="active">Login</a></li>
-                <li><a href="register.html">Register</a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
+    <nav>
+        <a href="HomePage.html" class="logo">Salonic</a>
+        <ul class="nav-links">
+            <li><a href="HomePage.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="artists.html">Artists</a></li>
+            <li><a href="#">Book</a></li>
+            <li><a href="login.html">Login</a></li>
+        </ul>
     </nav>
-
-    <main>
-        <section class="page-header">
-            <div class="container">
-                <h1>Login</h1>
-                <p>Sign in to your account</p>
+    <main class="auth-page">
+        <h1>Login</h1>
+        <form id="login-form" class="auth-form">
+            <div class="role-toggle">
+                <label><input type="radio" name="role" value="guest" checked> Guest</label>
+                <label><input type="radio" name="role" value="artist"> Artist</label>
             </div>
-        </section>
-
-        <section class="scheduler-content">
-            <div class="container">
-                <div class="booking-form-container">
-                    <form class="booking-form" id="loginForm">
-                        <div class="form-section">
-                            <h2>Login Information</h2>
-                            <div class="form-group">
-                                <label for="email">Email *</label>
-                                <input type="email" id="email" name="email" required placeholder="your.email@example.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Password *</label>
-                                <input type="password" id="password" name="password" required placeholder="Enter your password">
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn-primary">Login</button>
-                            <a href="register.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">Create Account</a>
-                        </div>
-
-                        <p id="loginMessage" class="form-note" style="margin-top: 1rem;"></p>
-                    </form>
-                </div>
-            </div>
-        </section>
+            <input id="Name" type="text" name="name" placeholder="Name" required>
+            <input id="Password" type="password" name="password" placeholder="Password" required>
+            <button type="submit">Log in</button>
+        </form>
+        <p class="auth-switch">Don't have an account? <a href="register.html">Register</a></p>
     </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Luxury Nails. All rights reserved.</p>
-        </div>
-    </footer>
-
     <script src="api.js"></script>
     <script src="script.js"></script>
-    <script src="login.js"></script>
 </body>
 </html>

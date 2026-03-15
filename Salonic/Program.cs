@@ -9,6 +9,32 @@ namespace Salonic
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+            builder.Services.AddScoped<IServiceService, ServiceService>();
+
+            builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+            builder.Services.AddScoped<IArtistService, ArtistService>();
+
+            builder.Services.AddScoped<IGuestRepository, GuestRepository>();
+            builder.Services.AddScoped<IGuestService, GuestService>();
+
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+            builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            builder.Services.AddScoped<IRegisterService, RegisterService>();
+            //IServiceRepo
+            //mapper
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile(new AppointmentProfile());
+                cfg.AddProfile(new ArtistProfile());
+                cfg.AddProfile(new GuestProfile());
+                cfg.AddProfile(new ServiceProfile());
+                cfg.AddProfile(new UserProfile());
+            });
             var connectionString = builder.Configuration.GetConnectionString("AppConnectionString");
             // Add services to the container.
             builder.Services.AddDbContext<AppDbContext>(builder => builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
