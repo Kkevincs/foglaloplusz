@@ -28,6 +28,15 @@ namespace Salonic
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
+
+            builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
+            builder.Services.AddScoped<IOwnerService, OwnerService>();
+
+            builder.Services.AddScoped<ISalonRepository, SalonRepository>();
+            builder.Services.AddScoped<ISalonService, SalonService>();
+
             builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             //IServiceRepo
@@ -37,6 +46,9 @@ namespace Salonic
                 cfg.AddProfile(new AppointmentProfile());
                 cfg.AddProfile(new ArtistProfile());
                 cfg.AddProfile(new GuestProfile());
+                cfg.AddProfile(new AdminProfile());
+                cfg.AddProfile(new OwnerProfile());
+                cfg.AddProfile(new SalonProfile());
                 cfg.AddProfile(new ServiceProfile());
             });
             var connectionString = builder.Configuration.GetConnectionString("AppConnectionString");
