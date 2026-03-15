@@ -52,7 +52,7 @@ namespace Salonic.BLL.Services
         public async Task Update(SalonWithIdDTO salon)
         {
             var salonDTO = _mapper.Map<Salon>(salon);
-            var newSalon = _salonRepository.Update(salonDTO);
+            await _salonRepository.Update(salonDTO);
         }
     }
 }
