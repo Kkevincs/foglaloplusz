@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Salonic.DAL.Repositories.Interfaces
 {
-    public interface IGuestRepository
+    public interface ISalonRepository
     {
         public Task<List<Salon>> GetAll();
         public Task<Salon> GetById(int id);
