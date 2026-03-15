@@ -16,13 +16,15 @@ namespace Salonic.BLL.Services
     {
         private readonly IGuestRepository _guestrepo;
         private readonly IArtistRepository _artistrepo;
+        private readonly IOwnerRepository _ownerRepository;
         private readonly IMapper _mapper;
 
-        public RegisterService(IGuestRepository guestrepo, IArtistRepository artistrepo, IMapper mapper)
+        public RegisterService(IGuestRepository guestrepo, IArtistRepository artistrepo, IMapper mapper, IOwnerRepository ownerrepo)
         {
             _guestrepo = guestrepo;
             _artistrepo = artistrepo;
             _mapper = mapper;
+            _ownerRepository = ownerrepo;
         }
 
         public async Task<UserDTO> Register(UserDTO user)
@@ -38,6 +40,11 @@ namespace Salonic.BLL.Services
                 case "artist":
                     var regArtist = _mapper.Map<Artist>(user);
                     await _artistrepo.Create(regArtist);
+                    return user;
+                    break;
+                case "owner":
+                    var regOwner = _mapper.Map<Owner>(user);
+                    await _ownerRepository.Create(regOwner);
                     return user;
                     break;
                 default:
