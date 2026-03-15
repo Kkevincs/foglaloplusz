@@ -19,10 +19,14 @@ namespace Salonic.presentation.Controllers
             _guestService = guest;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("me")]
         public async Task<ActionResult<GuestWithIdDTO>> GetById(int id)
         {
-            return await _guestService.GetById(id);
+            var subClaim = User.FindFirst("sub")?.Value;
+            if (subClaim == null) return Unauthorized();
+
+            int Id = Convert.ToInt32(subClaim);
+            return await _guestService.GetById(Id);
         }
         [HttpGet]
 

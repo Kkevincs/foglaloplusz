@@ -17,6 +17,8 @@ namespace Salonic.BLL.Profiles
         {
             CreateMap<IUserModel, UserDTO>();
             CreateMap<UserDTO, IUserModel>();
+            CreateMap<UserDTO, Guest>();   
+            CreateMap<UserDTO, Artist>();   
         }
     }
 }
