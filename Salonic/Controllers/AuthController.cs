@@ -75,7 +75,7 @@ namespace Salonic.presentation.Controllers
             //key-value pairs about the user = claims
             var claimsForToken = new List<Claim>()
             {
-                new Claim("sub", user.Id.ToString()),   
+                new Claim("sub", user.Id.ToString()),
                 new Claim("name", user.Name),
                 new Claim("role", user.Role)
                 //other: given_name, family_name
@@ -97,10 +97,7 @@ namespace Salonic.presentation.Controllers
 
         private async Task<UserInfo> ValidateCredentials(UserDTO user)
         {
-            if (user.Name == "setup" && user.Pwd == "password123")
-            {
-                return new UserInfo(999, "SetupAdmin", "admin");
-            }
+            
             var authenticatedUser = await _auth.Authentication(user);
             if (!(authenticatedUser == null))
             {
