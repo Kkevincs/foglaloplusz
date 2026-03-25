@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Salonic.DAL.Data;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
@@ -38,9 +38,19 @@ namespace Salonic.DAL.Repositories
             return await _context.Services.Select(x => x).ToListAsync();
         }
 
-        public async Task<Service> GetById(int id)
+        public async Task<Service?> GetById(int id)
         {
-            return await _context.Services.Where(x => x.Id == id).Select(x => x).FirstAsync();
+            return await _context.Services.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<Service[]> GetByIds(int[] ids)
+        {
+            if (ids == null || ids.Length == 0)
+                return Array.Empty<Service>();
+
+            return await _context.Services
+                .Where(x => ids.Contains(x.Id))
+                .ToArrayAsync();
         }
 
         public async Task Update(Service service)

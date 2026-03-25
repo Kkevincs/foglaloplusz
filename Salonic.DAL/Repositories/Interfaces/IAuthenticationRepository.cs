@@ -9,6 +9,6 @@ namespace Salonic.DAL.Repositories.Interfaces
 {
     public interface IAuthenticationRepository
     {
-        public Task<IUserModel?> Authentication(string username, string password, string role);
+        public Task<IUserModel?> Authentication(string email, string password, string role);
     }
 }

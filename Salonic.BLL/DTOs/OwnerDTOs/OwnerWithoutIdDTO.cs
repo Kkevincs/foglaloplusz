@@ -10,5 +10,7 @@ namespace Salonic.BLL.DTOs.OwnerDTOs
     {
         public string Name { get; set; } = string.Empty;
         public string Pwd { get; set; } = string.Empty;
+
+        public string Email { get; set; }
     }
 }

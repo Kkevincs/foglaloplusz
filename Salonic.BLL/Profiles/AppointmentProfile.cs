@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Salonic.BLL.DTOs.AppointmentDTOs;
 using Salonic.DAL.Models;
 using System;
@@ -13,10 +13,17 @@ namespace Salonic.BLL.Profiles
     {
         public AppointmentProfile()
         {
-            CreateMap<AppointmentsWithoutIdDTO, Appointment>(); 
-            CreateMap<Appointment, AppointmentsWithoutIdDTO>(); 
-            CreateMap<AppointmentsWithIdDTO, Appointment>();    
-            CreateMap<Appointment, AppointmentsWithIdDTO>();
+            CreateMap<AppointmentsWithoutIdDTO, Appointment>()
+                .ForMember(d => d.Services, o => o.Ignore());
+
+            CreateMap<Appointment, AppointmentsWithoutIdDTO>()
+                .ForMember(d => d.ServiceIds, o => o.MapFrom(a => a.Services.Select(s => s.Id).ToList()));
+
+            CreateMap<AppointmentsWithIdDTO, Appointment>()
+                .ForMember(d => d.Services, o => o.Ignore());
+
+            CreateMap<Appointment, AppointmentsWithIdDTO>()
+                .ForMember(d => d.ServiceIds, o => o.MapFrom(a => a.Services.Select(s => s.Id).ToList()));
         }
     }
 }

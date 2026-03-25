@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -18,7 +18,8 @@ namespace Salonic.DAL.Models
 
         public int Price { get; set; }
 
-        // Navigation: one Service has many Appointments (1 : N)
+        public int DurationInMinute { get; set; }
+
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
         // Navigation: many-to-many with Worker (EF creates the junction table automatically)

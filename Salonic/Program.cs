@@ -135,8 +135,6 @@ namespace Salonic
                 app.UseSwaggerUI();
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("AllowAll");        
             app.UseAuthentication();        

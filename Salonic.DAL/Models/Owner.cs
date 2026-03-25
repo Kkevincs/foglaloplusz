@@ -13,6 +13,7 @@ namespace Salonic.DAL.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Email { get; set; }
         public ICollection<Salon> Salons { get; set; } = new List<Salon>();
         public string Role { get; set; } = "Owner";
         public string Pwd { get; set; }

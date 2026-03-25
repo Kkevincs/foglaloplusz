@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Salonic.BLL.DTOs.ArtistDTOs;
+using Salonic.BLL.DTOs.GuestDTOs;
 using Salonic.BLL.DTOs.ServiceDTOs;
+using Salonic.BLL.Services;
 using Salonic.BLL.Services.Interfaces;
 using Salonic.DAL.Data;
 using Salonic.DAL.Models;
@@ -15,7 +17,6 @@ using System.Threading.Tasks;
 namespace Salonic.presentation.Controllers
 {
     [Route("api/Artist")]
-    [Authorize(Roles ="artist,admin")]
     [ApiController]
     public class ArtistController : ControllerBase
     {
@@ -28,24 +29,26 @@ namespace Salonic.presentation.Controllers
             _artistService = artist;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ArtistWithIdDTO>> GetById(int id)
+        [HttpGet("me")]
+        [Authorize(Roles ="artist")]
+        public async Task<ActionResult<ArtistWithIdDTO>> GetById()
         {
-            return await _artistService.GetById(id);
-        }
-        [HttpGet]
+            var subClaim = User.FindFirst("sub")?.Value;
+            if (subClaim == null) return Unauthorized();
 
+            int Id = Convert.ToInt32(subClaim);
+            return await _artistService.GetById(Id);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles ="admin,owner,guest,artist")]
         public async Task<ActionResult<List<ArtistWithIdDTO>>> GetAll()
         {
             return await _artistService.GetAll();
         }
-        [HttpPost]
-        public async Task<ActionResult<ArtistWithoutIdDTO>> Create(ArtistWithoutIdDTO artist)
-        {
-            return await _artistService.Create(artist);
-        }
-
         [HttpPut]
+        [Authorize(Roles ="admin,owner,artist")]
 
         public async Task Update(ArtistWithIdDTO artist)
         {
@@ -53,6 +56,7 @@ namespace Salonic.presentation.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "admin,owner,artist")]
 
         public async Task DeleteById(int id)
         {

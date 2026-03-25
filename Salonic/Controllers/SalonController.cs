@@ -18,31 +18,31 @@ namespace Salonic.presentation.Controllers
         {
             _salonService = salon;
         }
-
+        [Authorize(Roles = "admin,owner")]
         [HttpGet("{id}")]
         public async Task<ActionResult<SalonWithIdDTO>> GetById(int id)
         {
             return await _salonService.GetById(id);
         }
-
+        [Authorize(Roles ="admin")]
         [HttpGet]
         public async Task<ActionResult<List<SalonWithIdDTO>>> GetAll()
         {
             return await _salonService.GetAll();
         }
-
+        [Authorize(Roles = "admin,owner")]
         [HttpPost]
         public async Task<ActionResult<SalonWithoutIdDTO>> Create(SalonWithoutIdDTO salon)
         {
             return await _salonService.Create(salon);
         }
-
+        [Authorize(Roles = "admin,owner")]
         [HttpPut]
         public async Task Update(SalonWithIdDTO salon)
         {
             await _salonService.Update(salon);
         }
-
+        [Authorize(Roles = "admin,owner")]
         [HttpDelete]
         public async Task DeleteById(int id)
         {

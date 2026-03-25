@@ -24,14 +24,17 @@ namespace Salonic.BLL.Services
 
         public async Task<UserDTO> Authentication(UserDTO user)
         {
-           var authUser = await _AuthRepository.Authentication(user.Name, user.Pwd, user.Role);
-            if (!(authUser == null))
-            {
-                return user;
-            }
-            return null;
+            var authUser = await _AuthRepository.Authentication(user.Email, user.Pwd, user.Role);
+            if (authUser == null) return null;
 
-            
+            return new UserDTO
+            {
+                Id = authUser.Id,       
+                Email = authUser.Email,   
+                Role = user.Role
+            };
+
+
         }
     }
 }

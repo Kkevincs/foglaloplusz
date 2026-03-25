@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Salonic.DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -18,12 +18,19 @@ namespace Salonic.DAL.Data
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Salon> Salons { get; set; }
+        public DbSet<WorkingHours> WorkingHours { get; set; }
 
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Appointment>()
+                .HasMany(a => a.Services)
+                .WithMany(s => s.Appointments)
+                .UsingEntity(j => j.ToTable("AppointmentServices"));
+        }
     }
 }

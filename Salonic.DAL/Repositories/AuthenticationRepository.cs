@@ -23,22 +23,22 @@ namespace Salonic.DAL.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<IUserModel?> Authentication(string username, string password, string role)
+        public async Task<IUserModel?> Authentication(string email, string password, string role)
         {
             switch (role)
             {
                 case "guest":
                     return await _appDbContext.Guests
-                        .FirstOrDefaultAsync(x => x.Name == username && x.Pwd == password);
+                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
                 case "artist":
                     return await _appDbContext.Artists
-                        .FirstOrDefaultAsync(x => x.Name == username && x.Pwd == password);
+                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
                 case "owner":
                     return await _appDbContext.Owners
-                        .FirstOrDefaultAsync(x => x.Name == username && x.Pwd == password);
+                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
                 case "admin":
                     return await _appDbContext.Admins
-                        .FirstOrDefaultAsync(x => x.Name == username && x.Pwd == password);
+                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
                 default:
                     return null;
             }

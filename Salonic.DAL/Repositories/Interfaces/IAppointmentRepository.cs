@@ -11,7 +11,14 @@ namespace Salonic.DAL.Repositories.Interfaces
     {
         public Task<List<Appointment>> GetAll();
         public Task<Appointment> GetById(int id);
-        public Task<Appointment> Create(Appointment appointment);
+
+        public Task<List<Appointment>> GetByArtistId(int id);
+
+        public Task<List<Appointment>> GetByGuestId(int id);
+
+        Task<List<Appointment>> GetByArtistAndDate(int artistId, DateTime date);
+        Task<bool> IsOverlapping(int artistId, DateTime startTime, DateTime endTime);
+        Task Create(Appointment appointment);
         public Task Update(Appointment artist);
         public Task DeleteById(int id);
     }
