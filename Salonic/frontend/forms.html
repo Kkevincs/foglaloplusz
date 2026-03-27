@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salonic — Salon Setup Form</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <a href="HomePage.html" class="logo"><img src="img/Salonic_Logo.png" alt="Salonic" /></a>
+        <ul class="nav-links">
+            <li><a href="HomePage.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="artists.html">Artists</a></li>
+            <li><a href="#">Book</a></li>
+            <li><a href="user.html">User</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="forms.html">Create salon</a></li>
+        </ul>
+    </nav>
+    <main class="form-page">
+        <h1>Create your own salon with Salonic</h1>
+        <p class="subtitle">Here you can costumise your Salon's web page.</p>
+        <form id="salon-setup-form" class="auth-form setup-form" action="#" method="post" enctype="multipart/form-data">
+            <label for="salon-name" class="field-label">What is the name of your salon?</label>
+            <input id="salon-name" name="salon_name" type="text" placeholder="..." required />
+
+            <label for="salon-logo" class="field-label">Please upload the logo of your company</label>
+            <input id="salon-logo" name="salon_logo" type="file" accept="image/*" required />
+
+            <label for="salon-description" class="field-label">Please describe your Salon and your services, and we will display it in your home page</label>
+            <textarea id="salon-description" name="salon_description" rows="5" placeholder="..." required></textarea>
+
+            <label for="salon-theme" class="field-label">Please select a color that suits the vibe of you salon &lt;3</label>
+            <select id="salon-theme" name="salon_theme" required>
+                <option value="theme-pink">Pink</option>
+                <option value="theme-sky-blue">Sky blue</option>
+                <option value="theme-ruby">Ruby</option>
+                <option value="theme-forest-green">Forest green</option>
+                <option value="theme-amethyst">Amethyst</option>
+            </select>
+
+            <label for="support-email" class="field-label">Please give your customer service e-mail address, that customers can contact for help</label>
+            <input id="support-email" name="support_email" type="email" placeholder="support@gmail.com" required />
+
+            <button type="submit">Save Salon Details</button>
+        </form>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

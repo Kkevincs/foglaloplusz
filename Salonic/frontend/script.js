@@ -27,3 +27,16 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
    await Register(user);
 
 });
+
+const themeClasses = [
+    'theme-pink',
+    'theme-sky-blue',
+    'theme-ruby',
+    'theme-forest-green',
+    'theme-amethyst'
+];
+document.getElementById('salon-theme').addEventListener('change', (e) => {
+    const selectedTheme = e.target.value;
+    document.body.classList.remove(...themeClasses);
+    document.body.classList.add(selectedTheme);
+});
