@@ -19,6 +19,9 @@ namespace Salonic.DAL.Models
         public int OwnerId { get; set; }
         public Owner Owner { get; set; }
 
+        public string Email { get; set; }
+        public string Theme { get; set; }
+        public string Logo { get; set; }
         
     }
 }
