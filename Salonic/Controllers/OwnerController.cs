@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.GuestDTOs;
 using Salonic.BLL.DTOs.OwnerDTOs;
 using Salonic.BLL.DTOs.ServiceDTOs;
+using Salonic.BLL.Services;
 using Salonic.BLL.Services.Interfaces;
 
 namespace Salonic.presentation.Controllers
 {
     [Route("api/owner")]
-    [Authorize(Roles = "owner,admin")]
     [ApiController]
     public class OwnerController : ControllerBase
     {
@@ -20,30 +20,32 @@ namespace Salonic.presentation.Controllers
             _ownerService = owner;
         }
 
-        [HttpGet("{id}")]
+
+        [Authorize(Roles ="admin,owner")]
+        [HttpGet("me")]
         public async Task<ActionResult<OwnerWithIdDTO>> GetById(int id)
         {
-            return await _ownerService.GetById(id);
-        }
+            var subClaim = User.FindFirst("sub")?.Value;
+            if (subClaim == null) return Unauthorized();
 
+            int Id = Convert.ToInt32(subClaim);
+            return await _ownerService.GetById(Id);
+        }
+        [Authorize(Roles ="admin")]
         [HttpGet]
         public async Task<ActionResult<List<OwnerWithIdDTO>>> GetAll()
         {
             return await _ownerService.GetAll();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<OwnerWithoutIdDTO>> Create(OwnerWithoutIdDTO owner)
-        {
-            return await _ownerService.Create(owner);
-        }
 
+        [Authorize(Roles = "admin,owner")]
         [HttpPut]
         public async Task Update(OwnerWithIdDTO owner)
         {
             await _ownerService.Update(owner);
         }
-
+        [Authorize(Roles = "admin,owner")]
         [HttpDelete]
         public async Task DeleteById(int id)
         {

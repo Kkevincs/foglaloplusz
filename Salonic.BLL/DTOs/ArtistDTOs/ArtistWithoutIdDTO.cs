@@ -11,6 +11,8 @@ namespace Salonic.BLL.DTOs.ArtistDTOs
         public string Name { get; set; }
         public string Email { get; set; }
         public string Pwd { get; set; }
+        public int SalonId { get; set; }
+
 
         public string Description { get; set; }
     }

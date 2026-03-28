@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -64,6 +65,8 @@ namespace Salonic.DAL.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Role = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Pwd = table.Column<string>(type: "longtext", nullable: false)
@@ -85,7 +88,8 @@ namespace Salonic.DAL.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Price = table.Column<int>(type: "int", nullable: false)
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    DurationInMinute = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,7 +105,7 @@ namespace Salonic.DAL.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    OwnerId = table.Column<int>(type: "int", nullable: true)
+                    OwnerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -110,7 +114,8 @@ namespace Salonic.DAL.Migrations
                         name: "FK_Salons_Owners_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "Owners",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -152,16 +157,11 @@ namespace Salonic.DAL.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     GuestId = table.Column<int>(type: "int", nullable: false),
                     ArtistId = table.Column<int>(type: "int", nullable: false),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    SalonId = table.Column<int>(type: "int", nullable: false),
-                    Year = table.Column<int>(type: "int", nullable: false),
-                    Month = table.Column<int>(type: "int", nullable: false),
-                    Day = table.Column<int>(type: "int", nullable: false),
-                    Hour = table.Column<int>(type: "int", nullable: false),
-                    Minute = table.Column<int>(type: "int", nullable: false),
+                    SalonId = table.Column<int>(type: "int", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Notes = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    DurationInMinutes = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -182,14 +182,7 @@ namespace Salonic.DAL.Migrations
                         name: "FK_Appointments_Salons_SalonId",
                         column: x => x.SalonId,
                         principalTable: "Salons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -218,6 +211,54 @@ namespace Salonic.DAL.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "WorkingHours",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ArtistId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "time(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkingHours", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WorkingHours_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AppointmentServices",
+                columns: table => new
+                {
+                    AppointmentsId = table.Column<int>(type: "int", nullable: false),
+                    ServicesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppointmentServices", x => new { x.AppointmentsId, x.ServicesId });
+                    table.ForeignKey(
+                        name: "FK_AppointmentServices_Appointments_AppointmentsId",
+                        column: x => x.AppointmentsId,
+                        principalTable: "Appointments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AppointmentServices_Services_ServicesId",
+                        column: x => x.ServicesId,
+                        principalTable: "Services",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_ArtistId",
                 table: "Appointments",
@@ -234,9 +275,9 @@ namespace Salonic.DAL.Migrations
                 column: "SalonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_ServiceId",
-                table: "Appointments",
-                column: "ServiceId");
+                name: "IX_AppointmentServices_ServicesId",
+                table: "AppointmentServices",
+                column: "ServicesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Artists_SalonId",
@@ -252,6 +293,11 @@ namespace Salonic.DAL.Migrations
                 name: "IX_Salons_OwnerId",
                 table: "Salons",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkingHours_ArtistId",
+                table: "WorkingHours",
+                column: "ArtistId");
         }
 
         /// <inheritdoc />
@@ -261,19 +307,25 @@ namespace Salonic.DAL.Migrations
                 name: "Admins");
 
             migrationBuilder.DropTable(
-                name: "Appointments");
+                name: "AppointmentServices");
 
             migrationBuilder.DropTable(
                 name: "ArtistService");
 
             migrationBuilder.DropTable(
-                name: "Guests");
+                name: "WorkingHours");
+
+            migrationBuilder.DropTable(
+                name: "Appointments");
+
+            migrationBuilder.DropTable(
+                name: "Services");
 
             migrationBuilder.DropTable(
                 name: "Artists");
 
             migrationBuilder.DropTable(
-                name: "Services");
+                name: "Guests");
 
             migrationBuilder.DropTable(
                 name: "Salons");

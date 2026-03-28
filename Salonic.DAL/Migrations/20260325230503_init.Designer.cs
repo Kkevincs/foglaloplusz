@@ -12,7 +12,7 @@ using Salonic.DAL.Data;
 namespace Salonic.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260314134932_init")]
+    [Migration("20260325230503_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -24,6 +24,21 @@ namespace Salonic.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("AppointmentService", b =>
+                {
+                    b.Property<int>("AppointmentsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServicesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AppointmentsId", "ServicesId");
+
+                    b.HasIndex("ServicesId");
+
+                    b.ToTable("AppointmentServices", (string)null);
+                });
 
             modelBuilder.Entity("ArtistService", b =>
                 {
@@ -80,36 +95,21 @@ namespace Salonic.DAL.Migrations
                     b.Property<int>("ArtistId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Day")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DurationInMinutes")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("GuestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Hour")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Minute")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Month")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("SalonId")
+                    b.Property<int?>("SalonId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -118,8 +118,6 @@ namespace Salonic.DAL.Migrations
                     b.HasIndex("GuestId");
 
                     b.HasIndex("SalonId");
-
-                    b.HasIndex("ServiceId");
 
                     b.ToTable("Appointments");
                 });
@@ -199,6 +197,10 @@ namespace Salonic.DAL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -228,7 +230,7 @@ namespace Salonic.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("OwnerId")
+                    b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -250,6 +252,9 @@ namespace Salonic.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("DurationInMinute")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -260,6 +265,48 @@ namespace Salonic.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Services");
+                });
+
+            modelBuilder.Entity("Salonic.DAL.Models.WorkingHours", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArtistId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtistId");
+
+                    b.ToTable("WorkingHours");
+                });
+
+            modelBuilder.Entity("AppointmentService", b =>
+                {
+                    b.HasOne("Salonic.DAL.Models.Appointment", null)
+                        .WithMany()
+                        .HasForeignKey("AppointmentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Salonic.DAL.Models.Service", null)
+                        .WithMany()
+                        .HasForeignKey("ServicesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ArtistService", b =>
@@ -293,23 +340,13 @@ namespace Salonic.DAL.Migrations
 
                     b.HasOne("Salonic.DAL.Models.Salon", "Salon")
                         .WithMany("Appointments")
-                        .HasForeignKey("SalonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Salonic.DAL.Models.Service", "Service")
-                        .WithMany("Appointments")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SalonId");
 
                     b.Navigation("Artist");
 
                     b.Navigation("Guest");
 
                     b.Navigation("Salon");
-
-                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("Salonic.DAL.Models.Artist", b =>
@@ -325,9 +362,24 @@ namespace Salonic.DAL.Migrations
 
             modelBuilder.Entity("Salonic.DAL.Models.Salon", b =>
                 {
-                    b.HasOne("Salonic.DAL.Models.Owner", null)
+                    b.HasOne("Salonic.DAL.Models.Owner", "Owner")
                         .WithMany("Salons")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Salonic.DAL.Models.WorkingHours", b =>
+                {
+                    b.HasOne("Salonic.DAL.Models.Artist", "Artist")
+                        .WithMany()
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artist");
                 });
 
             modelBuilder.Entity("Salonic.DAL.Models.Artist", b =>
@@ -350,11 +402,6 @@ namespace Salonic.DAL.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("Artists");
-                });
-
-            modelBuilder.Entity("Salonic.DAL.Models.Service", b =>
-                {
-                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

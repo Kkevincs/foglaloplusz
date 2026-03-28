@@ -1,4 +1,5 @@
-﻿using Salonic.DAL.Data;
+using Microsoft.EntityFrameworkCore;
+using Salonic.DAL.Data;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
 using System;
@@ -17,13 +18,6 @@ namespace Salonic.DAL.Repositories
         public AppointmentRepository(AppDbContext context) {
             _context = context;
         }
-        public async Task<Appointment> Create(Appointment appointment)
-        {
-            await _context.Appointments.AddAsync(appointment);
-            _context.SaveChanges();
-            return appointment;
-            
-        }
 
         public async Task DeleteById(int id)
         {
@@ -33,21 +27,87 @@ namespace Salonic.DAL.Repositories
             
         }
 
+        public async Task<List<DateTime>> GetDaysWithAppointments(int artistId, DateTime start, DateTime end)
+        {
+            return await _context.Appointments
+                .Where(a =>
+                    a.ArtistId == artistId &&
+                    a.StartTime >= start &&
+                    a.StartTime <= end)
+                .Select(a => a.StartTime.Date)
+                .Distinct()
+                .ToListAsync();
+        }
+
         public async Task<List<Appointment>> GetAll()
         {
-            return _context.Appointments.Select(x => x).ToList();
+            return await _context.Appointments
+                .Include(a => a.Services)
+                .ToListAsync();
+        }
 
-            
+        public async Task<List<Appointment>> GetByArtistAndDate(int artistId, DateTime date)
+        {
+            return await _context.Appointments
+            .Include(a => a.Services)
+            .Where(x => x.ArtistId == artistId && x.StartTime.Date == date.Date)
+            .OrderBy(x => x.StartTime)
+            .ToListAsync();
+        }
+
+        public async Task<List<Appointment>> GetByArtistId(int id)
+        {
+            return await _context.Appointments
+                .Include(a => a.Services)
+                .Where(x => x.ArtistId == id)
+                .ToListAsync();
+        }
+
+        public async Task<List<Appointment>> GetByGuestId(int id)
+        {
+            return await _context.Appointments
+                .Include(a => a.Services)
+                .Where(x => x.GuestId == id)
+                .ToListAsync();
         }
 
         public async Task<Appointment> GetById(int id)
         {
-            return _context.Appointments.Where(x => x.Id == id).FirstOrDefault();
+            return await _context.Appointments
+                .Include(a => a.Services)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> IsOverlapping(int artistId, DateTime startTime, DateTime endTime)
+        {
+            return await _context.Appointments.AnyAsync(a =>
+            a.ArtistId == artistId &&
+            startTime < a.EndTime &&
+            endTime > a.StartTime);
         }
 
         public async Task Update(Appointment appointment)
         {
-            _context.Appointments.Update(appointment);
+            var existing = await _context.Appointments
+                .Include(a => a.Services)
+                .FirstOrDefaultAsync(a => a.Id == appointment.Id);
+
+            if (existing == null)
+                return;
+
+            existing.GuestId = appointment.GuestId;
+            existing.ArtistId = appointment.ArtistId;
+            existing.StartTime = appointment.StartTime;
+            existing.EndTime = appointment.EndTime;
+            existing.Notes = appointment.Notes;
+            existing.SalonId = appointment.SalonId;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Create(Appointment appointment)
+        {
+            _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
         }
     }

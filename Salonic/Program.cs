@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -8,6 +8,7 @@ using Salonic.BLL.Services.Interfaces;
 using Salonic.DAL.Data;
 using Salonic.DAL.Repositories;
 using Salonic.DAL.Repositories.Interfaces;
+    using System.Security.Claims;
 
 namespace Salonic
 {
@@ -41,6 +42,9 @@ namespace Salonic
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddScoped<IRegisterService, RegisterService>();
+            builder.Services.AddScoped<IWorkingHoursRepository, WorkingHoursRepository>();
+            builder.Services.AddScoped<IWorkingHoursService, WorkingHoursService>();
+            builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
             //IServiceRepo
             //mapper
             builder.Services.AddAutoMapper(cfg =>
@@ -100,22 +104,21 @@ namespace Salonic
             });
 
             builder.Services.AddAuthentication("Bearer")
-                .AddJwtBearer(options =>            
+                .AddJwtBearer(options =>
                 {
+                    options.MapInboundClaims = false; 
                     options.TokenValidationParameters = new()
                     {
-                        ValidateIssuer = true,       
+                        ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration["Authentication:Issuer"], 
-                        ValidAudience = builder.Configuration["Authentication:Audience"],  
+                        ValidIssuer = builder.Configuration["Authentication:Issuer"],
+                        ValidAudience = builder.Configuration["Authentication:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"])),
+                        RoleClaimType = "role"
                     };
-                    //timer is automatically validated
-                }
-
-                );
+                });
 
             builder.Services.AddAuthorization(options =>
             {
@@ -132,7 +135,6 @@ namespace Salonic
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
 
             app.UseRouting();
             app.UseCors("AllowAll");        

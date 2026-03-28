@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.GuestDTOs;
@@ -8,7 +8,6 @@ using Salonic.BLL.Services.Interfaces;
 namespace Salonic.presentation.Controllers
 {
     [Route("api/guest")]
-    [Authorize(Roles = "guest,admin")]
     [ApiController]
     public class GuestController : ControllerBase
     {
@@ -18,9 +17,9 @@ namespace Salonic.presentation.Controllers
         {
             _guestService = guest;
         }
-
+        [Authorize(Roles ="admin,owner,guest")]
         [HttpGet("me")]
-        public async Task<ActionResult<GuestWithIdDTO>> GetById(int id)
+        public async Task<ActionResult<GuestWithIdDTO>> GetById()
         {
             var subClaim = User.FindFirst("sub")?.Value;
             if (subClaim == null) return Unauthorized();
@@ -28,25 +27,22 @@ namespace Salonic.presentation.Controllers
             int Id = Convert.ToInt32(subClaim);
             return await _guestService.GetById(Id);
         }
+        [Authorize(Roles ="admin,owner")]
         [HttpGet]
 
         public async Task<ActionResult<List<GuestWithIdDTO>>> GetAll()
         {
             return await _guestService.GetAll();
         }
-        [HttpPost]
-        public async Task<ActionResult<GuestWithoutIdDTO>> Create(GuestWithoutIdDTO guest)
-        {
-            return await _guestService.Create(guest);
-        }
 
+        [Authorize(Roles ="admin,owner,guest")]
         [HttpPut]
 
         public async Task Update(GuestWithIdDTO guest)
         {
             await _guestService.Update(guest);
         }
-
+        [Authorize(Roles = "admin,owner")]
         [HttpDelete]
 
         public async Task DeleteById(int id)
