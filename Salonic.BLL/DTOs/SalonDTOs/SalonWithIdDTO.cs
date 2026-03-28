@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +11,9 @@ namespace Salonic.BLL.DTOs.SalonDTOs
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int OwnerId { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Theme { get; set; } = string.Empty;
+        public string Logo { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 }

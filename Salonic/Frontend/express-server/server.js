@@ -45,6 +45,11 @@ app.get("/Salon/Register", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "register.html"));
 });
 
+// Custom salon setup (design form)
+app.get("/Salon/Forms", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "forms.html"));
+});
+
 
 //Salon services
 app.get('/Salon/Services', (req, res) => {

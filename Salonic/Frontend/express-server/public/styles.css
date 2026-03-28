@@ -242,3 +242,124 @@ main.appointment-page { max-width: 900px; }
 .time-slot { padding: 0.5rem 0.85rem; background: #fff; border: 1px solid #eee; border-radius: 6px; font-size: 0.9rem; color: #2d2a26; cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease; }
 .time-slot:hover,
 .time-slot.time-slot-selected { background: #2d2a26; color: #fff; border-color: #2d2a26; font-weight: 600; }
+
+/* Optional salon themes (customSalon) — add class on body e.g. theme-pink */
+body.theme-pink {
+    --bg: #fff4f7;
+    --text: #6f3a80;
+    --muted: #8a6895;
+    --surface: #ffffff;
+    --surface-soft: #fde9ef;
+    --border: #c697c5;
+    --primary: #ec8494;
+    --primary-hover: #d97384;
+    --accent: #9c94dc;
+    --accent-soft: #fad3dd;
+}
+body.theme-sky-blue {
+    --bg: #f1f8ff;
+    --text: #1f4f73;
+    --muted: #4d7592;
+    --surface: #ffffff;
+    --surface-soft: #e8f4ff;
+    --border: #9fcaea;
+    --primary: #4da3dd;
+    --primary-hover: #3d8ec5;
+    --accent: #7ec4f3;
+    --accent-soft: #d6eeff;
+}
+body.theme-ruby {
+    --bg: #fff4f6;
+    --text: #6e1f36;
+    --muted: #8e4a5e;
+    --surface: #ffffff;
+    --surface-soft: #ffe8ee;
+    --border: #e4a5b8;
+    --primary: #c72f56;
+    --primary-hover: #ad2447;
+    --accent: #e16b8a;
+    --accent-soft: #ffd6e1;
+}
+body.theme-forest-green {
+    --bg: #f3fbf6;
+    --text: #21543a;
+    --muted: #4a7b62;
+    --surface: #ffffff;
+    --surface-soft: #e7f6ec;
+    --border: #9fcaad;
+    --primary: #3f9a64;
+    --primary-hover: #338251;
+    --accent: #6bc58b;
+    --accent-soft: #d5efde;
+}
+body.theme-amethyst {
+    --bg: #f7f4ff;
+    --text: #4b2f74;
+    --muted: #715a95;
+    --surface: #ffffff;
+    --surface-soft: #efe8ff;
+    --border: #c0b0e6;
+    --primary: #8d60d6;
+    --primary-hover: #774ac0;
+    --accent: #b191ec;
+    --accent-soft: #e3d7ff;
+}
+body[class^="theme-"],
+body[class*=" theme-"] {
+    background: var(--bg);
+    color: var(--text);
+}
+body[class^="theme-"] nav,
+body[class*=" theme-"] nav {
+    background: var(--surface);
+    border-bottom-color: var(--border);
+}
+body[class^="theme-"] .nav-links a,
+body[class*=" theme-"] .nav-links a {
+    color: var(--muted);
+}
+body[class^="theme-"] .nav-links a:hover,
+body[class*=" theme-"] .nav-links a:hover {
+    color: var(--primary);
+}
+body[class^="theme-"] .auth-form input,
+body[class*=" theme-"] .auth-form input,
+body[class^="theme-"] .auth-form textarea,
+body[class*=" theme-"] .auth-form textarea,
+body[class^="theme-"] .auth-form select,
+body[class*=" theme-"] .auth-form select {
+    border-color: var(--border);
+    background: var(--surface);
+    color: var(--text);
+}
+body[class^="theme-"] .auth-form button,
+body[class*=" theme-"] .auth-form button {
+    background: var(--primary);
+}
+body[class^="theme-"] .auth-form button:hover,
+body[class*=" theme-"] .auth-form button:hover {
+    background: var(--primary-hover);
+}
+body[class^="theme-"] .field-label,
+body[class*=" theme-"] .field-label {
+    color: var(--text);
+}
+body[class^="theme-"] .subtitle,
+body[class*=" theme-"] .subtitle {
+    color: var(--muted);
+}
+.logo { display: inline-block; max-width: 10rem; line-height: 0; }
+.logo img { width: 100%; height: auto; display: block; border-radius: 12px; }
+.auth-form textarea,
+.auth-form select {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+.auth-form input[type="file"] { padding: 0.45rem 0.6rem; }
+.field-label { text-align: left; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.25rem; }
+.form-page { max-width: 720px; text-align: left; margin-left: auto; margin-right: auto; }
+.form-page .subtitle { margin-bottom: 1.5rem; }
+.setup-form { max-width: 100%; }
