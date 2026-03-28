@@ -7,9 +7,9 @@ const PORT = 67;
 app.use(express.static(path.join(__dirname, "public")));
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
-// Salon Maker Form
-app.get("/Maker", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "HomePage.html"));
+// Salon maker (customize salon landing / branding form)
+app.get("/maker", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "forms.html"));
 });
 //Salon Home Page
 app.get("/Salon", (req, res) => {
@@ -44,12 +44,6 @@ app.get("/Salon/Register", (req, res) => {
   const salonId = parseInt(req.query.salonid, 10);
   res.sendFile(path.join(__dirname, "views", "register.html"));
 });
-
-// Custom salon setup (design form)
-app.get("/Salon/Forms", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "forms.html"));
-});
-
 
 //Salon services
 app.get('/Salon/Services', (req, res) => {
