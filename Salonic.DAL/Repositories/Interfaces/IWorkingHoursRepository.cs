@@ -1,9 +1,4 @@
-using Salonic.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Salonic.DAL.Models;
 
 namespace Salonic.DAL.Repositories.Interfaces
 {
@@ -12,5 +7,6 @@ namespace Salonic.DAL.Repositories.Interfaces
         Task<WorkingHours?> GetByArtistAndDate(int artistId, DateTime date);
         Task Add(WorkingHours workingHours);
         Task Update(WorkingHours workingHours);
+        Task ReplaceForArtistDateRangeAsync(int artistId, DateOnly rangeStart, DateOnly rangeEnd, IReadOnlyList<WorkingHours> newRows);
     }
 }

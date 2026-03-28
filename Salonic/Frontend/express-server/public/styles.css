@@ -27,6 +27,19 @@ p { color: #5c5650; line-height: 1.6; }
 .role-toggle input { position: absolute; opacity: 0; }
 .auth-switch { font-size: 0.9rem; color: #5c5650; }
 .auth-switch a { color: #2d2a26; }
+.auth-switch-spaced { margin-top: 1.25rem; }
+a.auth-cta {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    background: #2d2a26;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+a.auth-cta:hover { background: #3d3a36; color: #fff; }
 
 .user-page { text-align: left; }
 .user-page .subtitle { margin-bottom: 1.5rem; }
@@ -48,6 +61,156 @@ p { color: #5c5650; line-height: 1.6; }
     font-size: 0.95rem;
 }
 .adservice-form textarea { resize: vertical; min-height: 96px; }
+.adservice-form label { display: block; font-size: 0.9rem; color: #5c5650; margin-bottom: 0.25rem; text-align: left; }
+.adservice-form input[type="date"],
+.adservice-form input[type="time"] {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: #2d2a26;
+    max-width: 100%;
+}
+.working-hours-time-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.working-hours-time-field { flex: 1; min-width: 8rem; }
+.working-hours-time-field label { margin-top: 0.25rem; }
+.working-hours-mode-fieldset {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 0.75rem 1rem 1rem;
+    margin: 0;
+    background: #fff;
+}
+.working-hours-legend {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2d2a26;
+    padding: 0 0.35rem;
+}
+.working-hours-mode-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    margin-top: 0.35rem;
+}
+.working-hours-radio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    color: #2d2a26;
+    cursor: pointer;
+}
+.working-hours-radio-label input { width: auto; margin: 0; accent-color: #2d2a26; }
+.working-hours-panel { margin-top: 0.25rem; }
+.working-hours-block-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #5c5650;
+    margin-bottom: 0.65rem;
+    line-height: 1.45;
+}
+.working-hours-range-row {
+    margin-bottom: 0.5rem;
+}
+.working-hours-week-head {
+    display: grid;
+    grid-template-columns: minmax(4.5rem, 6rem) 4.5rem 1fr 1fr;
+    gap: 0.5rem 0.65rem;
+    align-items: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #8a847c;
+    margin-bottom: 0.35rem;
+    padding: 0 0.15rem;
+}
+.working-hours-week-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.working-hours-day-row {
+    display: grid;
+    grid-template-columns: minmax(4.5rem, 6rem) 4.5rem 1fr 1fr;
+    gap: 0.5rem 0.65rem;
+    align-items: center;
+    padding: 0.5rem 0.65rem;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+}
+.working-hours-day-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    align-self: center;
+    min-width: 0;
+}
+.working-hours-day-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #2d2a26;
+    line-height: 1.2;
+}
+.wh-calendar-date {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #8a847c;
+    line-height: 1.2;
+}
+.wh-calendar-date.wh-calendar-date--today,
+.wh-calendar-date.wh-calendar-date--tomorrow,
+.wh-calendar-date.wh-calendar-date--range-start {
+    color: #2d2a26;
+    font-weight: 600;
+}
+.working-hours-open-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: #5c5650;
+    cursor: pointer;
+    margin: 0;
+}
+.working-hours-open-label input {
+    margin: 0;
+    width: auto;
+    accent-color: #2d2a26;
+}
+.working-hours-day-row .wh-start,
+.working-hours-day-row .wh-end {
+    min-width: 0;
+    width: 100%;
+}
+.working-hours-day-row input:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+/* End time before/at start — same muted look as disabled (field stays editable). */
+input[type="time"].wh-time-invalid {
+    opacity: 0.55;
+    cursor: not-allowed;
+    border-color: #e5e2de;
+    background: #f7f6f4;
+    color: #8a847c;
+}
+input[type="time"].wh-time-invalid:focus {
+    outline: none;
+    border-color: #c4bfb8;
+}
+@media (max-width: 520px) {
+    .working-hours-week-head { display: none; }
+    .working-hours-day-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+    .working-hours-day-col { grid-column: 1 / -1; }
+    .working-hours-open-label { grid-column: 1 / -1; }
+}
 .adservice-form button {
     width: fit-content;
     padding: 0.6rem 0.9rem;

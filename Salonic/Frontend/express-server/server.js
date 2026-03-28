@@ -31,6 +31,14 @@ app.get("/Salon/Artist/Login", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "artistLogin.html"));
 });
 
+// Not logged in — prompt to log in (guest / artist)
+app.get("/Salon/UnloggedGuest", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "unloggedGuest.html"));
+});
+app.get("/Salon/Artist/UnloggedArtist", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "unloggedArtist.html"));
+});
+
 //guest register
 app.get("/Salon/Register", (req, res) => {
   const salonId = parseInt(req.query.salonid, 10);
@@ -59,6 +67,10 @@ app.get("/Salon/Artist/AddService", (req, res) => {
 //Artist user
 app.get("/Salon/Artist/User", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "artistUser.html"));
+});
+//Artist working hours
+app.get("/Salon/Artist/SetWorkingHours", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "setWorkingHours.html"));
 });
 //Date picker
 app.get("/Salon/DateSelection", (req, res) => {

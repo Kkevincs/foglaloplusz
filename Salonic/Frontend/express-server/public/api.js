@@ -114,10 +114,6 @@ async function PostAppointment(appointment, token) {
         body: JSON.stringify(appointment)
         
     });
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || `Request failed with status ${response.status}`);
-    }
     const data = await response.json();
     return data;
     
@@ -144,6 +140,34 @@ async function AddService(service, token) {
             "content-type": "application/json"
         },
         body: JSON.stringify(service)
+    })
+
+    const data = await response.json();
+    return data;
+}
+
+async function setWorkingHoursByDay(token, date) {
+    const response = await fetch('https://localhost:7156/api/workinghours', {
+        method: 'POST',
+        headers: {
+            "authorization" : `Bearer ${token}`,
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(date)
+    })
+
+    const data = await response.json();
+    return data;
+}
+
+async function setWorkingHoursByWeek(token, date) {
+    const response = await fetch('https://localhost:7156/api/workinghours/schedule', {
+        method: 'POST',
+        headers: {
+            "authorization" : `Bearer ${token}`,
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(date)
     })
 
     const data = await response.json();

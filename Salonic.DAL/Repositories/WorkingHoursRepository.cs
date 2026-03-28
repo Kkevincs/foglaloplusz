@@ -1,11 +1,6 @@
 using Salonic.DAL.Data;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Salonic.DAL.Repositories
@@ -40,6 +35,31 @@ namespace Salonic.DAL.Repositories
         {
             _context.WorkingHours.Update(workingHours);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task ReplaceForArtistDateRangeAsync(int artistId, DateOnly rangeStart, DateOnly rangeEnd, IReadOnlyList<WorkingHours> newRows)
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var startDt = rangeStart.ToDateTime(TimeOnly.MinValue);
+                var endExclusive = rangeEnd.ToDateTime(TimeOnly.MinValue).AddDays(1);
+
+                await _context.WorkingHours
+                    .Where(w => w.ArtistId == artistId && w.Date >= startDt && w.Date < endExclusive)
+                    .ExecuteDeleteAsync();
+
+                if (newRows.Count > 0)
+                    _context.WorkingHours.AddRange(newRows);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }

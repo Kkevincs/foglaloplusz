@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,9 @@ namespace Salonic.DAL.Models
         public int OwnerId { get; set; }
         public Owner Owner { get; set; }
 
+        public string Theme { get; set; }
+
+        public string LogoUrl { get; set; }
         
     }
 }
