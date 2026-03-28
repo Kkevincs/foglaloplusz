@@ -12,6 +12,7 @@ namespace Salonic.DAL.Repositories.Interfaces
         public Task<List<Appointment>> GetAll();
         public Task<Appointment> GetById(int id);
 
+        public Task<List<DateTime>> GetDaysWithAppointments(int artistId, DateTime start, DateTime end);
         public Task<List<Appointment>> GetByArtistId(int id);
 
         public Task<List<Appointment>> GetByGuestId(int id);

@@ -16,11 +16,19 @@ app.get("/Salon", (req, res) => {
   const salonId = parseInt(req.query.salonid, 10);
   res.sendFile(path.join(__dirname, "views", "HomePage.html"));
 });
+//Artist Home Page
+app.get("/Salon/Artist", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "artistHome.html"));
+});
 
 //guest login
 app.get("/Salon/Login", (req, res) => {
   const salonId = parseInt(req.query.salonid, 10);
   res.sendFile(path.join(__dirname, "views", "login.html"));
+});
+//artist login
+app.get("/Salon/Artist/Login", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "artistLogin.html"));
 });
 
 //guest register
@@ -32,16 +40,25 @@ app.get("/Salon/Register", (req, res) => {
 
 //Salon services
 app.get('/Salon/Services', (req, res) => {
-  const serviceIds = req.query.serviceid
-    ?.split(',')
-    .map(id => parseInt(id, 10)); // [1, 2, 3]
 
 
   res.sendFile(path.join(__dirname, "views", "services.html"));
 });
+//Artist services
+app.get('/Salon/Artist/Services', (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "artistServices.html"));
+});
 //Salon artists
 app.get("/Salon/Artists", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "artists.html"));
+});
+//Add service
+app.get("/Salon/Artist/AddService", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "addservice.html"));
+});
+//Artist user
+app.get("/Salon/Artist/User", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "artistUser.html"));
 });
 //Date picker
 app.get("/Salon/DateSelection", (req, res) => {

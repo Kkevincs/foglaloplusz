@@ -1,3 +1,4 @@
+
 async function Login(User) {
     const response = await fetch(`https://localhost:7156/api/authentication/authenticate`, {
         method: 'POST',
@@ -56,6 +57,17 @@ async function GetLoggedInUser(token) {
     return data
 }
 
+async function getLoggedInArtist(token) {
+    const response = await fetch("https://localhost:7156/api/artist/me", {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+
+    const data = await response.json();
+    return data
+}
+
 async function GetArtists(token) {
     const response = await fetch("https://localhost:7156/api/Artist", {
         headers :{
@@ -90,4 +102,50 @@ async function getServiceById(id, token){
     const data = response.json();
     return data;
 
+}
+
+async function PostAppointment(appointment, token) {
+    const response = await fetch(`https://localhost:7156/api/appointment`, {
+        method: "POST",
+        headers: {
+            "authorization" : `Bearer ${token}`,
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(appointment)
+        
+    });
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || `Request failed with status ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+    
+}
+
+async function GetAvailableDays(date) {
+    const response = await fetch(`https://localhost:7156/api/availability/month`, {
+        method: 'POST',
+        headers: {
+            "content-type" : "application/json"
+        },
+        body: JSON.stringify(date)
+    });
+
+    const data = await response.json();
+    return data;
+}
+
+async function AddService(service, token) {
+    const response = await fetch('https://localhost:7156/api/service', {
+        method: 'POST',
+        headers: {
+            "authorization" : `Bearer ${token}`,
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(service)
+    })
+
+    const data = await response.json();
+    return data;
 }

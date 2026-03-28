@@ -1,23 +1,26 @@
+let selectedDate = "";
+let selectedTimeStamp = "";
+let selectedArtistId = 0;
+let selectedServiceIds = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('appointment-date');
     const slots = document.querySelector('.appointment-page .time-slots');
     if (!dateInput) return;
 
+    const params = new URLSearchParams(window.location.search);
+    const serviceidsRaw = params.get('serviceids') ?? "";
+    selectedServiceIds = serviceidsRaw ? serviceidsRaw.split(',').map(Number) : [];
+    selectedArtistId = Number(params.get('artistid')) || 0;
     async function loadSlotsForSelectedDate() {
-        const date = dateInput.value;
-        console.log(date);
-
-        const params = new URLSearchParams(window.location.search);
-        const serviceidsRaw = params.get('serviceids');
-        if (!serviceidsRaw) return;
-
-        const serviceids = serviceidsRaw.split(',').map(Number);
-        const artistid = Number(params.get('artistid'));
+        selectedDate = dateInput.value;
+        console.log(selectedDate);
+        if (!selectedDate || selectedServiceIds.length === 0 || selectedArtistId <= 0) return;
 
         const timeData = {
-            artistId: artistid,
-            serviceIds: serviceids,
-            date: date
+            artistId: selectedArtistId,
+            serviceIds: selectedServiceIds,
+            date: selectedDate
         };
 
         const stamps = await GetAvaliableSlots(timeData);
@@ -30,14 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <li class="time-slot">${x.startTime.split('T')[1].slice(0, 5)}</li>
         `;
         });
-
-        console.log(date);
+        selectedTimeStamp = "";
     }
 
     dateInput.addEventListener('change', () => {
         void loadSlotsForSelectedDate();
     });
-
     void loadSlotsForSelectedDate();
 
     if (!slots) return;
@@ -47,5 +48,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!slot) return;
         slots.querySelectorAll('.time-slot').forEach((t) => t.classList.remove('time-slot-selected'));
         slot.classList.add('time-slot-selected');
+        selectedTimeStamp = slot.textContent.trim();
+        console.log(selectedTimeStamp);
     });
 });
+
+window.SaveDate = async function SaveDate() {
+    if (!selectedDate || !selectedTimeStamp) return;
+
+    const response = await GetLoggedInUser(localStorage.getItem('token'));
+    const id = Number(response.id);
+    const startTime = `${selectedDate}T${selectedTimeStamp}`;
+    const appointment = {
+        guestId: id,
+        artistId: selectedArtistId,
+        salonId: 1,
+        serviceIds: selectedServiceIds,
+        startTime: startTime,
+        notes: "semmi"
+    };
+    console.log(appointment);
+    const created = await PostAppointment(appointment, localStorage.getItem('token'));
+    console.log(created);
+};
+

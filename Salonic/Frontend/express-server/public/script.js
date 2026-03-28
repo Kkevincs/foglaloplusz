@@ -6,12 +6,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('services-list')) LoadServices();
     if (document.getElementById('user-profile')) LoadUserData();
     if (document.getElementById('artists-list')) LoadArtists();
+    if (document.getElementById('artist-profile')) LoadArtistData();
 });
 document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('click', e => {
         if (a.getAttribute('href') === '#') e.preventDefault();
     });
 });
+
+
+document.getElementById('artist-login-form')?.addEventListener('submit',async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.querySelector('#ArtistEmail').value;
+    const password = form.querySelector('#ArtistPassword').value
+    const role = "artist"
+
+    const artist = {
+        email: email,
+        role: role,
+        pwd: password
+    }
+    token = await Login(artist);
+    localStorage.setItem("token", token);
+    await GetById(localStorage.getItem("token"))
+
+})
 
 document.getElementById('guest-login-form')?.addEventListener('submit',async (e) => {
     e.preventDefault();
@@ -26,8 +46,27 @@ document.getElementById('guest-login-form')?.addEventListener('submit',async (e)
     const token = await Login(user);
 
     localStorage.setItem("token", token);
-    await GetById(localStorage.getItem("token"))
 });
+
+document.getElementById('addservice-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const serviceName = form.querySelector('#name').value;
+    const durationInMinutes = Number(form.querySelector('#durationInMinute').value);
+    const price = Number(form.querySelector('#price').value);
+    const description = form.querySelector('#description').value;
+
+    const newService = 
+        {
+            name: serviceName,
+            description: description,
+            price: price,
+            durationInMinutes: durationInMinutes
+        }
+
+    await AddService(newService, localStorage.getItem('token'))
+
+})
 
 document.getElementById('guest-register-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -67,9 +106,7 @@ function SelectArtist(){
     const serviceids = params.get('serviceids') ?? '';
     window.location.href = `/Salon/DateSelection?serviceids=${encodeURIComponent(serviceids)}&artistid=${encodeURIComponent(id)}`;
 }
-async function loadCalendar() {
-   
-}
+
 async function LoadServices(){
     const services = await GetServices(localStorage.getItem("token"));
 
@@ -98,6 +135,19 @@ async function LoadUserData() {
     const userData = await GetLoggedInUser(localStorage.getItem("token"))
 
     document.getElementById("user-profile").innerHTML = `
+        <div class="user-info">
+                <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
+                <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>
+                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
+            </div>
+
+    `
+}
+
+async function LoadArtistData() {
+    const userData = await getLoggedInArtist(localStorage.getItem("token"))
+
+    document.getElementById("artist-profile").innerHTML = `
         <div class="user-info">
                 <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
                 <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>

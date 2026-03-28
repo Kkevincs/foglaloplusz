@@ -27,6 +27,18 @@ namespace Salonic.DAL.Repositories
             
         }
 
+        public async Task<List<DateTime>> GetDaysWithAppointments(int artistId, DateTime start, DateTime end)
+        {
+            return await _context.Appointments
+                .Where(a =>
+                    a.ArtistId == artistId &&
+                    a.StartTime >= start &&
+                    a.StartTime <= end)
+                .Select(a => a.StartTime.Date)
+                .Distinct()
+                .ToListAsync();
+        }
+
         public async Task<List<Appointment>> GetAll()
         {
             return await _context.Appointments

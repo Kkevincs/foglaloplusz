@@ -44,6 +44,7 @@ namespace Salonic
             builder.Services.AddScoped<IRegisterService, RegisterService>();
             builder.Services.AddScoped<IWorkingHoursRepository, WorkingHoursRepository>();
             builder.Services.AddScoped<IWorkingHoursService, WorkingHoursService>();
+            builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
             //IServiceRepo
             //mapper
             builder.Services.AddAutoMapper(cfg =>

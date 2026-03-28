@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.AppointmentDTOs;
 using Salonic.BLL.DTOs.GuestDTOs;
+using Salonic.BLL.Services;
 using Salonic.BLL.Services.Interfaces;
 
 namespace Salonic.presentation.Controllers
@@ -12,11 +13,16 @@ namespace Salonic.presentation.Controllers
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
+        private readonly IAvailabilityService _availabilityService;
 
-        public AppointmentController(IAppointmentService appointmentService)
+        public AppointmentController(IAppointmentService appointmentService, IAvailabilityService availabilityService)
         {
             _appointmentService = appointmentService;
+            _availabilityService = availabilityService;
+
         }
+        
+
         [Authorize(Roles ="admin")]
         [HttpGet]
         public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetAll()

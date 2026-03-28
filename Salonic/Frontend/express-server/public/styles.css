@@ -36,6 +36,30 @@ p { color: #5c5650; line-height: 1.6; }
 .user-info .info-label { font-weight: 600; color: #2d2a26; }
 .user-info .info-value { color: #5c5650; }
 .user-page .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+.adservice-page { text-align: left; max-width: 640px; }
+.adservice-page .subtitle { margin-bottom: 1.5rem; }
+.adservice-form { display: flex; flex-direction: column; gap: 0.75rem; }
+.adservice-form input,
+.adservice-form textarea {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+.adservice-form textarea { resize: vertical; min-height: 96px; }
+.adservice-form button {
+    width: fit-content;
+    padding: 0.6rem 0.9rem;
+    background: #2d2a26;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+.adservice-form button:hover { background: #3d3a36; }
 
 main.appointment-page { max-width: 900px; }
 .appointment-page { text-align: left; }
@@ -47,20 +71,8 @@ main.appointment-page { max-width: 900px; }
 .times-panel { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; }
 .calendar-card { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; margin-bottom: 0; }
 .calendar-card .calendar-header { display: block; font-weight: 600; margin-bottom: 0.75rem; }
-.calendar-card input[type="date"] {
-    width: 100%;
-    max-width: 16rem;
-    padding: 0.6rem 0.75rem;
-    border: 1px solid #eee;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 0.95rem;
-    color: #2d2a26;
-}
-.calendar-card input[type="date"]:focus {
-    outline: none;
-    border-color: #c4bfb8;
-}
+.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid #eee; border-radius: 6px; font-family: inherit; font-size: 0.95rem; color: #2d2a26; }
+.calendar-card input[type="date"]:focus { outline: none; border-color: #c4bfb8; }
 .appointment-page .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; margin-top: 0; }
 .times-panel .time-slots { margin-top: 0.25rem; }
 .time-slots { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
