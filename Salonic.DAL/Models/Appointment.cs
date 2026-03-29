@@ -24,7 +24,7 @@ namespace Salonic.DAL.Models
         public ICollection<Service> Services { get; set; } = new List<Service>();
 
         public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }   // StartTime + service duration + 15 min break
+        public DateTime EndTime { get; set; }
         public string Notes { get; set; }
     }
 }

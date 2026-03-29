@@ -1,18 +1,13 @@
-﻿using Salonic.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Salonic.DAL.Models;
 
 namespace Salonic.DAL.Repositories.Interfaces
 {
     public interface ISalonRepository
     {
-        public Task<List<Salon>> GetAll();
-        public Task<Salon> GetById(int id);
-        public Task<Salon> Create(Salon salon);
-        public Task Update(Salon salon);
-        public Task DeleteById(int id);
+        Task<List<Salon>> GetAllByOwnerId(int ownerId);
+        Task<Salon?> GetByOwnerAndId(int ownerId, int salonId);
+        Task<Salon> CreateForOwner(int ownerId, Salon salon);
+        Task UpdateForOwner(int ownerId, Salon incoming);
+        Task<bool> DeleteForOwner(int ownerId, int salonId);
     }
 }

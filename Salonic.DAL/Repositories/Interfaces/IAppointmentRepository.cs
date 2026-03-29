@@ -1,4 +1,4 @@
-﻿using Salonic.DAL.Models;
+using Salonic.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +17,11 @@ namespace Salonic.DAL.Repositories.Interfaces
 
         public Task<List<Appointment>> GetByGuestId(int id);
 
-        Task<List<Appointment>> GetByArtistAndDate(int artistId, DateTime date);
-        Task<bool> IsOverlapping(int artistId, DateTime startTime, DateTime endTime);
-        Task Create(Appointment appointment);
+        public Task<List<Appointment>> GetBySalonId(int salonId);
+
+        public Task<List<Appointment>> GetByArtistAndDate(int artistId, DateTime date);
+        public Task<bool> IsOverlapping(int artistId, DateTime startTime, DateTime endTime);
+        public Task Create(Appointment appointment);
         public Task Update(Appointment artist);
         public Task DeleteById(int id);
     }

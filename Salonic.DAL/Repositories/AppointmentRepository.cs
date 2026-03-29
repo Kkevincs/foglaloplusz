@@ -36,7 +36,7 @@ namespace Salonic.DAL.Repositories
                     a.StartTime <= end)
                 .Select(a => a.StartTime.Date)
                 .Distinct()
-                .ToListAsync();
+                .ToListAsync(); //eg: 2025-03-01
         }
 
         public async Task<List<Appointment>> GetAll()
@@ -71,6 +71,15 @@ namespace Salonic.DAL.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Appointment>> GetBySalonId(int salonId)
+        {
+            return await _context.Appointments
+                .Include(a => a.Services)
+                .Where(a => a.SalonId == salonId)
+                .OrderBy(a => a.StartTime)
+                .ToListAsync();
+        }
+
         public async Task<Appointment> GetById(int id)
         {
             return await _context.Appointments
@@ -92,9 +101,6 @@ namespace Salonic.DAL.Repositories
             var existing = await _context.Appointments
                 .Include(a => a.Services)
                 .FirstOrDefaultAsync(a => a.Id == appointment.Id);
-
-            if (existing == null)
-                return;
 
             existing.GuestId = appointment.GuestId;
             existing.ArtistId = appointment.ArtistId;

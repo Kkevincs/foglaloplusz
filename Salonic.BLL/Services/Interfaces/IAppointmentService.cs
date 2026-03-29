@@ -15,6 +15,7 @@ namespace Salonic.BLL.Services.Interfaces
 
         public Task<List<AppointmentsWithIdDTO>> GetByArtistId(int id);
         public Task<List<AppointmentsWithIdDTO>> GetByGuestId(int id);
+        public Task<List<AppointmentsWithIdDTO>> GetBySalonIdForOwnerAsync(int ownerId, int salonId);
         public Task<List<AvaliableSlotDTO>> GetAvailableSlots(int artistId, int[] serviceIds, DateTime date);
 
         public Task<AppointmentsWithoutIdDTO> Create(AppointmentsWithoutIdDTO appointment);

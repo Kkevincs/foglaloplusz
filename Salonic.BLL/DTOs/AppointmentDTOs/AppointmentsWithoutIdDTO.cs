@@ -11,7 +11,7 @@ namespace Salonic.BLL.DTOs.AppointmentDTOs
         public int GuestId { get; set; }
         public int ArtistId { get; set; }
         public int SalonId { get; set; }
-        public List<int> ServiceIds { get; set; } = new();
+        public List<int> ServiceIds { get; set; }
         public DateTime StartTime { get; set; }
         public string Notes { get; set; }
     }

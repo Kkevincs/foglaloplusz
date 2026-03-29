@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salonic — Owner account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
+        <ul class="nav-links">
+            <li><a href="/ownerhomepage">My salons</a></li>
+            <li><a href="/maker">New salon setup</a></li>
+            <li><a href="/owneruserpage" aria-current="page">Account</a></li>
+            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
+        </ul>
+    </nav>
+    <main class="user-page">
+        <h1>Owner account</h1>
+        <p class="subtitle">Your profile and sign-in details.</p>
+        <div id="owner-profile" class="user-profile"></div>
+    </main>
+    <script src="/api.js"></script>
+    <script src="/script.js"></script>
+</body>
+</html>

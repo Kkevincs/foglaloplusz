@@ -31,6 +31,18 @@ namespace Salonic.DAL.Data
                 .HasMany(a => a.Services)
                 .WithMany(s => s.Appointments)
                 .UsingEntity(j => j.ToTable("AppointmentServices"));
+
+            modelBuilder.Entity<Service>()
+                .HasOne(s => s.Salon)
+                .WithMany()
+                .HasForeignKey(s => s.SalonId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Service>()
+                .HasOne(s => s.CreatedByArtist)
+                .WithMany()
+                .HasForeignKey(s => s.CreatedByArtistId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

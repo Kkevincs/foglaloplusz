@@ -21,7 +21,43 @@ namespace Salonic.presentation.Controllers
             _availabilityService = availabilityService;
 
         }
-        
+
+        /// <summary>Appointments for the logged-in artist (from JWT sub claim).</summary>
+        [Authorize(Roles = "artist")]
+        [HttpGet("my")]
+        public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetMyAppointments()
+        {
+            var subClaim = User.FindFirst("sub")?.Value;
+            if (subClaim == null) return Unauthorized();
+
+            int Id = Convert.ToInt32(subClaim);
+
+            return await _appointmentService.GetByArtistId(Id);
+        }
+
+        /// <summary>All appointments for a salon when the salon belongs to the logged-in owner (JWT sub).</summary>
+        [Authorize(Roles = "owner")]
+        [HttpGet("salon/{salonId:int}")]
+        public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetBySalonForOwner(int salonId)
+        {
+            var subClaim = User.FindFirst("sub")?.Value;
+            if (subClaim == null) return Unauthorized();
+
+            int Id = Convert.ToInt32(subClaim);
+
+            try
+            {
+                return await _appointmentService.GetBySalonIdForOwnerAsync(Id, salonId);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
         [Authorize(Roles ="admin")]
         [HttpGet]
@@ -64,14 +100,7 @@ namespace Salonic.presentation.Controllers
         [HttpPost]
         public async Task<ActionResult<AppointmentsWithoutIdDTO>> Create(AppointmentsWithoutIdDTO dto)
         {
-            try
-            {
-                return await _appointmentService.Create(dto);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return await _appointmentService.Create(dto);
         }
 
         [AllowAnonymous]
@@ -82,7 +111,7 @@ namespace Salonic.presentation.Controllers
             return await _appointmentService.GetAvailableSlots(
                 request.ArtistId,
                 request.ServiceIds.ToArray(),
-                request.Date);
+                request.Date); //TODO Modify them to be a dto
         }
         [Authorize(Roles ="owner,artist,guest")]
         [HttpPut]
@@ -97,6 +126,13 @@ namespace Salonic.presentation.Controllers
             await _appointmentService.DeleteById(id);
         }
 
+        private bool TryGetArtistIdFromSub(out int artistId)
+        {
+            artistId = 0;
+            var sub = User.FindFirst("sub")?.Value;
+            return sub != null && int.TryParse(sub, out artistId);
+        }
 
+        
     }
 }

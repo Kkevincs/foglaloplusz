@@ -1,4 +1,5 @@
-﻿using Salonic.DAL.Data;
+using Microsoft.EntityFrameworkCore;
+using Salonic.DAL.Data;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
 using System;
@@ -35,6 +36,15 @@ namespace Salonic.DAL.Repositories
         public async Task<List<Artist>> GetAll()
         {
             return _context.Artists.Select(x => x).ToList();
+        }
+
+        public async Task<List<Artist>> GetBySalonId(int salonId)
+        {
+            return await _context.Artists
+                .AsNoTracking()
+                .Where(a => a.SalonId == salonId)
+                .OrderBy(a => a.Name)
+                .ToListAsync();
         }
 
         public async Task<Artist> GetById(int id)

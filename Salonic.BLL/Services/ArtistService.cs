@@ -1,8 +1,7 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Salonic.BLL.DTOs.ArtistDTOs;
 using Salonic.BLL.Services.Interfaces;
 using Salonic.DAL.Models;
-using Salonic.DAL.Repositories;
 using Salonic.DAL.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,10 +15,12 @@ namespace Salonic.BLL.Services
     {
         private readonly IMapper _mapper;
         private readonly IArtistRepository _artistRepository;
+        private readonly ISalonRepository _salonRepository;
 
-        public ArtistService(IArtistRepository repo, IMapper mapper) {
+        public ArtistService(IArtistRepository repo, ISalonRepository salonRepository, IMapper mapper) {
             _mapper = mapper;
             _artistRepository = repo;
+            _salonRepository = salonRepository;
         }
 
         public async Task<ArtistWithoutIdDTO> Create(ArtistWithoutIdDTO artist) {
@@ -36,6 +37,19 @@ namespace Salonic.BLL.Services
             var artists = await _artistRepository.GetAll();
             var ArtistsDTO = _mapper.Map<List<ArtistWithIdDTO>>(artists);
             return ArtistsDTO;
+        }
+
+        public async Task<List<ArtistWithIdDTO>?> GetBySalonIdForOwner(int ownerId, int salonId)
+        {
+            if (ownerId <= 0 || salonId <= 0)
+                return null;
+
+            var salon = await _salonRepository.GetByOwnerAndId(ownerId, salonId);
+            if (salon == null)
+                return null;
+
+            var artists = await _artistRepository.GetBySalonId(salonId);
+            return _mapper.Map<List<ArtistWithIdDTO>>(artists);
         }
 
         public async Task<ArtistWithIdDTO> GetById(int id) { 

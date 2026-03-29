@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.GuestDTOs;
@@ -21,15 +21,16 @@ namespace Salonic.presentation.Controllers
         }
 
 
-        [Authorize(Roles ="admin,owner")]
+        /// <summary>Current owner profile from JWT sub (no id in URL).</summary>
+        [Authorize(Roles = "admin,owner")]
         [HttpGet("me")]
-        public async Task<ActionResult<OwnerWithIdDTO>> GetById(int id)
+        public async Task<ActionResult<OwnerWithIdDTO>> GetMe()
         {
             var subClaim = User.FindFirst("sub")?.Value;
-            if (subClaim == null) return Unauthorized();
+            if (subClaim == null || !int.TryParse(subClaim, out var ownerId))
+                return Unauthorized();
 
-            int Id = Convert.ToInt32(subClaim);
-            return await _ownerService.GetById(Id);
+            return await _ownerService.GetById(ownerId);
         }
         [Authorize(Roles ="admin")]
         [HttpGet]

@@ -7,7 +7,10 @@ const PORT = 67;
 app.use(express.static(path.join(__dirname, "public")));
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
-// Salon maker (customize salon landing / branding form)
+
+app.get("", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "ownerRegister.html"));
+});
 app.get("/maker", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "forms.html"));
 });
@@ -43,6 +46,27 @@ app.get("/Salon/Artist/UnloggedArtist", (req, res) => {
 app.get("/Salon/Register", (req, res) => {
   const salonId = parseInt(req.query.salonid, 10);
   res.sendFile(path.join(__dirname, "views", "register.html"));
+});
+
+// salon owner register
+app.get("/ownerregister", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "ownerRegister.html"));
+});
+// salon owner login
+app.get("/ownerlogin", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "ownerLogin.html"));
+});
+// salon owner dashboard (template)
+app.get("/ownerhomepage", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "ownerHomePage.html"));
+});
+// salon owner profile
+app.get("/owneruserpage", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "ownerUserPage.html"));
+});
+// salon dashboard (owner template)
+app.get("/salondashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "salonDashboard.html"));
 });
 
 //Salon services

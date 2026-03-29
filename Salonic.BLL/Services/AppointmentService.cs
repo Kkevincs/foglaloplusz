@@ -17,36 +17,32 @@ namespace Salonic.BLL.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IWorkingHoursRepository _workingHoursRepository;
         private readonly IServiceRepository _serviceRepository;
+        private readonly ISalonRepository _salonRepository;
         private readonly IMapper _mapper;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
             IWorkingHoursRepository workingHoursRepository,
             IServiceRepository serviceRepository,
+            ISalonRepository salonRepository,
             IMapper mapper)
         {
             _appointmentRepository = appointmentRepository;
             _workingHoursRepository = workingHoursRepository;
             _serviceRepository = serviceRepository;
+            _salonRepository = salonRepository;
             _mapper = mapper;
         }
 
         public async Task<AppointmentsWithoutIdDTO> Create(AppointmentsWithoutIdDTO dto)
         {
-            if (dto.SalonId <= 0)
-                throw new InvalidOperationException("SalonId is required.");
-
-            var serviceIds = dto.ServiceIds?
+            var serviceIds = dto.ServiceIds
                 .Where(id => id > 0)
-                .ToList() ?? new List<int>();
+                .ToList();
 
-            if (serviceIds.Count == 0)
-                throw new InvalidOperationException("At least one service is required.");
 
             var uniqueIds = serviceIds.Distinct().ToArray();
             var services = await _serviceRepository.GetByIds(uniqueIds);
-            if (services.Length != uniqueIds.Length)
-                throw new InvalidOperationException("One or more services were not found.");
 
             var byId = services.ToDictionary(s => s.Id);
             var orderedServices = serviceIds.Select(id => byId[id]).ToList();
@@ -57,20 +53,14 @@ namespace Salonic.BLL.Services
             var workingHours = await _workingHoursRepository
                 .GetByArtistAndDate(dto.ArtistId, dto.StartTime);
 
-            if (workingHours == null)
-                throw new InvalidOperationException("No working hours set for this date.");
-
             var workStart = dto.StartTime.Date + workingHours.StartTime;
             var workEnd = dto.StartTime.Date + workingHours.EndTime;
 
-            if (dto.StartTime < workStart || endTime > workEnd)
-                throw new InvalidOperationException("Appointment is outside working hours.");
 
             var isOverlapping = await _appointmentRepository
                 .IsOverlapping(dto.ArtistId, dto.StartTime, endTime);
 
-            if (isOverlapping)
-                throw new InvalidOperationException("This slot is no longer available.");
+        
 
             var appointment = new Appointment
             {
@@ -101,17 +91,11 @@ namespace Salonic.BLL.Services
 
         public async Task<List<AvaliableSlotDTO>> GetAvailableSlots(int artistId, int[] serviceIds, DateTime date)
         {
-            if (serviceIds == null || serviceIds.Length == 0)
-                return new List<AvaliableSlotDTO>();
 
             var orderedIds = serviceIds.Where(id => id > 0).ToList();
-            if (orderedIds.Count == 0)
-                return new List<AvaliableSlotDTO>();
 
             var uniqueIds = orderedIds.Distinct().ToArray();
             var services = await _serviceRepository.GetByIds(uniqueIds);
-            if (services.Length != uniqueIds.Length)
-                return new List<AvaliableSlotDTO>();
 
             var byId = services.ToDictionary(s => s.Id);
             var orderedServices = orderedIds.Select(id => byId[id]).ToList();
@@ -120,7 +104,6 @@ namespace Salonic.BLL.Services
             var totalBlockedDuration = serviceDuration + BlockBufferAfterServices;
 
             var workingHours = await _workingHoursRepository.GetByArtistAndDate(artistId, date);
-            if (workingHours == null) return new List<AvaliableSlotDTO>();
 
             var existingAppointments = await _appointmentRepository.GetByArtistAndDate(artistId, date);
 
@@ -160,6 +143,15 @@ namespace Salonic.BLL.Services
         {
             var app = await _appointmentRepository.GetByGuestId(id);
             return _mapper.Map<List<AppointmentsWithIdDTO>>(app);
+        }
+
+        public async Task<List<AppointmentsWithIdDTO>> GetBySalonIdForOwnerAsync(int ownerId, int salonId)
+        {
+
+            var salon = await _salonRepository.GetByOwnerAndId(ownerId, salonId);
+
+            var appointments = await _appointmentRepository.GetBySalonId(salonId);
+            return _mapper.Map<List<AppointmentsWithIdDTO>>(appointments);
         }
 
         public async Task<AppointmentsWithIdDTO> GetById(int id)
