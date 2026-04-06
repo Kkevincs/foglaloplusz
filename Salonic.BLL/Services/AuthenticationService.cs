@@ -1,40 +1,88 @@
-﻿using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Salonic.BLL.DTOs.UserDTOs;
 using Salonic.BLL.Services.Interfaces;
-using Salonic.DAL.Models.Interfaces;
 using Salonic.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Salonic.BLL.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly IMapper _mapper;
-        private readonly IAuthenticationRepository _AuthRepository;
+        private readonly IAuthenticationRepository _auth;
+        private readonly IConfiguration _configuration;
 
-        public AuthenticationService(IMapper mapper, IAuthenticationRepository authRepository)
+        public AuthenticationService(IAuthenticationRepository auth, IConfiguration configuration)
         {
-            _mapper = mapper;
-            _AuthRepository = authRepository;
+            _auth = auth;
+            _configuration = configuration;
         }
 
-        public async Task<UserDTO> Authentication(UserDTO user)
+        public async Task<string?> SignInAsync(UserDTO user)
         {
-            var authUser = await _AuthRepository.Authentication(user.Email, user.Pwd, user.Role);
-            if (authUser == null) return null;
+            if (user == null ||
+                string.IsNullOrWhiteSpace(user.Email) ||
+                user.Pwd == null ||
+                string.IsNullOrWhiteSpace(user.Role))
+                return null;
 
-            return new UserDTO
+            var role = user.Role.Trim().ToLowerInvariant();
+            int id;
+            string email;
+
+            switch (role)
             {
-                Id = authUser.Id,       
-                Email = authUser.Email,   
-                Role = user.Role
+                case "guest":
+                    var guest = await _auth.FindGuestByCredentials(user.Email, user.Pwd);
+                    if (guest == null) return null;
+                    id = guest.Id;
+                    email = guest.Email;
+                    break;
+                case "artist":
+                    var artist = await _auth.FindArtistByCredentials(user.Email, user.Pwd);
+                    if (artist == null) return null;
+                    id = artist.Id;
+                    email = artist.Email;
+                    break;
+                case "owner":
+                    var owner = await _auth.FindOwnerByCredentials(user.Email, user.Pwd);
+                    if (owner == null) return null;
+                    id = owner.Id;
+                    email = owner.Email;
+                    break;
+                default:
+                    return null;
+            }
+
+            return CreateJwt(id, email, role);
+        }
+
+        public Task<bool> EmailExistsAsync(string email) =>
+            _auth.EmailExists(email ?? string.Empty);
+
+        private string CreateJwt(int id, string email, string role)
+        {
+            var secret = _configuration["Authentication:SecretForKey"]
+                ?? throw new InvalidOperationException("Authentication:SecretForKey is not configured.");
+            var key = new SymmetricSecurityKey(Convert.FromBase64String(secret));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var claims = new List<Claim>
+            {
+                new("sub", id.ToString()),
+                new("email", email),
+                new("role", role)
             };
 
+            var token = new JwtSecurityToken(
+                _configuration["Authentication:Issuer"],
+                _configuration["Authentication:Audience"],
+                claims,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddHours(1),
+                credentials);
 
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

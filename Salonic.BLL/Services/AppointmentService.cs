@@ -3,10 +3,6 @@ using Salonic.BLL.DTOs.AppointmentDTOs;
 using Salonic.BLL.Services.Interfaces;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Salonic.BLL.Services
 {
@@ -17,36 +13,38 @@ namespace Salonic.BLL.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IWorkingHoursRepository _workingHoursRepository;
         private readonly IServiceRepository _serviceRepository;
+        private readonly ISalonRepository _salonRepository;
         private readonly IMapper _mapper;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
             IWorkingHoursRepository workingHoursRepository,
             IServiceRepository serviceRepository,
+            ISalonRepository salonRepository,
             IMapper mapper)
         {
             _appointmentRepository = appointmentRepository;
             _workingHoursRepository = workingHoursRepository;
             _serviceRepository = serviceRepository;
+            _salonRepository = salonRepository;
             _mapper = mapper;
         }
 
-        public async Task<AppointmentsWithoutIdDTO> Create(AppointmentsWithoutIdDTO dto)
+        public async Task<AppointmentsWithoutIdDTO> CreateAsync(AppointmentsWithoutIdDTO dto)
         {
-            if (dto.SalonId <= 0)
-                throw new InvalidOperationException("SalonId is required.");
-
-            var serviceIds = dto.ServiceIds?
-                .Where(id => id > 0)
-                .ToList() ?? new List<int>();
-
+            var serviceIds = dto.ServiceIds.Where(id => id > 0).ToList();
             if (serviceIds.Count == 0)
-                throw new InvalidOperationException("At least one service is required.");
+                throw new ArgumentException("Select at least one service.");
 
             var uniqueIds = serviceIds.Distinct().ToArray();
-            var services = await _serviceRepository.GetByIds(uniqueIds);
+            var services = await _serviceRepository.GetByIdsAsync(uniqueIds);
             if (services.Length != uniqueIds.Length)
-                throw new InvalidOperationException("One or more services were not found.");
+            {
+                var foundIds = services.Select(s => s.Id).ToHashSet();
+                var missing = uniqueIds.Where(id => !foundIds.Contains(id)).ToList();
+                throw new ArgumentException(
+                    $"Unknown service id(s): {string.Join(", ", missing)}.");
+            }
 
             var byId = services.ToDictionary(s => s.Id);
             var orderedServices = serviceIds.Select(id => byId[id]).ToList();
@@ -54,64 +52,51 @@ namespace Salonic.BLL.Services
             var serviceDuration = TimeSpan.FromMinutes(orderedServices.Sum(s => s.DurationInMinute));
             var endTime = dto.StartTime + serviceDuration + BlockBufferAfterServices;
 
-            var workingHours = await _workingHoursRepository
-                .GetByArtistAndDate(dto.ArtistId, dto.StartTime);
-
+            var workingHours = await _workingHoursRepository.GetByArtistAndDate(dto.ArtistId, dto.StartTime);
             if (workingHours == null)
-                throw new InvalidOperationException("No working hours set for this date.");
+                throw new ArgumentException("No working hours are set for the selected day.");
 
             var workStart = dto.StartTime.Date + workingHours.StartTime;
             var workEnd = dto.StartTime.Date + workingHours.EndTime;
 
-            if (dto.StartTime < workStart || endTime > workEnd)
-                throw new InvalidOperationException("Appointment is outside working hours.");
+            var isOverlapping = await _appointmentRepository.HasOverlapAsync(dto.ArtistId, dto.StartTime, endTime);
 
-            var isOverlapping = await _appointmentRepository
-                .IsOverlapping(dto.ArtistId, dto.StartTime, endTime);
+            if (dto.StartTime < workStart || endTime > workEnd)
+                throw new ArgumentException("Appointment is outside of artist working hours.");
 
             if (isOverlapping)
-                throw new InvalidOperationException("This slot is no longer available.");
+                throw new ArgumentException("Appointment overlaps with an existing booking.");
 
             var appointment = new Appointment
             {
                 GuestId = dto.GuestId,
                 ArtistId = dto.ArtistId,
-                SalonId = dto.SalonId,
+                SalonId = dto.SalonId > 0 ? dto.SalonId : null,
                 StartTime = dto.StartTime,
                 EndTime = endTime,
-                Notes = dto.Notes,
+                Notes = dto.Notes ?? string.Empty,
                 Services = orderedServices.ToList()
             };
 
-            await _appointmentRepository.Create(appointment);
+            await _appointmentRepository.AddAsync(appointment);
             return dto;
         }
 
-
-        public async Task DeleteById(int id)
+        public async Task<List<AvaliableSlotDTO>> GetAvailableSlotsAsync(int artistId, int[] serviceIds, DateTime date)
         {
-            await _appointmentRepository.DeleteById(id);
-        }
-
-        public async Task<List<AppointmentsWithIdDTO>> GetAll()
-        {
-            var appointments = await _appointmentRepository.GetAll();
-            return _mapper.Map<List<AppointmentsWithIdDTO>>(appointments);
-        }
-
-        public async Task<List<AvaliableSlotDTO>> GetAvailableSlots(int artistId, int[] serviceIds, DateTime date)
-        {
-            if (serviceIds == null || serviceIds.Length == 0)
-                return new List<AvaliableSlotDTO>();
-
             var orderedIds = serviceIds.Where(id => id > 0).ToList();
             if (orderedIds.Count == 0)
                 return new List<AvaliableSlotDTO>();
 
             var uniqueIds = orderedIds.Distinct().ToArray();
-            var services = await _serviceRepository.GetByIds(uniqueIds);
+            var services = await _serviceRepository.GetByIdsAsync(uniqueIds);
             if (services.Length != uniqueIds.Length)
-                return new List<AvaliableSlotDTO>();
+            {
+                var foundIds = services.Select(s => s.Id).ToHashSet();
+                var missing = uniqueIds.Where(id => !foundIds.Contains(id)).ToList();
+                throw new ArgumentException(
+                    $"Unknown service id(s): {string.Join(", ", missing)}.");
+            }
 
             var byId = services.ToDictionary(s => s.Id);
             var orderedServices = orderedIds.Select(id => byId[id]).ToList();
@@ -120,10 +105,10 @@ namespace Salonic.BLL.Services
             var totalBlockedDuration = serviceDuration + BlockBufferAfterServices;
 
             var workingHours = await _workingHoursRepository.GetByArtistAndDate(artistId, date);
-            if (workingHours == null) return new List<AvaliableSlotDTO>();
+            if (workingHours == null)
+                return new List<AvaliableSlotDTO>();
 
-            var existingAppointments = await _appointmentRepository.GetByArtistAndDate(artistId, date);
-
+            var existingAppointments = await _appointmentRepository.ListByArtistAndDateAsync(artistId, date);
             var availableSlots = new List<AvaliableSlotDTO>();
             var current = date.Date + workingHours.StartTime;
             var workEnd = date.Date + workingHours.EndTime;
@@ -132,10 +117,10 @@ namespace Salonic.BLL.Services
             {
                 var slotEnd = current + totalBlockedDuration;
 
-                var isOverlapping = existingAppointments.Any(a =>
+                var overlaps = existingAppointments.Any(a =>
                     current < a.EndTime && slotEnd > a.StartTime);
 
-                if (!isOverlapping)
+                if (!overlaps)
                 {
                     availableSlots.Add(new AvaliableSlotDTO
                     {
@@ -150,28 +135,20 @@ namespace Salonic.BLL.Services
             return availableSlots;
         }
 
-        public async Task<List<AppointmentsWithIdDTO>> GetByArtistId(int id)
+        public async Task<List<AppointmentsWithIdDTO>> ListForGuestAsync(int guestId)
         {
-            var app = await _appointmentRepository.GetByArtistId(id);
-            return _mapper.Map<List<AppointmentsWithIdDTO>>(app);
+            var apps = await _appointmentRepository.ListByGuestIdAsync(guestId);
+            return _mapper.Map<List<AppointmentsWithIdDTO>>(apps);
         }
 
-        public async Task<List<AppointmentsWithIdDTO>> GetByGuestId(int id)
+        public async Task<List<AppointmentsWithIdDTO>> ListForSalonOwnerAsync(int ownerId, int salonId)
         {
-            var app = await _appointmentRepository.GetByGuestId(id);
-            return _mapper.Map<List<AppointmentsWithIdDTO>>(app);
-        }
+            var salon = await _salonRepository.GetByOwnerAndIdAsync(ownerId, salonId);
+            if (salon == null)
+                throw new InvalidOperationException("Salon was not found.");
 
-        public async Task<AppointmentsWithIdDTO> GetById(int id)
-        {
-            var appointment = await _appointmentRepository.GetById(id);
-            return _mapper.Map<AppointmentsWithIdDTO>(appointment);
-        }
-
-        public async Task Update(AppointmentsWithIdDTO app)
-        {
-            var appointment = _mapper.Map<Appointment>(app);
-            await _appointmentRepository.Update(appointment);
+            var appointments = await _appointmentRepository.ListBySalonIdAsync(salonId);
+            return _mapper.Map<List<AppointmentsWithIdDTO>>(appointments);
         }
     }
 }

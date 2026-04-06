@@ -1,48 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Salonic.DAL.Data;
-using Salonic.DAL.Models.Interfaces;
+using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Salonic.DAL.Repositories
 {
     public class AuthenticationRepository : IAuthenticationRepository
     {
+        private readonly AppDbContext _context;
 
-        private readonly AppDbContext _appDbContext;
-
-        public AuthenticationRepository(AppDbContext appDbContext)
+        public AuthenticationRepository(AppDbContext context)
         {
-            _appDbContext = appDbContext;
+            _context = context;
         }
 
-        public async Task<IUserModel?> Authentication(string email, string password, string role)
-        {
-            switch (role)
-            {
-                case "guest":
-                    return await _appDbContext.Guests
-                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
-                case "artist":
-                    return await _appDbContext.Artists
-                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
-                case "owner":
-                    return await _appDbContext.Owners
-                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
-                case "admin":
-                    return await _appDbContext.Admins
-                        .FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
-                default:
-                    return null;
-            }
+        public Task<Guest?> FindGuestByCredentials(string email, string password) =>
+            _context.Guests.FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
 
+        public Task<Artist?> FindArtistByCredentials(string email, string password) =>
+            _context.Artists.FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
+
+        public Task<Owner?> FindOwnerByCredentials(string email, string password) =>
+            _context.Owners.FirstOrDefaultAsync(x => x.Email == email && x.Pwd == password);
+
+        public async Task<bool> EmailExists(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            var normalizedEmail = email.Trim();
+
+            return await _context.Guests.AnyAsync(x => x.Email == normalizedEmail)
+                || await _context.Artists.AnyAsync(x => x.Email == normalizedEmail)
+                || await _context.Owners.AnyAsync(x => x.Email == normalizedEmail);
         }
     }
 }

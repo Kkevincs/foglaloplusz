@@ -52,35 +52,6 @@ namespace Salonic.DAL.Migrations
                     b.ToTable("ArtistService");
                 });
 
-            modelBuilder.Entity("Salonic.DAL.Models.Admin", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Pwd")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Admins");
-                });
-
             modelBuilder.Entity("Salonic.DAL.Models.Appointment", b =>
                 {
                     b.Property<int>("Id")
@@ -223,6 +194,14 @@ namespace Salonic.DAL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("LogoUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -253,6 +232,9 @@ namespace Salonic.DAL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CreatedByArtistId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -267,7 +249,14 @@ namespace Salonic.DAL.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedByArtistId");
+
+                    b.HasIndex("SalonId");
 
                     b.ToTable("Services");
                 });
@@ -374,6 +363,25 @@ namespace Salonic.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Salonic.DAL.Models.Service", b =>
+                {
+                    b.HasOne("Salonic.DAL.Models.Artist", "CreatedByArtist")
+                        .WithMany()
+                        .HasForeignKey("CreatedByArtistId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Salonic.DAL.Models.Salon", "Salon")
+                        .WithMany()
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByArtist");
+
+                    b.Navigation("Salon");
                 });
 
             modelBuilder.Entity("Salonic.DAL.Models.WorkingHours", b =>

@@ -1,14 +1,12 @@
-﻿using Salonic.DAL.Models.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Salonic.DAL.Models;
 
 namespace Salonic.DAL.Repositories.Interfaces
 {
     public interface IAuthenticationRepository
     {
-        public Task<IUserModel?> Authentication(string email, string password, string role);
+        Task<Guest?> FindGuestByCredentials(string email, string password);
+        Task<Artist?> FindArtistByCredentials(string email, string password);
+        Task<Owner?> FindOwnerByCredentials(string email, string password);
+        Task<bool> EmailExists(string email);
     }
 }

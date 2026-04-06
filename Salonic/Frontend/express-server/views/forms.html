@@ -11,14 +11,12 @@
 </head>
 <body class="theme-pink">
     <nav>
-        <a href="/Salon" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
+        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
         <ul class="nav-links">
-            <li><a id="homeLink" href="#">Home</a></li>
-            <li><a id="servicesLink" href="#">Services</a></li>
-            <li><a id="artistsLink" href="#">Artists</a></li>
-            <li><a href="/Salon/Services">Book</a></li>
-            <li><a id="userLink" href="#">User</a></li>
-            <li><a id="loginLink" href="#">Login</a></li>
+            <li><a href="/ownerhomepage">My salons</a></li>
+            <li><a href="/maker" aria-current="page">New salon setup</a></li>
+            <li><a href="/owneruserpage">Account</a></li>
+            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
         </ul>
     </nav>
     <main class="form-page">
@@ -29,7 +27,7 @@
             <input id="salon-name" name="salon_name" type="text" placeholder="..." required />
 
             <label for="salon-logo" class="field-label">Please upload the logo of your company</label>
-            <input id="salon-logo" name="salon_logo" type="file" accept="image/*" required />
+            <input id="salon-logo" name="salon_logo" type="file" accept="image/*" />
 
             <label for="salon-description" class="field-label">Please describe your Salon and your services, and we will display it in your home page</label>
             <textarea id="salon-description" name="salon_description" rows="5" placeholder="..." required></textarea>
@@ -49,8 +47,8 @@
             <button type="submit">Save Salon Details</button>
         </form>
     </main>
-    <script src="/navbar.js"></script>
     <script src="/script.js"></script>
+    <script src="/api.js"></script>
     <script>
         (function () {
             var themeSelect = document.getElementById("salon-theme");

@@ -1,4 +1,5 @@
 (function () {
+    const form = document.getElementById("working-hours-form");
     const singleRadio = document.getElementById("schedule-mode-single");
     const weekRadio = document.getElementById("schedule-mode-week");
     const singlePanel = document.getElementById("single-day-panel");
@@ -7,6 +8,7 @@
     const workDate = document.getElementById("work-date");
     const whRangeStart = document.getElementById("wh-range-start");
     const whRangeFinish = document.getElementById("wh-range-finish");
+    const singleOpenCheckbox = document.getElementById("wh-single-open");
 
     function formatLocalYMD(date) {
         return (
@@ -25,7 +27,6 @@
         function syncRow() {
             const isOpen = openCheckbox.checked;
             startInput.disabled = endInput.disabled = !isOpen;
-            endInput.classList.toggle("wh-time-invalid", isOpen && endInput.value <= startInput.value);
         }
         openCheckbox.onchange = syncRow;
         startInput.oninput = endInput.oninput = syncRow;
@@ -65,10 +66,12 @@
         const isSingleMode = singleRadio.checked;
         singlePanel.hidden = !isSingleMode;
         weeklyPanel.hidden = isSingleMode;
-        workDate.disabled = isSingleMode;
+        workDate.disabled = !isSingleMode;
+        const singleTimesOpen = isSingleMode && singleOpenCheckbox.checked;
         document.querySelectorAll("#single-day-times [type=time]").forEach((timeInput) => {
-            timeInput.disabled = isSingleMode;
+            timeInput.disabled = !singleTimesOpen;
         });
+        if (singleOpenCheckbox) singleOpenCheckbox.disabled = !isSingleMode;
         whRangeStart.disabled = isSingleMode;
         whRangeFinish.disabled = isSingleMode;
 
@@ -104,11 +107,75 @@
 
     const singleStartInput = document.getElementById("wh-single-start");
     const singleEndInput = document.getElementById("wh-single-end");
-    function syncSingleDayEndStyle() {
-        singleEndInput.classList.toggle("wh-time-invalid", singleEndInput.value <= singleStartInput.value);
+
+    function syncSingleDayOpenState() {
+        if (!singleRadio.checked || !singleOpenCheckbox) return;
+        const on = singleOpenCheckbox.checked;
+        singleStartInput.disabled = !on;
+        singleEndInput.disabled = !on;
     }
-    singleStartInput.oninput = singleEndInput.oninput = syncSingleDayEndStyle;
+    singleOpenCheckbox?.addEventListener("change", syncSingleDayOpenState);
+
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("Please log in first.");
+            return;
+        }
+
+        try {
+            if (singleRadio.checked) {
+                if (!workDate.value) {
+                    alert("Please set the date.");
+                    return;
+                }
+                const isOpenDay = singleOpenCheckbox?.checked !== false;
+                if (isOpenDay && (!singleStartInput.value || !singleEndInput.value)) {
+                    alert("Please set start and end time, or uncheck Open to mark the day closed.");
+                    return;
+                }
+
+                await setWorkingHoursByDay(token, {
+                    date: workDate.value,
+                    startTime: isOpenDay ? singleStartInput.value : "0",
+                    endTime: isOpenDay ? singleEndInput.value : "0"
+                });
+            } else {
+                if (!whRangeStart.value || !whRangeFinish.value) {
+                    alert("Please set start and finish dates.");
+                    return;
+                }
+
+                const rows = Array.from(weekList.querySelectorAll(".working-hours-day-row"));
+                if (!rows.length) {
+                    alert("Please choose a valid date range.");
+                    return;
+                }
+
+                const days = rows.map((row) => {
+                    const isOpen = row.querySelector(".wh-open").checked;
+                    const start = row.querySelector(".wh-start").value;
+                    const end = row.querySelector(".wh-end").value;
+                    return isOpen ? { start, end } : { start: null, end: null };
+                });
+
+                await setWorkingHoursByWeek(token, {
+                    startDate: whRangeStart.value,
+                    days
+                });
+            }
+
+            const salonId = new URLSearchParams(window.location.search).get("salonId");
+            const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
+            window.location.assign(`/Salon/Artist/Hours${salonQuery}`);
+        } catch (_) {
+            alert("Could not save working hours. Please check your inputs and try again.");
+        }
+    });
 
     singleRadio.onchange = weekRadio.onchange = syncScheduleMode;
     syncScheduleMode();
+    syncSingleDayOpenState();
 })();

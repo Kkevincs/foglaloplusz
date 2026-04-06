@@ -1,20 +1,12 @@
-﻿using Salonic.BLL.DTOs.AppointmentDTOs;
 using Salonic.BLL.DTOs.ArtistDTOs;
-using Salonic.BLL.DTOs.ServiceDTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Salonic.BLL.Services.Interfaces
 {
     public interface IArtistService
     {
-        public Task<List<ArtistWithIdDTO>> GetAll();
-        public Task<ArtistWithIdDTO> GetById(int id);
-        public Task<ArtistWithoutIdDTO> Create(ArtistWithoutIdDTO artist);
-        public Task Update(ArtistWithIdDTO artist);
-        public Task DeleteById(int id);
+        Task<List<ArtistWithIdDTO>> ListAllAsync();
+        Task<List<ArtistWithIdDTO>?> ListBySalonForOwnerAsync(int ownerId, int salonId);
+        Task<ArtistWithIdDTO?> GetByIdAsync(int id);
+        Task<ArtistWithoutIdDTO> CreateAsync(ArtistWithoutIdDTO artist);
     }
 }

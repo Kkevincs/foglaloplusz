@@ -1,13 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+using AutoMapper;
 using Salonic.BLL.DTOs.UserDTOs;
 using Salonic.DAL.Models;
-using Salonic.DAL.Models.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Salonic.BLL.Profiles
 {
@@ -15,17 +8,9 @@ namespace Salonic.BLL.Profiles
     {
         public UserProfile()
         {
-            CreateMap<IUserModel, UserDTO>();
-            CreateMap<UserDTO, IUserModel>();
-            CreateMap<UserDTO, Guest>();   
-            CreateMap<UserDTO, Artist>();
-
-            CreateMap<IUserModel, UserDTO>();  // ← this direction is fine
-                                               // CreateMap<UserDTO, IUserModel>(); ← remove this, can't instantiate interface
             CreateMap<UserDTO, Guest>();
             CreateMap<UserDTO, Artist>();
-            CreateMap<UserDTO, Owner>();       // ← add if you have Owner
-            CreateMap<UserDTO, Admin>();
+            CreateMap<UserDTO, Owner>();
         }
     }
 }

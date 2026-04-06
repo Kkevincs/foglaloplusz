@@ -2,48 +2,22 @@ using Microsoft.EntityFrameworkCore;
 using Salonic.DAL.Data;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Salonic.DAL.Repositories
 {
     public class ServiceRepository : IServiceRepository
     {
-
         private readonly AppDbContext _context;
 
         public ServiceRepository(AppDbContext context)
         {
             _context = context;
         }
-        public async Task<Service> Create(Service service)
-        {
-            _context.Add(service);
-            _context.SaveChanges();
-            return service;
-        }
 
-        public async Task DeleteById(int id)
-        {
-            var service = await _context.Services.Where(x => x.Id == id).Select(x => x).FirstAsync();
-            _context.Remove(service);
-            _context.SaveChanges();
-        }
+        public Task<Service?> GetByIdAsync(int id) =>
+            _context.Services.FirstOrDefaultAsync(s => s.Id == id);
 
-        public async Task<List<Service>> GetAll()
-        {
-            return await _context.Services.Select(x => x).ToListAsync();
-        }
-
-        public async Task<Service?> GetById(int id)
-        {
-            return await _context.Services.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public async Task<Service[]> GetByIds(int[] ids)
+        public async Task<Service[]> GetByIdsAsync(int[] ids)
         {
             if (ids == null || ids.Length == 0)
                 return Array.Empty<Service>();
@@ -53,10 +27,49 @@ namespace Salonic.DAL.Repositories
                 .ToArrayAsync();
         }
 
-        public async Task Update(Service service)
+        public Task<List<Service>> ListBySalonIdAsync(int salonId) =>
+            _context.Services
+                .Where(s => s.SalonId == salonId)
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+
+        public Task<List<Service>> ListByArtistIdAsync(int artistId) =>
+            _context.Services
+                .Where(s => s.CreatedByArtistId == artistId)
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+
+        public async Task AddAsync(Service service)
         {
-            _context.Services.Update(service);
-            _context.SaveChanges();
+            service.Id = 0;
+            service.Appointments ??= new List<Appointment>();
+            service.Artists ??= new List<Artist>();
+            _context.Services.Add(service);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Service incoming)
+        {
+            var existing = await _context.Services.FirstOrDefaultAsync(s => s.Id == incoming.Id);
+            if (existing == null)
+                return;
+
+            existing.Name = incoming.Name;
+            existing.Description = incoming.Description;
+            existing.Price = incoming.Price;
+            existing.DurationInMinute = incoming.DurationInMinute;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await _context.Services.FirstOrDefaultAsync(s => s.Id == id);
+            if (entity == null)
+                return false;
+
+            _context.Services.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -25,6 +25,20 @@ namespace Salonic.DAL.Repositories
                     w.Date < dayEnd);
         }
 
+        public async Task<List<WorkingHours>> GetByArtistAndDateRange(int artistId, DateTime startDate, DateTime endDate)
+        {
+            var rangeStart = startDate.Date;
+            var rangeEndExclusive = endDate.Date.AddDays(1);
+
+            return await _context.WorkingHours
+                .Where(w =>
+                    w.ArtistId == artistId &&
+                    w.Date >= rangeStart &&
+                    w.Date < rangeEndExclusive)
+                .OrderBy(w => w.Date)
+                .ToListAsync();
+        }
+
         public async Task Add(WorkingHours workingHours)
         {
             _context.WorkingHours.Add(workingHours);

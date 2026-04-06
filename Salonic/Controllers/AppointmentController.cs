@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.AppointmentDTOs;
-using Salonic.BLL.DTOs.GuestDTOs;
-using Salonic.BLL.Services;
 using Salonic.BLL.Services.Interfaces;
 
 namespace Salonic.presentation.Controllers
@@ -13,62 +11,72 @@ namespace Salonic.presentation.Controllers
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
-        private readonly IAvailabilityService _availabilityService;
 
-        public AppointmentController(IAppointmentService appointmentService, IAvailabilityService availabilityService)
+        public AppointmentController(IAppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
-            _availabilityService = availabilityService;
-
-        }
-        
-
-        [Authorize(Roles ="admin")]
-        [HttpGet]
-        public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetAll()
-        { 
-            return await _appointmentService.GetAll();
-        }
-        [Authorize(Roles = "admin,owner")]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AppointmentsWithIdDTO>> GetById(int id)
-        { 
-            return await _appointmentService.GetById(id);
         }
 
-
-
-        [Authorize(Roles = "admin,owner,artist")]
-        [HttpGet("artist")]
-        public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetByArtistId()
+        [Authorize(Roles = "owner")]
+        [HttpGet("salon/{salonId:int}")]
+        [ProducesResponseType(typeof(List<AppointmentsWithIdDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetBySalonForOwner(int salonId)
         {
-            var subClaim = User.FindFirst("sub")?.Value;
-            if (subClaim == null) return Unauthorized();
+            if (!TryGetIntClaim("sub", out var ownerId))
+                return Unauthorized();
 
-            int Id = Convert.ToInt32(subClaim);
-            return await _appointmentService.GetByArtistId(Id);
+            try
+            {
+                var list = await _appointmentService.ListForSalonOwnerAsync(ownerId, salonId);
+                return Ok(list);
+            }
+            catch (InvalidOperationException)
+            {
+                return Forbid();
+            }
         }
 
-        [Authorize(Roles = "admin,owner,guest")]
+        [Authorize(Roles = "guest")]
         [HttpGet("guest")]
+        [ProducesResponseType(typeof(List<AppointmentsWithIdDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetByGuestId()
         {
-            var subClaim = User.FindFirst("sub")?.Value;
-            if (subClaim == null) return Unauthorized();
+            if (!TryGetIntClaim("sub", out var guestId))
+                return Unauthorized();
 
-            int Id = Convert.ToInt32(subClaim);
-            return await _appointmentService.GetByGuestId(Id);
+            var list = await _appointmentService.ListForGuestAsync(guestId);
+            return Ok(list);
         }
 
         [Authorize(Roles = "guest")]
         [HttpPost]
-        public async Task<ActionResult<AppointmentsWithoutIdDTO>> Create(AppointmentsWithoutIdDTO dto)
+        [ProducesResponseType(typeof(AppointmentsWithoutIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<AppointmentsWithoutIdDTO>> Create([FromBody] AppointmentsWithoutIdDTO dto)
         {
+            if (dto == null)
+                return BadRequest("Request body is required.");
+
+            if (!TryGetIntClaim("sub", out var tokenGuestId))
+                return Unauthorized();
+
+            if (dto.GuestId != tokenGuestId)
+                return Forbid();
+
             try
             {
-                return await _appointmentService.Create(dto);
+                var created = await _appointmentService.CreateAsync(dto);
+                return Ok(created);
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -76,27 +84,37 @@ namespace Salonic.presentation.Controllers
 
         [AllowAnonymous]
         [HttpPatch("available")]
+        [ProducesResponseType(typeof(List<AvaliableSlotDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<AvaliableSlotDTO>>> GetAvailableSlots(
-            GetAvailableSlotsDTO request)
+            [FromBody] GetAvailableSlotsDTO? request)
         {
-            return await _appointmentService.GetAvailableSlots(
-                request.ArtistId,
-                request.ServiceIds.ToArray(),
-                request.Date);
+            if (request == null)
+                return BadRequest("Request body is required.");
+
+            try
+            {
+                var slots = await _appointmentService.GetAvailableSlotsAsync(
+                    request.ArtistId,
+                    request.ServiceIds?.ToArray() ?? Array.Empty<int>(),
+                    request.Date);
+                return Ok(slots);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        [Authorize(Roles ="owner,artist,guest")]
-        [HttpPut]
 
-        public async Task Update(AppointmentsWithIdDTO app) { 
-            await _appointmentService.Update(app);
+        private bool TryGetIntClaim(string type, out int value)
+        {
+            value = 0;
+            var raw = User.FindFirst(type)?.Value;
+            return raw != null && int.TryParse(raw, out value);
         }
-
-        [HttpDelete]    
-        [Authorize(Roles ="owner,artist,guest")]
-        public async Task DeleteById(int id) { 
-            await _appointmentService.DeleteById(id);
-        }
-
-
     }
 }

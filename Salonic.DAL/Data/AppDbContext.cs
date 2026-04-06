@@ -15,7 +15,6 @@ namespace Salonic.DAL.Data
         public DbSet<Artist> Artists { get; set; }
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Service> Services { get; set; }
-        public DbSet<Admin> Admins { get; set; }
         public DbSet<Owner> Owners { get; set; }
         public DbSet<Salon> Salons { get; set; }
         public DbSet<WorkingHours> WorkingHours { get; set; }
@@ -31,6 +30,18 @@ namespace Salonic.DAL.Data
                 .HasMany(a => a.Services)
                 .WithMany(s => s.Appointments)
                 .UsingEntity(j => j.ToTable("AppointmentServices"));
+
+            modelBuilder.Entity<Service>()
+                .HasOne(s => s.Salon)
+                .WithMany()
+                .HasForeignKey(s => s.SalonId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Service>()
+                .HasOne(s => s.CreatedByArtist)
+                .WithMany()
+                .HasForeignKey(s => s.CreatedByArtistId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

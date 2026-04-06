@@ -1,10 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Salonic.DAL.Models
 {
@@ -12,7 +7,7 @@ namespace Salonic.DAL.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         public string Description { get; set; }
 
@@ -20,9 +15,15 @@ namespace Salonic.DAL.Models
 
         public int DurationInMinute { get; set; }
 
+        public int SalonId { get; set; }
+        public Salon Salon { get; set; } = null!;
+
+        
+        public int CreatedByArtistId { get; set; }
+        public Artist CreatedByArtist { get; set; }
+
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
-        // Navigation: many-to-many with Worker (EF creates the junction table automatically)
         public ICollection<Artist> Artists { get; set; } = new List<Artist>();
-    }   
+    }
 }

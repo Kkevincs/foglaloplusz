@@ -1,18 +1,12 @@
-﻿using Salonic.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Salonic.DAL.Models;
 
 namespace Salonic.DAL.Repositories.Interfaces
 {
     public interface IArtistRepository
     {
-        public Task<List<Artist>> GetAll();
-        public Task<Artist> GetById(int id);
-        public Task<Artist> Create(Artist artist);
-        public Task Update(Artist artist);
-        public Task DeleteById(int id);
+        Task<List<Artist>> ListAllAsync();
+        Task<List<Artist>> ListBySalonIdAsync(int salonId);
+        Task<Artist?> GetByIdAsync(int id);
+        Task AddAsync(Artist artist);
     }
 }

@@ -24,6 +24,7 @@
     <main class="adservice-page">
         <h1>Set working hours</h1>
         <p class="subtitle">Single day or a date range; one row per day in the range.</p>
+        <p class="artist-hours-switch"><a id="artist-hours-to-view" href="#">View my hours</a></p>
 
         <form id="working-hours-form" class="adservice-form">
             <fieldset class="working-hours-mode-fieldset">
@@ -43,6 +44,10 @@
             <div id="single-day-panel" class="working-hours-panel">
                 <label for="work-date">Date</label>
                 <input id="work-date" type="date" name="date">
+                <label class="working-hours-open-label working-hours-single-open-label" for="wh-single-open">
+                    <input type="checkbox" id="wh-single-open" name="singleDayOpen" checked>
+                    Open this day
+                </label>
                 <div class="working-hours-time-row" id="single-day-times">
                     <div class="working-hours-time-field">
                         <label for="wh-single-start">Start</label>
@@ -81,8 +86,8 @@
         </form>
     </main>
     <script src="/setWorkingHours.js"></script>
-    <script src="/artistNavbar.js"></script>
-    <script src="/script.js"></script>
     <script src="/api.js"></script>
+    <script src="/script.js"></script>
+    <script src="/artistNavbar.js"></script>
 </body>
 </html>
