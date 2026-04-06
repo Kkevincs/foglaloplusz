@@ -8,7 +8,8 @@ using Salonic.BLL.Services.Interfaces;
 using Salonic.DAL.Data;
 using Salonic.DAL.Repositories;
 using Salonic.DAL.Repositories.Interfaces;
-    using System.Security.Claims;
+using Salonic.FileStorage;
+using System.Security.Claims;
 
 namespace Salonic
 {
@@ -29,21 +30,21 @@ namespace Salonic
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
-            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-            builder.Services.AddScoped<IAdminService, AdminService>();
-
             builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
             builder.Services.AddScoped<IOwnerService, OwnerService>();
 
             builder.Services.AddScoped<ISalonRepository, SalonRepository>();
             builder.Services.AddScoped<ISalonService, SalonService>();
+            builder.Services.AddScoped<SalonImageStorage>();
+            builder.Services.AddScoped<ISalonImageStorage>(sp => sp.GetRequiredService<SalonImageStorage>());
+            builder.Services.AddScoped<ISalonLogoCleanup>(sp => sp.GetRequiredService<SalonImageStorage>());
 
             builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
-            builder.Services.AddScoped<IRegisterService, RegisterService>();
             builder.Services.AddScoped<IWorkingHoursRepository, WorkingHoursRepository>();
             builder.Services.AddScoped<IWorkingHoursService, WorkingHoursService>();
+            builder.Services.AddScoped<IArtistScheduleService, ArtistScheduleService>();
             builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
             //IServiceRepo
             //mapper
@@ -52,7 +53,6 @@ namespace Salonic
                 cfg.AddProfile(new AppointmentProfile());
                 cfg.AddProfile(new ArtistProfile());
                 cfg.AddProfile(new GuestProfile());
-                cfg.AddProfile(new AdminProfile());
                 cfg.AddProfile(new OwnerProfile());
                 cfg.AddProfile(new SalonProfile());
                 cfg.AddProfile(new ServiceProfile());
@@ -136,10 +136,16 @@ namespace Salonic
                 app.UseSwaggerUI();
             }
 
+            var webRoot = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+            Directory.CreateDirectory(Path.Combine(webRoot, "uploads", "salons"));
+            // Static files must run before UseRouting so /uploads/... is served from wwwroot (not 404).
+            app.UseStaticFiles();
+
             app.UseRouting();
-            app.UseCors("AllowAll");        
-            app.UseAuthentication();        
-            app.UseAuthorization();         
+            app.UseCors("AllowAll");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.MapControllers();
 
             app.Run();

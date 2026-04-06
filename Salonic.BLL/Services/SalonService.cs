@@ -10,68 +10,59 @@ namespace Salonic.BLL.Services
     {
         private readonly IMapper _mapper;
         private readonly ISalonRepository _salonRepository;
+        private readonly ISalonLogoCleanup _salonLogoCleanup;
 
-        public SalonService(ISalonRepository repo, IMapper mapper)
+        public SalonService(ISalonRepository repo, IMapper mapper, ISalonLogoCleanup salonLogoCleanup)
         {
             _mapper = mapper;
             _salonRepository = repo;
+            _salonLogoCleanup = salonLogoCleanup;
         }
 
-        public async Task<SalonWithIdDTO> CreateForOwner(int ownerId, SalonWithoutIdDTO salon)
+        public async Task<SalonWithIdDTO> CreateForOwnerAsync(int ownerId, SalonWithoutIdDTO salon)
         {
             if (ownerId <= 0)
                 throw new ArgumentException("Owner id must be positive.", nameof(ownerId));
 
             var entity = _mapper.Map<Salon>(salon);
-            entity.Id = 0;
+            entity.OwnerId = ownerId;
             entity.Artists = new List<Artist>();
             entity.Appointments = new List<Appointment>();
 
-            var created = await _salonRepository.CreateForOwner(ownerId, entity);
-            return _mapper.Map<SalonWithIdDTO>(created);
+            await _salonRepository.AddAsync(entity);
+            return _mapper.Map<SalonWithIdDTO>(entity);
         }
 
-        public async Task DeleteForOwner(int ownerId, int salonId)
+        public Task<bool> ExistsAsync(int salonId) =>
+            salonId <= 0 ? Task.FromResult(false) : _salonRepository.ExistsByIdAsync(salonId);
+
+        public async Task<List<SalonWithIdDTO>> ListForOwnerAsync(int ownerId)
+        {
+            if (ownerId <= 0)
+                throw new ArgumentException("Owner id must be positive.", nameof(ownerId));
+
+            var salons = await _salonRepository.ListByOwnerIdAsync(ownerId);
+            return _mapper.Map<List<SalonWithIdDTO>>(salons);
+        }
+
+        public async Task DeleteForOwnerAsync(int ownerId, int salonId, CancellationToken cancellationToken = default)
         {
             if (ownerId <= 0)
                 throw new ArgumentException("Owner id must be positive.", nameof(ownerId));
             if (salonId <= 0)
                 throw new ArgumentException("Salon id must be positive.", nameof(salonId));
 
-            var deleted = await _salonRepository.DeleteForOwner(ownerId, salonId);
+            var existing = await _salonRepository.GetByOwnerAndIdAsync(ownerId, salonId);
+            if (existing == null)
+                throw new InvalidOperationException("Salon was not found for this owner.");
+
+            var logoUrl = existing.LogoUrl;
+
+            var deleted = await _salonRepository.DeleteCascadeByOwnerAsync(ownerId, salonId, cancellationToken);
             if (!deleted)
-                throw new InvalidOperationException("Salon was not found.");
-        }
+                throw new InvalidOperationException("Salon could not be deleted (it may have already been removed).");
 
-        public async Task<List<SalonWithIdDTO>> GetAllForOwner(int ownerId)
-        {
-            if (ownerId <= 0)
-                throw new ArgumentException("Owner id must be positive.", nameof(ownerId));
-
-            var salons = await _salonRepository.GetAllByOwnerId(ownerId);
-            return _mapper.Map<List<SalonWithIdDTO>>(salons);
-        }
-
-        public async Task<SalonWithIdDTO?> GetByIdForOwner(int ownerId, int salonId)
-        {
-            if (ownerId <= 0)
-                throw new ArgumentException("Owner id must be positive.", nameof(ownerId));
-            if (salonId <= 0)
-                return null;
-
-            var salon = await _salonRepository.GetByOwnerAndId(ownerId, salonId);
-            return salon == null ? null : _mapper.Map<SalonWithIdDTO>(salon);
-        }
-
-        public async Task UpdateForOwner(int ownerId, SalonWithIdDTO salon)
-        {
-            if (ownerId <= 0)
-                throw new ArgumentException("Owner id must be positive.", nameof(ownerId));
-            if (salon.Id <= 0)
-                throw new ArgumentException("Salon id must be set.", nameof(salon));
-
-            var entity = _mapper.Map<Salon>(salon);
-            await _salonRepository.UpdateForOwner(ownerId, entity);
+            await _salonLogoCleanup.TryDeleteByRelativeUrlAsync(logoUrl, cancellationToken);
         }
     }
 }

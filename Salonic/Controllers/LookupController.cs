@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.AppointmentDTOs;
 using Salonic.BLL.Services.Interfaces;
@@ -16,14 +17,20 @@ namespace Salonic.presentation.Controllers
             _serviceService = serviceService;
         }
 
-        /// <summary>Resolve artist, guest, and service display names for a booking context. No auth.</summary>
         [AllowAnonymous]
         [HttpPost("names")]
-        public async Task<ActionResult<BookingNamesResponseDTO>> GetBookingNames([FromBody] BookingNamesRequestDTO request)
+        [ProducesResponseType(typeof(BookingNamesResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<BookingNamesResponseDTO>> GetBookingNames(
+            [FromBody] BookingNamesRequestDTO? request)
         {
+            if (request == null)
+                return BadRequest("Request body is required.");
+
             try
             {
-                return await _serviceService.GetBookingDisplayNamesAsync(request);
+                var result = await _serviceService.GetBookingDisplayNamesAsync(request);
+                return Ok(result);
             }
             catch (ArgumentNullException ex)
             {
@@ -35,7 +42,7 @@ namespace Salonic.presentation.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

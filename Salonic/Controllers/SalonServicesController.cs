@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.ServiceDTOs;
 using Salonic.BLL.Services.Interfaces;
 
 namespace Salonic.presentation.Controllers
 {
-    /// <summary>Salon services: public list; artists manage their own services under a salon.</summary>
     [Route("api/salon/{salonId:int}/services")]
     [ApiController]
     public class SalonServicesController : ControllerBase
@@ -17,14 +17,16 @@ namespace Salonic.presentation.Controllers
             _serviceService = serviceService;
         }
 
-        /// <summary>All services in a salon. No auth.</summary>
         [AllowAnonymous]
         [HttpGet]
+        [ProducesResponseType(typeof(List<ServiceWithIdDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<ServiceWithIdDTO>>> List(int salonId)
         {
             try
             {
-                return await _serviceService.ListForSalonAsync(salonId);
+                var list = await _serviceService.ListForSalonAsync(salonId);
+                return Ok(list);
             }
             catch (ArgumentException ex)
             {
@@ -34,79 +36,20 @@ namespace Salonic.presentation.Controllers
 
         [Authorize(Roles = "artist")]
         [HttpGet("{serviceId:int}")]
+        [ProducesResponseType(typeof(ServiceWithIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ServiceWithIdDTO>> GetById(int salonId, int serviceId)
         {
             if (!TryGetArtistIdFromSub(out var artistId))
                 return Unauthorized();
 
             var dto = await _serviceService.GetByIdForArtistAsync(artistId, salonId, serviceId);
-            return dto == null ? NotFound() : Ok(dto);
-        }
+            if (dto == null)
+                return Forbid();
 
-        [Authorize(Roles = "artist")]
-        [HttpPost]
-        public async Task<ActionResult<ServiceWithIdDTO>> Create(int salonId, ServiceWithoutIdDTO dto)
-        {
-            if (!TryGetArtistIdFromSub(out var artistId))
-                return Unauthorized();
-
-            try
-            {
-                var created = await _serviceService.CreateForArtistAsync(artistId, salonId, dto);
-                return Ok(created);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [Authorize(Roles = "artist")]
-        [HttpPut]
-        public async Task<ActionResult> Update(int salonId, ServiceWithIdDTO dto)
-        {
-            if (!TryGetArtistIdFromSub(out var artistId))
-                return Unauthorized();
-
-            try
-            {
-                await _serviceService.UpdateForArtistAsync(artistId, salonId, dto);
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [Authorize(Roles = "artist")]
-        [HttpDelete("{serviceId:int}")]
-        public async Task<ActionResult> Delete(int salonId, int serviceId)
-        {
-            if (!TryGetArtistIdFromSub(out var artistId))
-                return Unauthorized();
-
-            try
-            {
-                await _serviceService.DeleteForArtistAsync(artistId, salonId, serviceId);
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(dto);
         }
 
         private bool TryGetArtistIdFromSub(out int artistId)

@@ -12,8 +12,8 @@ using Salonic.DAL.Data;
 namespace Salonic.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260328181537_ServiceSalonCatalog")]
-    partial class ServiceSalonCatalog
+    [Migration("20260331161727_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,35 +53,6 @@ namespace Salonic.DAL.Migrations
                     b.HasIndex("ServicesId");
 
                     b.ToTable("ArtistService");
-                });
-
-            modelBuilder.Entity("Salonic.DAL.Models.Admin", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Pwd")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("Salonic.DAL.Models.Appointment", b =>
@@ -226,6 +197,14 @@ namespace Salonic.DAL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("LogoUrl")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -256,7 +235,7 @@ namespace Salonic.DAL.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CreatedByArtistId")
+                    b.Property<int>("CreatedByArtistId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -394,7 +373,8 @@ namespace Salonic.DAL.Migrations
                     b.HasOne("Salonic.DAL.Models.Artist", "CreatedByArtist")
                         .WithMany()
                         .HasForeignKey("CreatedByArtistId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Salonic.DAL.Models.Salon", "Salon")
                         .WithMany()

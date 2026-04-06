@@ -14,49 +14,85 @@ namespace Salonic.DAL.Repositories
             _context = context;
         }
 
-        public async Task<List<Salon>> GetAllByOwnerId(int ownerId)
-        {
-            return await _context.Salons
+        public Task<List<Salon>> ListByOwnerIdAsync(int ownerId) =>
+            _context.Salons
                 .Where(s => s.OwnerId == ownerId)
                 .OrderBy(s => s.Name)
                 .ToListAsync();
-        }
 
-        public async Task<Salon?> GetByOwnerAndId(int ownerId, int salonId)
-        {
-            return await _context.Salons
+        public Task<bool> ExistsByIdAsync(int salonId) =>
+            _context.Salons.AnyAsync(s => s.Id == salonId);
+
+        public Task<Salon?> GetByOwnerAndIdAsync(int ownerId, int salonId) =>
+            _context.Salons
                 .FirstOrDefaultAsync(s => s.Id == salonId && s.OwnerId == ownerId);
-        }
 
-        public async Task<Salon> CreateForOwner(int ownerId, Salon salon)
+        public async Task AddAsync(Salon salon)
         {
-            salon.OwnerId = ownerId;
+            salon.Id = 0;
             _context.Salons.Add(salon);
             await _context.SaveChangesAsync();
-            return salon;
         }
 
-        public async Task UpdateForOwner(int ownerId, Salon incoming)
+        public async Task<bool> DeleteCascadeByOwnerAsync(int ownerId, int salonId, CancellationToken cancellationToken = default)
         {
-            var existing = await GetByOwnerAndId(ownerId, incoming.Id)
-                ?? throw new InvalidOperationException("Salon was not found.");
+            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-            existing.Name = incoming.Name;
-            existing.Email = incoming.Email;
-            existing.Description = incoming.Description;
-            existing.Theme = incoming.Theme;
-            existing.LogoUrl = incoming.LogoUrl;
-            await _context.SaveChangesAsync();
-        }
+            var salon = await _context.Salons
+                .FirstOrDefaultAsync(s => s.Id == salonId && s.OwnerId == ownerId, cancellationToken);
 
-        public async Task<bool> DeleteForOwner(int ownerId, int salonId)
-        {
-            var existing = await GetByOwnerAndId(ownerId, salonId);
-            if (existing == null)
+            if (salon == null)
+            {
+                await transaction.RollbackAsync(cancellationToken);
                 return false;
+            }
 
-            _context.Salons.Remove(existing);
-            await _context.SaveChangesAsync();
+            var artistIds = await _context.Artists
+                .Where(a => a.SalonId == salonId)
+                .Select(a => a.Id)
+                .ToListAsync(cancellationToken);
+
+            var appointments = await _context.Appointments
+                .Where(a => a.SalonId == salonId || artistIds.Contains(a.ArtistId))
+                .Include(a => a.Services)
+                .ToListAsync(cancellationToken);
+
+            foreach (var a in appointments)
+                a.Services.Clear();
+
+            _context.Appointments.RemoveRange(appointments);
+
+            if (artistIds.Count > 0)
+            {
+                var workingHours = await _context.WorkingHours
+                    .Where(w => artistIds.Contains(w.ArtistId))
+                    .ToListAsync(cancellationToken);
+                _context.WorkingHours.RemoveRange(workingHours);
+            }
+
+            var services = await _context.Services
+                .Where(s => s.SalonId == salonId)
+                .Include(s => s.Artists)
+                .Include(s => s.Appointments)
+                .ToListAsync(cancellationToken);
+
+            foreach (var s in services)
+            {
+                s.Artists.Clear();
+                s.Appointments.Clear();
+            }
+
+            _context.Services.RemoveRange(services);
+
+            var artists = await _context.Artists
+                .Where(a => a.SalonId == salonId)
+                .ToListAsync(cancellationToken);
+            _context.Artists.RemoveRange(artists);
+
+            _context.Salons.Remove(salon);
+
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
             return true;
         }
     }

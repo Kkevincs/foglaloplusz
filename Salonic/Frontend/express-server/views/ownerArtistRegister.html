@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salonic — Register artist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
+        <ul class="nav-links">
+            <li><a href="/ownerhomepage">My salons</a></li>
+            <li><a href="/maker">New salon setup</a></li>
+            <li><a href="/owneruserpage">Account</a></li>
+            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
+        </ul>
+    </nav>
+    <main class="auth-page">
+        <h1>Register artist</h1>
+        <p class="subtitle">Template form for adding a new artist to this salon.</p>
+        <p class="auth-switch"><a href="/ownerhomepage">Back to salons</a></p>
+        <form id="owner-artist-register-form" class="auth-form">
+            <input id="ArtistRegName" type="text" name="name" placeholder="Artist name" required>
+            <input id="ArtistRegEmail" type="email" name="email" placeholder="Artist email" required>
+            <input id="ArtistRegPassword" type="password" name="password" placeholder="password" required>
+            <input id="ArtistRegDescription" type="text" name="description" placeholder="Description (optional)">
+            <button type="submit">Create artist</button>
+        </form>
+    </main>
+    <script src="/script.js"></script>
+    <script src="/api.js"></script>
+</body>
+</html>

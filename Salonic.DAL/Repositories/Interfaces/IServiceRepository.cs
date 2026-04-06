@@ -4,18 +4,12 @@ namespace Salonic.DAL.Repositories.Interfaces
 {
     public interface IServiceRepository
     {
-        Task<Service[]> GetByIds(int[] ids);
-
-        Task<List<(int Id, string Name)>> GetIdAndNameBySalonAndArtistIds(int salonId, int artistId, int[] serviceIds);
-
-        Task<List<Service>> GetAllBySalonId(int salonId);
-
-        Task<bool> ArtistBelongsToSalon(int artistId, int salonId);
-        Task<Service?> GetForArtist(int artistId, int salonId, int serviceId);
-        Task<Service> CreateForArtist(int artistId, Service service);
-        Task UpdateForArtist(int artistId, Service incoming);
-        Task<bool> DeleteForArtistInSalon(int artistId, int salonId, int serviceId);
-
-        Task<bool> ArtistCanUseAllServices(int artistId, int[] serviceIds);
+        Task<Service?> GetByIdAsync(int id);
+        Task<Service[]> GetByIdsAsync(int[] ids);
+        Task<List<Service>> ListBySalonIdAsync(int salonId);
+        Task<List<Service>> ListByArtistIdAsync(int artistId);
+        Task AddAsync(Service service);
+        Task UpdateAsync(Service incoming);
+        Task<bool> DeleteAsync(int id);
     }
 }

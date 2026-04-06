@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.AppointmentDTOs;
 using Salonic.BLL.Services.Interfaces;
@@ -16,11 +17,25 @@ namespace Salonic.presentation.Controllers
             _availabilityService = availabilityService;
         }
 
+        [AllowAnonymous]
         [HttpPost("month")]
-        public async Task<IActionResult> GetMonthAvailability([FromBody] MonthAvailabilityRequestDto request)
+        [ProducesResponseType(typeof(List<DayAvailabilityDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<DayAvailabilityDto>>> GetMonthAvailability(
+            [FromBody] MonthAvailabilityRequestDto? request)
         {
-            var result = await _availabilityService.GetMonthAvailability(request);
-            return Ok(result);
+            if (request == null)
+                return BadRequest("Request body is required.");
+
+            try
+            {
+                var result = await _availabilityService.GetMonthAvailability(request);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

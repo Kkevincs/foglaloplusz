@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Salonic.BLL.DTOs.AdminDTOs;
 using Salonic.BLL.DTOs.ArtistDTOs;
 using Salonic.BLL.DTOs.GuestDTOs;
 using Salonic.BLL.DTOs.OwnerDTOs;
-using Salonic.BLL.DTOs.UserDTOs;
 using Salonic.BLL.Services.Interfaces;
 
 namespace Salonic.presentation.Controllers
@@ -17,38 +14,63 @@ namespace Salonic.presentation.Controllers
         private readonly IOwnerService _ownerService;
         private readonly IArtistService _artistService;
         private readonly IGuestService _guestService;
-        private readonly IAdminService _adminService;
+        private readonly IAuthenticationService _authenticationService;
 
-        public RegisterController(IOwnerService ownerService, IArtistService artistService, IGuestService guestService, IAdminService adminService)
+        public RegisterController(
+            IOwnerService ownerService,
+            IArtistService artistService,
+            IGuestService guestService,
+            IAuthenticationService authenticationService)
         {
             _ownerService = ownerService;
             _artistService = artistService;
             _guestService = guestService;
-            _adminService = adminService;
+            _authenticationService = authenticationService;
         }
 
         [HttpPost("guest")]
-        public async Task<GuestWithoutIdDTO> RegisterGuest(GuestWithoutIdDTO user) {
-            return await _guestService.Create(user);
-            
+        [ProducesResponseType(typeof(GuestWithoutIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<GuestWithoutIdDTO>> RegisterGuest([FromBody] GuestWithoutIdDTO? user)
+        {
+            if (user == null)
+                return BadRequest("Request body is required.");
+
+            if (await _authenticationService.EmailExistsAsync(user.Email))
+                return BadRequest("A user with this email is already registered.");
+
+            var created = await _guestService.CreateAsync(user);
+            return Ok(created);
         }
+
         [HttpPost("artist")]
-        public async Task<ArtistWithoutIdDTO> RegisterArtist(ArtistWithoutIdDTO user)
+        [ProducesResponseType(typeof(ArtistWithoutIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ArtistWithoutIdDTO>> RegisterArtist([FromBody] ArtistWithoutIdDTO? user)
         {
-            return await _artistService.Create(user);
+            if (user == null)
+                return BadRequest("Request body is required.");
 
+            if (await _authenticationService.EmailExistsAsync(user.Email))
+                return BadRequest("A user with this email is already registered.");
+
+            var created = await _artistService.CreateAsync(user);
+            return Ok(created);
         }
+
         [HttpPost("owner")]
-        public async Task<OwnerWithoutIdDTO> RegisterOwner(OwnerWithoutIdDTO user)
+        [ProducesResponseType(typeof(OwnerWithoutIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<OwnerWithoutIdDTO>> RegisterOwner([FromBody] OwnerWithoutIdDTO? user)
         {
-            return await _ownerService.Create(user);
+            if (user == null)
+                return BadRequest("Request body is required.");
 
-        }
-        [HttpPost("admin")]
-        public async Task<AdminWithoutIdDTO> RegisterAdmin(AdminWithoutIdDTO user)
-        {
-            return await _adminService.Create(user);
+            if (await _authenticationService.EmailExistsAsync(user.Email))
+                return BadRequest("A user with this email is already registered.");
 
+            var created = await _ownerService.CreateAsync(user);
+            return Ok(created);
         }
     }
 }

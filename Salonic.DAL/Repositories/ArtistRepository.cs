@@ -2,59 +2,34 @@ using Microsoft.EntityFrameworkCore;
 using Salonic.DAL.Data;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Salonic.DAL.Repositories
 {
     public class ArtistRepository : IArtistRepository
     {
-
         private readonly AppDbContext _context;
 
         public ArtistRepository(AppDbContext context)
         {
             _context = context;
         }
-        public async Task<Artist> Create(Artist artist)
-        {
-            _context.Artists.Add(artist);
-            _context.SaveChanges();
-            return artist;
-        }
 
-        public async Task DeleteById(int id)
-        {
-           var artist = _context.Artists.Where(x => x.Id == id);
-            _context.Remove(artist);
-            _context.SaveChanges();
-        }
+        public Task<List<Artist>> ListAllAsync() =>
+            _context.Artists.OrderBy(a => a.Name).ToListAsync();
 
-        public async Task<List<Artist>> GetAll()
-        {
-            return _context.Artists.Select(x => x).ToList();
-        }
-
-        public async Task<List<Artist>> GetBySalonId(int salonId)
-        {
-            return await _context.Artists
-                .AsNoTracking()
+        public Task<List<Artist>> ListBySalonIdAsync(int salonId) =>
+            _context.Artists
                 .Where(a => a.SalonId == salonId)
                 .OrderBy(a => a.Name)
                 .ToListAsync();
-        }
 
-        public async Task<Artist> GetById(int id)
-        {
-            return _context.Artists.Where(x => x.Id == id).Select(x => x).FirstOrDefault();
-        }
+        public Task<Artist?> GetByIdAsync(int id) =>
+            _context.Artists.FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task Update(Artist artist)
+        public async Task AddAsync(Artist artist)
         {
-           _context.Artists.Update(artist);
+            artist.Id = 0;
+            _context.Artists.Add(artist);
             await _context.SaveChangesAsync();
         }
     }

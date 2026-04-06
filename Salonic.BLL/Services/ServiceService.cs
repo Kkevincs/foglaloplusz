@@ -26,13 +26,23 @@ namespace Salonic.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<List<ServiceWithIdDTO>> ListForSalonAsync(int salonId)
+        public async Task<ServiceWithIdDTO> CreateForCurrentArtistAsync(int artistId, ServiceWithoutIdDTO dto)
         {
-            if (salonId <= 0)
-                throw new ArgumentException("Salon id must be positive.", nameof(salonId));
+            if (artistId <= 0)
+                throw new ArgumentException("Artist id must be positive.", nameof(artistId));
 
-            var list = await _serviceRepository.GetAllBySalonId(salonId);
-            return _mapper.Map<List<ServiceWithIdDTO>>(list);
+            var artist = await _artistRepository.GetByIdAsync(artistId)
+                ?? throw new InvalidOperationException("Artist was not found.");
+
+            if (artist.SalonId <= 0)
+                throw new InvalidOperationException("Artist is not assigned to a salon.");
+
+            var entity = _mapper.Map<Service>(dto);
+            entity.SalonId = artist.SalonId;
+            entity.CreatedByArtistId = artistId;
+
+            await _serviceRepository.AddAsync(entity);
+            return _mapper.Map<ServiceWithIdDTO>(entity);
         }
 
         public async Task<BookingNamesResponseDTO> GetBookingDisplayNamesAsync(BookingNamesRequestDTO request)
@@ -44,16 +54,14 @@ namespace Salonic.BLL.Services
             if (request.GuestId <= 0)
                 throw new ArgumentException("Guest id must be positive.", nameof(request));
 
-            var artist = await _artistRepository.GetById(request.ArtistId);
-            if (artist == null)
-                throw new InvalidOperationException("Artist was not found.");
+            var artist = await _artistRepository.GetByIdAsync(request.ArtistId)
+                ?? throw new InvalidOperationException("Artist was not found.");
 
             if (artist.SalonId <= 0)
                 throw new InvalidOperationException("Artist is not assigned to a salon.");
 
-            var guest = await _guestRepository.GetById(request.GuestId);
-            if (guest == null)
-                throw new InvalidOperationException("Guest was not found.");
+            var guest = await _guestRepository.GetByIdAsync(request.GuestId)
+                ?? throw new InvalidOperationException("Guest was not found.");
 
             var orderedIds = new List<int>();
             var seen = new HashSet<int>();
@@ -70,14 +78,16 @@ namespace Salonic.BLL.Services
             }
             else
             {
-                var rows = await _serviceRepository.GetIdAndNameBySalonAndArtistIds(
-                    artist.SalonId,
-                    request.ArtistId,
-                    orderedIds.ToArray());
-                var byId = rows.ToDictionary(r => r.Id, r => r.Name);
+                var loaded = await _serviceRepository.GetByIdsAsync(orderedIds.ToArray());
+                var filtered = loaded
+                    .Where(s =>
+                        s.SalonId == artist.SalonId &&
+                        s.CreatedByArtistId == request.ArtistId)
+                    .ToDictionary(s => s.Id, s => s.Name ?? string.Empty);
+
                 serviceDtos = orderedIds
-                    .Where(id => byId.ContainsKey(id))
-                    .Select(id => new ServiceIdNameDTO { Id = id, Name = byId[id] })
+                    .Where(id => filtered.ContainsKey(id))
+                    .Select(id => new ServiceIdNameDTO { Id = id, Name = filtered[id] })
                     .ToList();
             }
 
@@ -94,74 +104,31 @@ namespace Salonic.BLL.Services
             if (artistId <= 0 || salonId <= 0 || serviceId <= 0)
                 return null;
 
-            if (!await _serviceRepository.ArtistBelongsToSalon(artistId, salonId))
+            var service = await _serviceRepository.GetByIdAsync(serviceId);
+            if (service == null ||
+                service.SalonId != salonId ||
+                service.CreatedByArtistId != artistId)
                 return null;
 
-            var service = await _serviceRepository.GetForArtist(artistId, salonId, serviceId);
-            return service == null ? null : _mapper.Map<ServiceWithIdDTO>(service);
+            return _mapper.Map<ServiceWithIdDTO>(service);
         }
 
-        public async Task<ServiceWithIdDTO> CreateForArtistAsync(int artistId, int salonId, ServiceWithoutIdDTO dto)
-        {
-            if (!await _serviceRepository.ArtistBelongsToSalon(artistId, salonId))
-                throw new InvalidOperationException("Salon was not found.");
-
-            var entity = _mapper.Map<Service>(dto);
-            entity.SalonId = salonId;
-            var created = await _serviceRepository.CreateForArtist(artistId, entity);
-            return _mapper.Map<ServiceWithIdDTO>(created);
-        }
-
-        public async Task UpdateForArtistAsync(int artistId, int salonId, ServiceWithIdDTO dto)
-        {
-            if (!await _serviceRepository.ArtistBelongsToSalon(artistId, salonId))
-                throw new InvalidOperationException("Salon was not found.");
-
-            var entity = _mapper.Map<Service>(dto);
-            await _serviceRepository.UpdateForArtist(artistId, entity);
-        }
-
-        public async Task DeleteForArtistAsync(int artistId, int salonId, int serviceId)
-        {
-            if (!await _serviceRepository.ArtistBelongsToSalon(artistId, salonId))
-                throw new InvalidOperationException("Salon was not found.");
-
-            var deleted = await _serviceRepository.DeleteForArtistInSalon(artistId, salonId, serviceId);
-            if (!deleted)
-                throw new InvalidOperationException("Service was not found.");
-        }
-
-        private async Task<int> ResolveSalonIdForArtistOrThrowAsync(int artistId)
+        public async Task<List<ServiceWithIdDTO>> ListForCurrentArtistAsync(int artistId)
         {
             if (artistId <= 0)
                 throw new ArgumentException("Artist id must be positive.", nameof(artistId));
 
-            var artist = await _artistRepository.GetById(artistId);
-            if (artist == null)
-                throw new InvalidOperationException("Artist was not found.");
-
-            if (artist.SalonId <= 0)
-                throw new InvalidOperationException("Artist is not assigned to a salon.");
-
-            return artist.SalonId;
+            var list = await _serviceRepository.ListByArtistIdAsync(artistId);
+            return _mapper.Map<List<ServiceWithIdDTO>>(list);
         }
 
-        public async Task<ServiceWithIdDTO> CreateForCurrentArtistAsync(int artistId, ServiceWithoutIdDTO dto)
+        public async Task<List<ServiceWithIdDTO>> ListForSalonAsync(int salonId)
         {
-            var salonId = await ResolveSalonIdForArtistOrThrowAsync(artistId);
-            return await CreateForArtistAsync(artistId, salonId, dto);
-        }
+            if (salonId <= 0)
+                throw new ArgumentException("Salon id must be positive.", nameof(salonId));
 
-        public async Task UpdateForCurrentArtistAsync(int artistId, ServiceWithIdDTO dto)
-        {
-            var salonId = await ResolveSalonIdForArtistOrThrowAsync(artistId);
-            await UpdateForArtistAsync(artistId, salonId, dto);
-        }
-
-        public async Task DeleteForCurrentArtistAsync(int artistId, int serviceId)
-        {
-            var salonId = await ResolveSalonIdForArtistOrThrowAsync(artistId);
-            await DeleteForArtistAsync(artistId, salonId, serviceId);
+            var list = await _serviceRepository.ListBySalonIdAsync(salonId);
+            return _mapper.Map<List<ServiceWithIdDTO>>(list);
         }
     }
 }

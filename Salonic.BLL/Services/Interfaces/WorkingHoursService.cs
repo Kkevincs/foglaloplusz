@@ -92,5 +92,53 @@ namespace Salonic.BLL.Services.Interfaces
             var rangeEnd = dto.StartDate.AddDays(dto.Days.Count - 1);
             await _workingHoursRepository.ReplaceForArtistDateRangeAsync(artistId, dto.StartDate, rangeEnd, rows);
         }
+
+        public async Task<List<WorkingHoursDTO>> GetInRange(int artistId, WorkingHoursRangeRequestDTO dto)
+        {
+            if (artistId <= 0)
+                throw new ArgumentException("Artist id must be positive.", nameof(artistId));
+            if (dto.StartDate == default)
+                throw new ArgumentException("StartDate is required.", nameof(dto.StartDate));
+            if (dto.EndDate == default)
+                throw new ArgumentException("EndDate is required.", nameof(dto.EndDate));
+            if (dto.StartDate.Date > dto.EndDate.Date)
+                throw new ArgumentException("StartDate must be earlier than or equal to EndDate.");
+
+            var rows = await _workingHoursRepository.GetByArtistAndDateRange(
+                artistId,
+                dto.StartDate.Date,
+                dto.EndDate.Date);
+
+            var existingByDate = rows
+                .GroupBy(w => w.Date.Date)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.First());
+
+            var result = new List<WorkingHoursDTO>();
+            for (var day = dto.StartDate.Date; day <= dto.EndDate.Date; day = day.AddDays(1))
+            {
+                if (existingByDate.TryGetValue(day, out var row))
+                {
+                    result.Add(new WorkingHoursDTO
+                    {
+                        Date = day,
+                        StartTime = row.StartTime.ToString(@"hh\:mm"),
+                        EndTime = row.EndTime.ToString(@"hh\:mm")
+                    });
+                }
+                else
+                {
+                    result.Add(new WorkingHoursDTO
+                    {
+                        Date = day,
+                        StartTime = "0",
+                        EndTime = "0"
+                    });
+                }
+            }
+
+            return result;
+        }
     }
 }

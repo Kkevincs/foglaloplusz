@@ -3,11 +3,6 @@ using Salonic.BLL.DTOs.ArtistDTOs;
 using Salonic.BLL.Services.Interfaces;
 using Salonic.DAL.Models;
 using Salonic.DAL.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Salonic.BLL.Services
 {
@@ -17,50 +12,43 @@ namespace Salonic.BLL.Services
         private readonly IArtistRepository _artistRepository;
         private readonly ISalonRepository _salonRepository;
 
-        public ArtistService(IArtistRepository repo, ISalonRepository salonRepository, IMapper mapper) {
+        public ArtistService(IArtistRepository repo, ISalonRepository salonRepository, IMapper mapper)
+        {
             _mapper = mapper;
             _artistRepository = repo;
             _salonRepository = salonRepository;
         }
 
-        public async Task<ArtistWithoutIdDTO> Create(ArtistWithoutIdDTO artist) {
-            var newArtist = _mapper.Map<Artist>(artist);
-            await _artistRepository.Create(newArtist);
+        public async Task<ArtistWithoutIdDTO> CreateAsync(ArtistWithoutIdDTO artist)
+        {
+            var entity = _mapper.Map<Artist>(artist);
+            await _artistRepository.AddAsync(entity);
             return artist;
         }
 
-        public async Task DeleteById(int id) { 
-           await _artistRepository.DeleteById(id);
+        public async Task<List<ArtistWithIdDTO>> ListAllAsync()
+        {
+            var artists = await _artistRepository.ListAllAsync();
+            return _mapper.Map<List<ArtistWithIdDTO>>(artists);
         }
 
-        public async Task<List<ArtistWithIdDTO>> GetAll() { 
-            var artists = await _artistRepository.GetAll();
-            var ArtistsDTO = _mapper.Map<List<ArtistWithIdDTO>>(artists);
-            return ArtistsDTO;
-        }
-
-        public async Task<List<ArtistWithIdDTO>?> GetBySalonIdForOwner(int ownerId, int salonId)
+        public async Task<List<ArtistWithIdDTO>?> ListBySalonForOwnerAsync(int ownerId, int salonId)
         {
             if (ownerId <= 0 || salonId <= 0)
                 return null;
 
-            var salon = await _salonRepository.GetByOwnerAndId(ownerId, salonId);
+            var salon = await _salonRepository.GetByOwnerAndIdAsync(ownerId, salonId);
             if (salon == null)
                 return null;
 
-            var artists = await _artistRepository.GetBySalonId(salonId);
+            var artists = await _artistRepository.ListBySalonIdAsync(salonId);
             return _mapper.Map<List<ArtistWithIdDTO>>(artists);
         }
 
-        public async Task<ArtistWithIdDTO> GetById(int id) { 
-            var artist = await _artistRepository.GetById(id);
-            var artistDTO = _mapper.Map<ArtistWithIdDTO>(artist);
-            return artistDTO;
-        }
-
-        public async Task Update(ArtistWithIdDTO artist) {
-            var artistDTO = _mapper.Map<Artist>(artist);
-            var newArtist = _artistRepository.Update(artistDTO);
+        public async Task<ArtistWithIdDTO?> GetByIdAsync(int id)
+        {
+            var artist = await _artistRepository.GetByIdAsync(id);
+            return artist == null ? null : _mapper.Map<ArtistWithIdDTO>(artist);
         }
     }
 }

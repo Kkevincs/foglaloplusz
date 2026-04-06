@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salonic — Artist schedule</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav>
+        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
+        <ul class="nav-links">
+            <li><a href="/ownerhomepage">My salons</a></li>
+            <li><a href="/maker">New salon setup</a></li>
+            <li><a href="/owneruserpage">Account</a></li>
+            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
+        </ul>
+    </nav>
+    <main class="salon-schedule-page">
+        <div class="salon-schedule-toolbar">
+            <a id="schedule-back" href="/salondashboard" class="owner-btn owner-btn-ghost schedule-back-link">← Back to dashboard</a>
+        </div>
+
+        <header class="salon-schedule-header">
+            <p class="salon-schedule-label">Weekly availability</p>
+            <h1>Artist schedule</h1>
+            <p class="subtitle">Open hours, bookings, and closed time for the selected week.</p>
+            <div class="salon-schedule-meta">
+                <span class="salon-schedule-meta-item" id="schedule-artist-label">Artist</span>
+                <span class="salon-schedule-meta-sep" aria-hidden="true">·</span>
+                <span class="salon-schedule-meta-item" id="schedule-week-label">Week</span>
+            </div>
+        </header>
+
+        <section class="salon-schedule-controls" aria-label="Week navigation">
+            <button type="button" id="schedule-nav-prev" class="owner-btn schedule-nav-btn" disabled>Previous week</button>
+            <button type="button" id="schedule-nav-next" class="owner-btn schedule-nav-btn" disabled>Next week</button>
+        </section>
+
+        <section class="salon-schedule-board" aria-labelledby="schedule-board-title">
+            <h2 id="schedule-board-title" class="visually-hidden">Weekly grid</h2>
+            <div id="schedule-grid-mount"></div>
+        </section>
+
+        <section class="salon-schedule-legend" aria-label="Legend">
+            <span class="schedule-legend-item"><span class="schedule-legend-swatch schedule-pill-open"></span> Available</span>
+            <span class="schedule-legend-item"><span class="schedule-legend-swatch schedule-pill-booked"></span> Booked</span>
+            <span class="schedule-legend-item"><span class="schedule-legend-swatch schedule-legend-muted"></span> Closed</span>
+        </section>
+    </main>
+    <script src="/api.js"></script>
+    <script src="/script.js"></script>
+</body>
+</html>

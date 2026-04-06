@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.GuestDTOs;
-using Salonic.BLL.DTOs.ServiceDTOs;
 using Salonic.BLL.Services.Interfaces;
 
 namespace Salonic.presentation.Controllers
@@ -17,37 +16,34 @@ namespace Salonic.presentation.Controllers
         {
             _guestService = guest;
         }
-        [Authorize(Roles ="admin,owner,guest")]
+
+        [Authorize(Roles = "owner,guest")]
         [HttpGet("me")]
+        [ProducesResponseType(typeof(GuestWithIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<GuestWithIdDTO>> GetById()
         {
-            var subClaim = User.FindFirst("sub")?.Value;
-            if (subClaim == null) return Unauthorized();
+            if (!TryGetIntClaim("sub", out var id))
+                return Unauthorized();
 
-            int Id = Convert.ToInt32(subClaim);
-            return await _guestService.GetById(Id);
+            var guest = await _guestService.GetByIdAsync(id);
+            if (guest == null)
+            {
+                if (User.IsInRole("guest"))
+                    return BadRequest("Guest profile was not found.");
+                return Forbid();
+            }
+
+            return Ok(guest);
         }
-        [Authorize(Roles ="admin,owner")]
-        [HttpGet]
 
-        public async Task<ActionResult<List<GuestWithIdDTO>>> GetAll()
+        private bool TryGetIntClaim(string type, out int value)
         {
-            return await _guestService.GetAll();
-        }
-
-        [Authorize(Roles ="admin,owner,guest")]
-        [HttpPut]
-
-        public async Task Update(GuestWithIdDTO guest)
-        {
-            await _guestService.Update(guest);
-        }
-        [Authorize(Roles = "admin,owner")]
-        [HttpDelete]
-
-        public async Task DeleteById(int id)
-        {
-            await _guestService.DeleteById(id);
+            value = 0;
+            var raw = User.FindFirst(type)?.Value;
+            return raw != null && int.TryParse(raw, out value);
         }
     }
 }

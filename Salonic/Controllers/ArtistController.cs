@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salonic.BLL.DTOs.ArtistDTOs;
 using Salonic.BLL.DTOs.ServiceDTOs;
@@ -21,18 +22,55 @@ namespace Salonic.presentation.Controllers
 
         [HttpGet("me")]
         [Authorize(Roles = "artist")]
+        [ProducesResponseType(typeof(ArtistWithIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ArtistWithIdDTO>> GetMe()
         {
             if (!TryGetArtistIdFromSub(out var artistId))
                 return Unauthorized();
 
-            return await _artistService.GetById(artistId);
+            var dto = await _artistService.GetByIdAsync(artistId);
+            if (dto == null)
+                return Forbid();
+
+            return Ok(dto);
+        }
+
+        [Authorize(Roles = "artist")]
+        [HttpGet("services")]
+        [ProducesResponseType(typeof(List<ServiceWithIdDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<List<ServiceWithIdDTO>>> GetMyServices()
+        {
+            if (!TryGetArtistIdFromSub(out var artistId))
+                return Unauthorized();
+
+            try
+            {
+                var list = await _serviceService.ListForCurrentArtistAsync(artistId);
+                return Ok(list);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize(Roles = "artist")]
         [HttpPost("services")]
-        public async Task<ActionResult<ServiceWithIdDTO>> CreateMyService(ServiceWithoutIdDTO dto)
+        [ProducesResponseType(typeof(ServiceWithIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<ServiceWithIdDTO>> CreateMyService([FromBody] ServiceWithoutIdDTO? dto)
         {
+            if (dto == null)
+                return BadRequest("Request body is required.");
+
             if (!TryGetArtistIdFromSub(out var artistId))
                 return Unauthorized();
 
@@ -51,69 +89,16 @@ namespace Salonic.presentation.Controllers
             }
         }
 
-        [Authorize(Roles = "artist")]
-        [HttpPut("services")]
-        public async Task<ActionResult> UpdateMyService(ServiceWithIdDTO dto)
-        {
-            if (!TryGetArtistIdFromSub(out var artistId))
-                return Unauthorized();
-
-            try
-            {
-                await _serviceService.UpdateForCurrentArtistAsync(artistId, dto);
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [Authorize(Roles = "artist")]
-        [HttpDelete("services/{serviceId:int}")]
-        public async Task<ActionResult> DeleteMyService(int serviceId)
-        {
-            if (!TryGetArtistIdFromSub(out var artistId))
-                return Unauthorized();
-
-            try
-            {
-                await _serviceService.DeleteForCurrentArtistAsync(artistId, serviceId);
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpGet]
-        [Authorize(Roles = "admin,owner,guest,artist")]
+        [Authorize(Roles = "owner,guest,artist")]
+        [ProducesResponseType(typeof(List<ArtistWithIdDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<List<ArtistWithIdDTO>>> GetAll()
         {
-            return await _artistService.GetAll();
-        }
-
-        [HttpPut]
-        [Authorize(Roles = "admin,owner,artist")]
-        public async Task Update(ArtistWithIdDTO artist)
-        {
-            await _artistService.Update(artist);
-        }
-
-        [HttpDelete]
-        [Authorize(Roles = "admin,owner,artist")]
-        public async Task DeleteById(int id)
-        {
-            await _artistService.DeleteById(id);
+            var list = await _artistService.ListAllAsync();
+            return Ok(list);
         }
 
         private bool TryGetArtistIdFromSub(out int artistId)

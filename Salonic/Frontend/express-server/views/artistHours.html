@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salonic — Artist Hours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav>
+        <a id="logoLink" href="#" class="logo">Salonic</a>
+        <ul class="nav-links">
+            <li><a id="homeLink" href="#">Home</a></li>
+            <li><a id="servicesLink" href="#">Services</a></li>
+            <li><a id="userLink" href="#">User</a></li>
+            <li><a id="addServiceLink" href="#">Add Service</a></li>
+            <li><a id="workingHoursLink" href="#">Hours</a></li>
+            <li><a id="loginLink" href="#">Login</a></li>
+        </ul>
+    </nav>
+    <main class="artist-hours-page">
+        <h1>My working hours</h1>
+        <p class="subtitle">View your current schedule and update it below. (Template only)</p>
+        <p class="artist-hours-switch"><a id="artist-hours-to-set" href="#">Add or set hours by date</a></p>
+
+        <section class="artist-hours-section" aria-labelledby="current-hours-heading">
+            <h2 id="current-hours-heading" class="section-title">Current hours</h2>
+            <ul id="artist-hours-list" class="artist-hours-list">
+            </ul>
+        </section>
+
+        <section class="artist-hours-section" aria-labelledby="modify-hours-heading">
+            <h2 id="modify-hours-heading" class="section-title">Modify hours</h2>
+            <form class="adservice-form">
+                <label for="hours-day">Day</label>
+                <select id="hours-day" name="hours-day">
+                    <option>Monday</option>
+                    <option>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option>Friday</option>
+                    <option>Saturday</option>
+                    <option>Sunday</option>
+                </select>
+
+                <div class="working-hours-time-row">
+                    <div class="working-hours-time-field">
+                        <label for="hours-start">Start</label>
+                        <input id="hours-start" type="time" name="hours-start">
+                    </div>
+                    <div class="working-hours-time-field">
+                        <label for="hours-end">End</label>
+                        <input id="hours-end" type="time" name="hours-end">
+                    </div>
+                </div>
+
+                <button type="button">Save changes</button>
+            </form>
+        </section>
+    </main>
+    <script src="/script.js"></script>
+    <script src="/artistNavbar.js"></script>
+    <script src="/api.js"></script>
+</body>
+</html>

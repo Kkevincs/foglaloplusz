@@ -1,7 +1,9 @@
 let selectedDate = "";
-let selectedTimeStamp = "";
+/** ISO start time from the API slot (DateTime), not display text */
+let selectedSlotStartIso = "";
 let selectedArtistId = 0;
 let selectedServiceIds = [];
+let selectedSalonId = 0;
 
 function appointmentFormatLocalYMD(date) {
     const y = date.getFullYear();
@@ -22,8 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const params = new URLSearchParams(window.location.search);
     const serviceidsRaw = params.get("serviceids") ?? "";
-    selectedServiceIds = serviceidsRaw ? serviceidsRaw.split(",").map(Number) : [];
+    selectedServiceIds = serviceidsRaw
+        ? serviceidsRaw.split(",").map((x) => Number(x.trim())).filter((n) => n > 0)
+        : [];
     selectedArtistId = Number(params.get("artistid")) || 0;
+    selectedSalonId = Number(params.get("salonId") || params.get("salonid")) || 0;
 
     async function loadSlotsForSelectedDate() {
         selectedDate = dateInput.value;
@@ -40,10 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         list.innerHTML = "";
         stamps.forEach((slot) => {
-            list.innerHTML +=
-                '<li class="time-slot">' + slot.startTime.split("T")[1].slice(0, 5) + "</li>";
+            const raw = slot.startTime;
+            const isoStr = typeof raw === "string" ? raw : String(raw);
+            const label = isoStr.includes("T") ? isoStr.split("T")[1].slice(0, 5) : isoStr;
+            const enc = encodeURIComponent(isoStr);
+            list.innerHTML += `<li class="time-slot" data-start-iso="${enc}">${label}</li>`;
         });
-        selectedTimeStamp = "";
+        selectedSlotStartIso = "";
     }
 
     dateInput.addEventListener("change", () => void loadSlotsForSelectedDate());
@@ -56,27 +64,63 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!slot) return;
         slotsPanel.querySelectorAll(".time-slot").forEach((item) => item.classList.remove("time-slot-selected"));
         slot.classList.add("time-slot-selected");
-        selectedTimeStamp = slot.textContent.trim();
+        const rawEnc = slot.getAttribute("data-start-iso") || "";
+        try {
+            selectedSlotStartIso = rawEnc ? decodeURIComponent(rawEnc) : "";
+        } catch (_) {
+            selectedSlotStartIso = rawEnc;
+        }
     });
 });
 
 window.SaveDate = async function SaveDate() {
-    if (!selectedDate || !selectedTimeStamp) return;
+    if (!selectedDate || !selectedSlotStartIso) {
+        alert("Choose a date and a time slot.");
+        return;
+    }
 
     if (selectedDate < appointmentFormatLocalYMD(new Date())) {
         alert("Choose today or a future date.");
         return;
     }
 
-    const guestUser = await GetLoggedInUser(localStorage.getItem("token"));
+    if (selectedServiceIds.length === 0 || selectedArtistId <= 0) {
+        alert("Missing services or artist. Go back and select again.");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    let guestUser;
+    try {
+        guestUser = await GetLoggedInUser(token);
+    } catch (err) {
+        console.error(err);
+        alert("Could not load your profile. Please log in again.");
+        return;
+    }
+
+    const guestId = Number(guestUser?.id ?? guestUser?.Id);
+    if (!Number.isFinite(guestId) || guestId < 1) {
+        alert("Invalid guest session. Please log in again.");
+        return;
+    }
+
     const appointment = {
-        guestId: Number(guestUser.id),
+        guestId: guestId,
         artistId: selectedArtistId,
-        salonId: 1,
+        salonId: selectedSalonId > 0 ? selectedSalonId : 0,
         serviceIds: selectedServiceIds,
-        startTime: selectedDate + "T" + selectedTimeStamp,
-        notes: "semmi"
+        startTime: selectedSlotStartIso,
+        notes: "",
     };
-    console.log(appointment);
-    console.log(await PostAppointment(appointment, localStorage.getItem("token")));
+    try {
+        const result = await PostAppointment(appointment, token);
+        console.log(result);
+        const salonQ =
+            selectedSalonId > 0 ? `?salonId=${encodeURIComponent(String(selectedSalonId))}` : "";
+        window.location.assign(`/Salon/AppointmentCreated${salonQ}`);
+    } catch (err) {
+        console.error(err);
+        alert(err?.message || "Could not book this time. Try another slot.");
+    }
 };
