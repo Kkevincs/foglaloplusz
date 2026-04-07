@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!(await assertPublicSalonExistsOrRedirect(guestSalonId))) return;
     }
 
+    await applySalonThemeForPublicPages();
+
     if (window.location.pathname === '/ownerhomepage') {
         loadSalons();
         document.getElementById('owner-salons-list')?.addEventListener('click', async (e) => {
@@ -120,6 +122,69 @@ function getRoleFromToken() {
 }
 
 window.getRoleFromToken = getRoleFromToken;
+
+function getSalonThemeCache() {
+    try {
+        return JSON.parse(localStorage.getItem("salonThemeById") || "{}");
+    } catch (_) {
+        return {};
+    }
+}
+
+function setSalonThemeCache(cache) {
+    localStorage.setItem("salonThemeById", JSON.stringify(cache || {}));
+}
+
+/** @returns {string|null} */
+function normalizeSalonThemeClass(raw) {
+    if (raw == null) return null;
+    if (typeof raw === "object" && raw !== null && typeof raw.theme === "string") {
+        raw = raw.theme;
+    }
+    if (typeof raw !== "string") return null;
+    const t = raw.trim();
+    if (!t.startsWith("theme-")) return null;
+    return t;
+}
+
+function applySalonThemeClass(themeClass) {
+    const t = normalizeSalonThemeClass(themeClass);
+    if (!t) return;
+    document.body.classList.forEach((cls) => {
+        if (cls.startsWith("theme-")) {
+            document.body.classList.remove(cls);
+        }
+    });
+    document.body.classList.add(t);
+}
+
+
+
+async function applySalonThemeForPublicPages() {
+    const path = window.location.pathname;
+    const isSalonPage = path === "/Salon" || path.startsWith("/Salon/");
+    if (!isSalonPage) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    if (!salonId) return;
+
+    const cache = getSalonThemeCache();
+
+    const fetchedRaw = await GetSalonThemeBySalonId(localStorage.getItem('token'), salonId);
+    const fetchedTheme = normalizeSalonThemeClass(fetchedRaw);
+    if (fetchedTheme) {
+        cache[String(salonId)] = fetchedTheme;
+        setSalonThemeCache(cache);
+        applySalonThemeClass(fetchedTheme);
+        return;
+    }
+
+    const cachedTheme = normalizeSalonThemeClass(cache[String(salonId)]);
+    if (cachedTheme) {
+        applySalonThemeClass(cachedTheme);
+    }
+}
 
 /**
  * Guest /Salon routes: salon must exist in the database.
@@ -310,7 +375,14 @@ document.getElementById('salon-setup-form')?.addEventListener('submit',async (e)
         description,
         logoFile
     };
-    await AddSalon(localStorage.getItem('token'), newSalon);
+    const createdSalon = await AddSalon(localStorage.getItem('token'), newSalon);
+
+    const salonId = createdSalon?.id ?? createdSalon?.Id;
+    if (salonId) {
+        const cache = getSalonThemeCache();
+        cache[String(salonId)] = theme;
+        setSalonThemeCache(cache);
+    }
 })
 
 

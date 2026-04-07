@@ -6,6 +6,8 @@ namespace Salonic.DAL.Repositories.Interfaces
     {
         Task<List<Salon>> ListByOwnerIdAsync(int ownerId);
         Task<bool> ExistsByIdAsync(int salonId);
+        /// <summary>Theme class string for the salon, or null if no salon with this id.</summary>
+        Task<string?> GetThemeBySalonIdAsync(int salonId);
         Task<Salon?> GetByOwnerAndIdAsync(int ownerId, int salonId);
         Task AddAsync(Salon salon);
 

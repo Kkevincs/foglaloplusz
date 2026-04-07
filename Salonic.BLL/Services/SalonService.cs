@@ -36,6 +36,9 @@ namespace Salonic.BLL.Services
         public Task<bool> ExistsAsync(int salonId) =>
             salonId <= 0 ? Task.FromResult(false) : _salonRepository.ExistsByIdAsync(salonId);
 
+        public Task<string?> GetThemeBySalonIdAsync(int salonId) =>
+            salonId <= 0 ? Task.FromResult<string?>(null) : _salonRepository.GetThemeBySalonIdAsync(salonId);
+
         public async Task<List<SalonWithIdDTO>> ListForOwnerAsync(int ownerId)
         {
             if (ownerId <= 0)

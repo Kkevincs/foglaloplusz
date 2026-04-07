@@ -42,6 +42,18 @@ namespace Salonic.presentation.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
+        [HttpGet("{salonId:int}/theme")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<string>> GetSalonTheme(int salonId)
+        {
+            var theme = await _salonService.GetThemeBySalonIdAsync(salonId);
+            if (theme == null)
+                return NotFound();
+            return Ok(theme);
+        }
+
         [Authorize(Roles = "owner")]
         [HttpGet("my")]
         [ProducesResponseType(typeof(List<SalonWithIdDTO>), StatusCodes.Status200OK)]

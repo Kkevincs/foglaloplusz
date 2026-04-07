@@ -375,3 +375,40 @@ async function setWorkingHoursByWeek(token, date) {
     const data = await response.json();
     return data;
 }
+async function GetSalonThemeBySalonId(token, salonId) {
+    const headers = {};
+    if (token) {
+        headers.authorization = `Bearer ${token}`;
+    }
+    const id = encodeURIComponent(String(salonId).trim());
+    try {
+        const response = await fetch(`https://localhost:7156/api/salon/${id}/theme`, { headers });
+        if (!response.ok) {
+            return null;
+        }
+        const raw = await response.text();
+        const text = raw.replace(/^\uFEFF/, "").trim();
+        if (!text || text === "null") {
+            return null;
+        }
+        if (text.startsWith("{")) {
+            try {
+                const o = JSON.parse(text);
+                return typeof o?.theme === "string" ? o.theme : null;
+            } catch (_) {
+                return null;
+            }
+        }
+        if (text.startsWith('"')) {
+            try {
+                const s = JSON.parse(text);
+                return typeof s === "string" ? s : null;
+            } catch (_) {
+                return null;
+            }
+        }
+        return text;
+    } catch (_) {
+        return null;
+    }
+}
