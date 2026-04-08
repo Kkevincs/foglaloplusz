@@ -123,66 +123,36 @@ function getRoleFromToken() {
 
 window.getRoleFromToken = getRoleFromToken;
 
-function getSalonThemeCache() {
-    try {
-        return JSON.parse(localStorage.getItem("salonThemeById") || "{}");
-    } catch (_) {
-        return {};
-    }
+// Only keep this if you actually need to store multiple salon themes in one browser
+function getCache() {
+    return JSON.parse(localStorage.getItem("salonThemeById") || "{}");
 }
 
-function setSalonThemeCache(cache) {
-    localStorage.setItem("salonThemeById", JSON.stringify(cache || {}));
+function applyTheme(theme) {
+    if (!theme) return;
+    document.body.className = document.body.className
+        .split(' ')
+        .filter(cls => !cls.startsWith('theme-'))
+        .join(' ');
+    document.body.classList.add(theme.trim());
 }
-
-/** @returns {string|null} */
-function normalizeSalonThemeClass(raw) {
-    if (raw == null) return null;
-    if (typeof raw === "object" && raw !== null && typeof raw.theme === "string") {
-        raw = raw.theme;
-    }
-    if (typeof raw !== "string") return null;
-    const t = raw.trim();
-    if (!t.startsWith("theme-")) return null;
-    return t;
-}
-
-function applySalonThemeClass(themeClass) {
-    const t = normalizeSalonThemeClass(themeClass);
-    if (!t) return;
-    document.body.classList.forEach((cls) => {
-        if (cls.startsWith("theme-")) {
-            document.body.classList.remove(cls);
-        }
-    });
-    document.body.classList.add(t);
-}
-
-
-
 async function applySalonThemeForPublicPages() {
-    const path = window.location.pathname;
-    const isSalonPage = path === "/Salon" || path.startsWith("/Salon/");
-    if (!isSalonPage) return;
-
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get("salonId") || params.get("salonid");
     if (!salonId) return;
 
-    const cache = getSalonThemeCache();
+    const cache = getCache();
 
-    const fetchedRaw = await GetSalonThemeBySalonId(localStorage.getItem('token'), salonId);
-    const fetchedTheme = normalizeSalonThemeClass(fetchedRaw);
-    if (fetchedTheme) {
-        cache[String(salonId)] = fetchedTheme;
-        setSalonThemeCache(cache);
-        applySalonThemeClass(fetchedTheme);
-        return;
-    }
-
-    const cachedTheme = normalizeSalonThemeClass(cache[String(salonId)]);
-    if (cachedTheme) {
-        applySalonThemeClass(cachedTheme);
+    try {
+        const theme = await GetSalonThemeBySalonId(localStorage.getItem('token'), salonId);
+        if (theme) {
+            applyTheme(theme);
+            cache[salonId] = theme;
+            localStorage.setItem("salonThemeById", JSON.stringify(cache));
+            return;
+        }
+    } catch (e) {
+        applyTheme(cache[salonId]);
     }
 }
 
