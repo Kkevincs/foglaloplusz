@@ -130,8 +130,8 @@ async function applySalonPersonalHomepage() {
     const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
     document.getElementById('salon-name').textContent = salon.name;
     document.getElementById('salon-description').textContent = salon.description;
-    document.getElementById('salon-support-email').href = `mailto:${salon.supportEmail}`;
-    document.getElementById('salon-support-email').textContent = salon.supportEmail;
+    document.getElementById('salon-support-email').href = `mailto:${salon.email}`;
+    document.getElementById('salon-support-email').textContent = salon.email;
 }
 async function applySalonPersonalLogo() {
     const params = new URLSearchParams(window.location.search);
