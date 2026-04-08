@@ -42,7 +42,7 @@ namespace Salonic.BLL.Services
         public async Task<SalonWithIdDTO?> GetPublicProfileAsync(int salonId)
         {
             if (salonId <= 0) return null;
-            var entity = await _salonRepository.GetBySalonId(salonId);
+            var entity = await _salonRepository.GetBySalonIdAsync(salonId);
             if (entity == null) return null;
             return _mapper.Map<SalonWithIdDTO>(entity);
         }

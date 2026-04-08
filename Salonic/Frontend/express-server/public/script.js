@@ -25,10 +25,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         if (!(await assertPublicSalonExistsOrRedirect(guestSalonId))) return;
+        await applySalonThemeForPublicPages();
+        await applySalonPersonal();
     }
-
-    await applySalonThemeForPublicPages();
-
+    
     if (window.location.pathname === '/ownerhomepage') {
         loadSalons();
         document.getElementById('owner-salons-list')?.addEventListener('click', async (e) => {
@@ -123,12 +123,15 @@ function getRoleFromToken() {
 
 window.getRoleFromToken = getRoleFromToken;
 
-const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
-applyTheme(salon.theme);
-document.getElementById('logo').src = salon.logo;
-document.getElementById('salon-name').src = salon.name;
-document.getElementById('salon-description').textContent = salon.description;
-document.getElementById('salon-support-email').href = `mailto:${salon.supportEmail}`;
+function applySalonPersonal() {
+    const salonId = params.get("salonId") || params.get("salonid");
+    const salon = GetSalonBySalonId(localStorage.getItem('token'), salonId);
+    applyTheme(salon.theme);
+    document.getElementById('logo').src = salon.logo;
+    document.getElementById('salon-name').src = salon.name;
+    document.getElementById('salon-description').textContent = salon.description;
+    document.getElementById('salon-support-email').href = `mailto:${salon.supportEmail}`;
+}
 
 // Only keep this if you actually need to store multiple salon themes in one browser
 function getCache() {
