@@ -148,6 +148,8 @@ namespace Salonic
             app.UseAuthorization();
             app.MapControllers();
 
+            
+
             app.Run();
         }
     }

@@ -9,9 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
+<body id="salon-info">
     <nav>
-        <a id="logoLink" href="#" class="logo">Salonic</a>
+        <a id="logoLink" href="#" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic"/></a>
         <ul class="nav-links">
             <li><a id="homeLink" href="#">Home</a></li>
             <li><a id="servicesLink" href="#">Services</a></li>
@@ -22,8 +22,11 @@
         </ul>
     </nav>
     <main>
-        <h1>Welcome, artist.</h1>
-        <p>Manage your services and appointments from one place.</p>
+        <div>
+            <h1 id="salon-name">Loading...</h1>
+            <p id="salon-description">Loading...</p>
+            <a id="salon-support-email">Loading...</a>
+        </div>
     </main>
     <script src="/api.js"></script>
     <script src="/script.js"></script>

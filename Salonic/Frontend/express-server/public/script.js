@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (!(await assertPublicSalonExistsOrRedirect(guestSalonId))) return;
         await applySalonThemeForPublicPages();
-        await applySalonPersonal();
+        await applySalonPersonalLogo();
     }
     
     if (window.location.pathname === '/ownerhomepage') {
@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('artists-list')) LoadArtists();
     if (document.getElementById('artist-profile')) LoadArtistData();
     if (document.getElementById('owner-profile')) LoadOwnerData();
+    if (document.getElementById('salon-info')) applySalonPersonalHomepage();
 });
 document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('click', e => {
@@ -123,14 +124,21 @@ function getRoleFromToken() {
 
 window.getRoleFromToken = getRoleFromToken;
 
-function applySalonPersonal() {
+async function applySalonPersonalHomepage() {
+    const params = new URLSearchParams(window.location.search);
     const salonId = params.get("salonId") || params.get("salonid");
-    const salon = GetSalonBySalonId(localStorage.getItem('token'), salonId);
-    applyTheme(salon.theme);
-    document.getElementById('logo').src = salon.logo;
-    document.getElementById('salon-name').src = salon.name;
+    const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
+    document.getElementById('salon-name').textContent = salon.name;
     document.getElementById('salon-description').textContent = salon.description;
     document.getElementById('salon-support-email').href = `mailto:${salon.supportEmail}`;
+    document.getElementById('salon-support-email').textContent = salon.supportEmail;
+}
+async function applySalonPersonalLogo() {
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
+    const logoUrl = `http://localhost:5181${salon.logo}`
+    logoLink.innerHTML = `<img src="${logoUrl}" alt="${salon.name}">`;
 }
 
 // Only keep this if you actually need to store multiple salon themes in one browser
@@ -149,15 +157,12 @@ function applyTheme(theme) {
 async function applySalonThemeForPublicPages() {
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get("salonId") || params.get("salonid");
-    if (!salonId) return;
-
     const cache = getCache();
-
     try {
-        const theme = await GetSalonThemeBySalonId(localStorage.getItem('token'), salonId);
-        if (theme) {
-            applyTheme(theme);
-            cache[salonId] = theme;
+        const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
+        if (salon) {
+            applyTheme(salon.theme);
+            cache[salonId] = salon.theme;
             localStorage.setItem("salonThemeById", JSON.stringify(cache));
             return;
         }
