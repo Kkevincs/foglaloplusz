@@ -541,6 +541,14 @@ a.owner-btn-primary:hover {
     border-bottom: none;
 }
 
+.artist-hours-list li .artist-service-desc {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--muted);
+}
+
 /* Salon dashboard (owner template) */
 .salon-dashboard-page {
     max-width: 900px;
@@ -768,4 +776,33 @@ a.owner-btn-primary:hover {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* Toast + button feedback (Anime.js) */
+#salonic-toast-root {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.salonic-toast {
+    padding: 0.65rem 1.35rem;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+    font-size: 0.92rem;
+    font-weight: 600;
+    max-width: min(90vw, 360px);
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
 }

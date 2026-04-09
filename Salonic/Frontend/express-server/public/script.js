@@ -323,17 +323,18 @@ async function loadWorkingHours() {
     }
     console.log(date)
     const hours = await GetArtistWorkingHoursByMonth(localStorage.getItem('token'), date )
-    const days = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"]
+    const days = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
     hours.forEach(x => {
         const [year, month, dayPart] = x.date.split("-");
         const day = dayPart.slice(0, 2);
-        const dayName = days[new Date(x.date).getDay() - 1]
+        const dow = new Date(x.date).getDay();
+        const dayName = days[(dow + 6) % 7];
         const startTime = String(x.startTime).trim();
         const endTime = String(x.endTime).trim();
         const isClosed =
             (startTime === "0" && endTime === "0") ||
             (startTime === "00:00" && endTime === "00:00");
-        openHours = isClosed ? "closed" : `${startTime} - ${endTime}`;
+        const openHours = isClosed ? "closed" : `${startTime} - ${endTime}`;
         document.getElementById('artist-hours-list').innerHTML += `
 
             <li><span>${dayName} (${day}/${month})</span> <strong>${openHours}</strong></li>
@@ -599,7 +600,7 @@ async function LoadUserData() {
         <div class="user-info">
                 <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
                 <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
+                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">${userData.role}</span></div>
             </div>
 
     `
@@ -612,7 +613,7 @@ async function LoadArtistData() {
         <div class="user-info">
                 <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
                 <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
+                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Artist</span></div>
             </div>
 
     `
@@ -648,14 +649,23 @@ async function LoadArtists() {
     )
 }
 
-async function loadServicesForArtists(){
-    const services = await getServicesByArtist(localStorage.getItem('token'))
-    services.forEach(x => 
-        document.getElementById("service-card").innerHTML += `
-            <div class="name">${x.name}</div>
-            <div class="desc">${x.durationInMinute}</div>
-        `
-    )
+async function loadServicesForArtists() {
+    const list = document.getElementById("artist-services-list");
+    if (!list) return;
+    const services = await getServicesByArtist(localStorage.getItem("token"));
+    list.innerHTML = "";
+    if (!Array.isArray(services)) return;
+    services.forEach((x) => {
+        const desc = x.description
+            ? `<span class="artist-service-desc">${x.description}</span>`
+            : "";
+        list.innerHTML += `
+            <li>
+                <span><strong>${x.name}</strong>${desc}</span>
+                <strong>${x.durationInMinute} min ${x.price} Ft</strong>
+            </li>
+        `;
+    });
 }
 
 function scheduleGetMondayOfWeek(d) {
