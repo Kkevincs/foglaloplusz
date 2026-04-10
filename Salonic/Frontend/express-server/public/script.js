@@ -478,16 +478,54 @@ document.getElementById('owner-register-form')?.addEventListener('submit', async
     }
 });
 
-async function AddToCart() {
-    
+function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
 
-    const pathSegments = window.location.pathname.split('/');
-    pathSegments.forEach(x => console.log(x))
+function syncServicesCartButton() {
+    const list = document.getElementById('services-list');
+    const btn = document.getElementById('AddToCart');
+    const holder = document.getElementById('services-cart-holder');
+    if (!list || !btn) return;
+    if (holder) holder.appendChild(btn);
+    list.querySelectorAll('.service-card-cart-slot').forEach((el) => el.remove());
+    const checked = list.querySelectorAll('input.booking-choice-input[type="checkbox"]:checked');
+    if (!checked.length) {
+        btn.hidden = true;
+        return;
+    }
+    btn.hidden = false;
+    const cards = [...list.querySelectorAll('.service-card')];
+    let lastCard = null;
+    for (let i = cards.length - 1; i >= 0; i--) {
+        if (cards[i].querySelector('input.booking-choice-input[type="checkbox"]:checked')) {
+            lastCard = cards[i];
+            break;
+        }
+    }
+    if (!lastCard) return;
+    const slot = document.createElement('div');
+    slot.className = 'service-card-cart-slot booking-card-actions-row booking-card-actions-row--cta';
+    lastCard.appendChild(slot);
+    slot.appendChild(btn);
+}
+
+document.addEventListener('change', (e) => {
+    if (e.target.matches('#services-list input.booking-choice-input[type="checkbox"]')) {
+        syncServicesCartButton();
+    }
+});
+
+async function AddToCart() {
     const ids = [];
-    document.querySelectorAll('#services-list input[type="checkbox"]:checked').forEach((cb) => {
+    document.querySelectorAll('#services-list input.booking-choice-input[type="checkbox"]:checked').forEach((cb) => {
         ids.push(cb.id);
     });
-    console.log(ids)
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get("salonId") || params.get("salonid");
     const salonQuery = salonId ? `&salonId=${encodeURIComponent(salonId)}` : "";
@@ -495,7 +533,7 @@ async function AddToCart() {
 }
 
 function SelectArtist(){
-    const selectedRadio = document.querySelector('.artist-radio-cell input[type="radio"]:checked');
+    const selectedRadio = document.querySelector('#artists-list input.booking-choice-input[type="radio"]:checked');
     if (!selectedRadio) return;
     const id = selectedRadio.id;
     const params = new URLSearchParams(window.location.search);
@@ -570,27 +608,30 @@ async function LoadServices() {
         console.warn('Add ?salonId= to the URL to load services.');
         return;
     }
+    const list = document.getElementById('services-list');
+    if (!list) return;
     const services = await GetServices(salonId);
-
-    services.forEach(x => 
-        document.getElementById("services-list").innerHTML += `
+    list.innerHTML = '';
+    services.forEach((x) => {
+        const name = escapeHtml(x.name);
+        const desc = escapeHtml(x.description ?? '');
+        const id = String(x.id);
+        list.innerHTML += `
             <div class="service-card">
-                <div class="name">
-                    ${x.name}
+                <div class="service-card-body">
+                    <div class="name">${name}</div>
+                    <div class="desc">${desc}</div>
                 </div>
-                <div class="desc">
-                    ${x.description}
+                <div class="booking-card-actions-row">
+                    <label class="booking-choice">
+                        <input type="checkbox" class="booking-choice-input" id="${id}" aria-label="Select ${name}">
+                        <span class="booking-choice-box" aria-hidden="true"></span>
+                    </label>
                 </div>
-                <div class="service-checkbox-cell" style="display: flex; justify-content: flex-end; align-items: center;">
-                    <input type="checkbox" id="${x.id}">
-                </div>
-
             </div>
-        
-
-        `
-    )
-
+        `;
+    });
+    syncServicesCartButton();
 }
 
 async function LoadUserData() {
@@ -635,18 +676,38 @@ async function LoadOwnerData() {
 }
 
 async function LoadArtists() {
-    const artists = await GetArtists(localStorage.getItem("token"))
-
-    artists.forEach(x => 
-        document.getElementById("artists-list").innerHTML += `
-             <div class="artist-card"><div class="name">${x.name}</div><div class="role">${x.description}</div>
-             <div class="artist-radio-cell" style="display: flex; justify-content: flex-end; align-items: center;">
-                    <input type="radio" name="artist" id="${x.id}">
+    const list = document.getElementById('artists-list');
+    if (!list) return;
+    const artists = await GetArtists(localStorage.getItem('token'));
+    const bookingStep = window.location.pathname === '/Salon/SelectArtist';
+    list.innerHTML = '';
+    artists.forEach((x) => {
+        const name = escapeHtml(x.name ?? '');
+        const desc = escapeHtml(x.description ?? '');
+        const id = String(x.id);
+        if (bookingStep) {
+            list.innerHTML += `
+             <div class="artist-card">
+                <div class="artist-card-text">
+                    <div class="name">${name}</div>
+                    <div class="role">${desc}</div>
                 </div>
-             </div>
-             
-        `
-    )
+                <div class="booking-card-actions-row">
+                    <label class="booking-choice">
+                        <input type="radio" name="booking-artist" class="booking-choice-input" id="${id}" aria-label="Select ${name}">
+                        <span class="booking-choice-box" aria-hidden="true"></span>
+                    </label>
+                    <button type="button" class="btn-primary artist-card-cta" onclick="SelectArtist()">Select artist</button>
+                </div>
+             </div>`;
+        } else {
+            list.innerHTML += `
+             <div class="artist-card">
+                <div class="name">${name}</div>
+                <div class="role">${desc}</div>
+             </div>`;
+        }
+    });
 }
 
 async function loadServicesForArtists() {

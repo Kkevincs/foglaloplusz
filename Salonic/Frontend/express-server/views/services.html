@@ -24,9 +24,9 @@
     <main class="services-page">
         <h1>Services</h1>
         <p class="subtitle">Choose a service to book.</p>
-        <div id="services-list" class="services-list">
-            
-            <button type="button" onclick="AddToCart()" id="AddToCart">Add to Cart</button>
+        <div id="services-list" class="services-list"></div>
+        <div id="services-cart-holder" class="services-cart-holder">
+            <button type="button" id="AddToCart" class="btn-primary" hidden onclick="AddToCart()">Add to cart</button>
         </div>
     </main>
     <script src="/api.js"></script>

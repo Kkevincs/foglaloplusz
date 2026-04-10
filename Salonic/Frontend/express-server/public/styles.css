@@ -16,6 +16,89 @@ p { color: var(--muted); line-height: 1.6; }
 .services-list .service-card .name, .artists-list .artist-card .name { font-weight: 600; }
 .services-list .service-card .desc, .artists-list .artist-card .role { font-size: 0.9rem; color: var(--muted); margin-top: 0.25rem; }
 
+/* Booking: same chrome for service checkboxes and artist radio (multi vs single select) */
+.booking-card-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+.booking-card-actions-row--cta {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+}
+.booking-choice {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.booking-choice-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+.booking-choice-box {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--text);
+    border-radius: 4px;
+    background: var(--surface);
+    flex-shrink: 0;
+    position: relative;
+    box-sizing: border-box;
+}
+.booking-choice-input:focus-visible + .booking-choice-box {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+.booking-choice-input[type="checkbox"]:checked + .booking-choice-box {
+    background: var(--text);
+    border-color: var(--text);
+}
+.booking-choice-input[type="checkbox"]:checked + .booking-choice-box::after {
+    content: "";
+    position: absolute;
+    left: 0.3rem;
+    top: 0.05rem;
+    width: 0.28rem;
+    height: 0.55rem;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.booking-choice-input[type="radio"]:checked + .booking-choice-box::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    background: var(--text);
+    border-radius: 2px;
+}
+.artist-card .artist-card-cta {
+    display: none;
+}
+.artist-card:has(.booking-choice-input[type="radio"]:checked) .artist-card-cta {
+    display: inline-flex;
+}
+
+.services-cart-holder {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}
+
 .auth-page { max-width: 320px; }
 .auth-form { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
 .auth-form input { padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; background: var(--surface); color: var(--text); }
@@ -233,6 +316,8 @@ input[type="time"].wh-time-invalid:focus {
     .working-hours-day-col { grid-column: 1 / -1; }
     .working-hours-open-label { grid-column: 1 / -1; }
 }
+/* Primary action: reuse on standalone buttons (e.g. Add to cart) and .adservice-form */
+.btn-primary,
 .adservice-form button {
     width: fit-content;
     padding: 0.6rem 0.9rem;
@@ -242,9 +327,17 @@ input[type="time"].wh-time-invalid:focus {
     border-radius: 6px;
     font-family: inherit;
     font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
 }
-.adservice-form button:hover { background: var(--primary-hover); }
+.btn-primary:hover,
+.adservice-form button:hover {
+    background: var(--primary-hover);
+}
+.appointment-layout > .btn-primary {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+}
 
 main.appointment-page { max-width: 900px; }
 .appointment-page { text-align: left; }
@@ -265,18 +358,17 @@ main.appointment-page { max-width: 900px; }
 .time-slot:hover,
 .time-slot.time-slot-selected { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
 
-/* Optional salon themes (customSalon) — add class on body e.g. theme-pink */
 :root {
-    --bg: #fff4f7;
-    --text: #6f3a80;
-    --muted: #8a6895;
+    --bg: #f0f0f0;
+    --text: #0a0a0a;
+    --muted: #525252;
     --surface: #ffffff;
-    --surface-soft: #fde9ef;
-    --border: #c697c5;
-    --primary: #ec8494;
-    --primary-hover: #d97384;
-    --accent: #9c94dc;
-    --accent-soft: #fad3dd;
+    --surface-soft: #e5e5e5;
+    --border: #a3a3a3;
+    --primary: #171717;
+    --primary-hover: #000000;
+    --accent: #404040;
+    --accent-soft: #d4d4d4;
 }
 body.theme-pink {
     --bg: #fff4f7;
