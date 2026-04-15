@@ -4,41 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salonic — Your salons</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="theme-pink">
-    <nav>
-        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
-        <ul class="nav-links">
-            <li><a href="/ownerhomepage">My salons</a></li>
-            <li><a href="/maker">New salon setup</a></li>
-            <li><a href="/owneruserpage">Account</a></li>
-            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
-        </ul>
+<body class="theme-pink owner-area-page">
+    <nav class="navbar navbar-expand-lg navbar-light salonic-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand logo p-0" href="/ownerhomepage"><img src="/img/Salonic_Logo.png" alt="Salonic" height="40" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ownerNav" aria-controls="ownerNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="ownerNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-2">
+                    <li class="nav-item"><a class="nav-link" href="/ownerhomepage">My salons</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/maker">New salon setup</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/owneruserpage">Account</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    <main class="owner-home-page">
-        <header class="owner-home-header">
-            <h1>Your salons</h1>
-            <p class="subtitle">Overview of every location you manage on Salonic.</p>
+    <main class="container py-4 py-lg-5 owner-home-page salonic-main salonic-main--wide salonic-page-enter">
+        <header class="owner-page-header mb-4">
+            <h1 class="h3 mb-2">Your salons</h1>
+            <p class="subtitle mb-0">Overview of every location you manage on Salonic.</p>
         </header>
 
-        <section class="owner-home-toolbar" aria-label="Actions">
-            <a href="/maker" class="owner-btn owner-btn-primary">Add salon</a>
+        <section class="owner-content-panel mb-4" aria-label="Actions">
+            <a href="/maker" class="btn btn-primary">Add salon</a>
         </section>
 
-        <section aria-labelledby="salons-heading">
-            <h2 id="salons-heading" class="owner-section-title">All locations</h2>
-            <ul id="owner-salons-list" class="owner-salons-list">
-                
-            </ul>
+        <section class="owner-content-panel" aria-labelledby="salons-heading">
+            <h2 id="salons-heading" class="h5 mb-3">All locations</h2>
+            <ul id="owner-salons-list" class="owner-salons-list list-unstyled mb-0"></ul>
         </section>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="/api.js"></script>
-    <script src="/script.js"></script>
-
+    <script src="/common.js"></script>
+    <script src="/ownerHomePage.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
     <script src="/buttonFeedback.js"></script>
 </body>

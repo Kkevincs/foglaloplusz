@@ -12,7 +12,9 @@ function appointmentFormatLocalYMD(date) {
     return `${y}-${m}-${day}`;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    await initSalonGuestPublicShell();
+
     const dateInput = document.getElementById("appointment-date");
     if (!dateInput) return;
 
@@ -73,6 +75,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+function resolveSalonIdForBooking() {
+    if (selectedSalonId > 0) return selectedSalonId;
+    const p = new URLSearchParams(window.location.search);
+    const id = Number(p.get("salonId") || p.get("salonid"));
+    return Number.isFinite(id) && id > 0 ? id : 0;
+}
+
+function buildPendingBookingRegisterUrl() {
+    const salon = resolveSalonIdForBooking();
+    const p = new URLSearchParams();
+    if (salon > 0) p.set("salonId", String(salon));
+    p.set("serviceids", selectedServiceIds.join(","));
+    p.set("artistid", String(selectedArtistId));
+    p.set("appointmentDate", selectedDate);
+    p.set("startTime", selectedSlotStartIso);
+    return `/Salon/Register?${p.toString()}`;
+}
+
 window.SaveDate = async function SaveDate() {
     if (!selectedDate || !selectedSlotStartIso) {
         alert("Choose a date and a time slot.");
@@ -89,35 +109,58 @@ window.SaveDate = async function SaveDate() {
         return;
     }
 
-    const token = localStorage.getItem("token");
+    const registerWithBooking = buildPendingBookingRegisterUrl();
+
+    const token = (localStorage.getItem("token") || "").trim();
+
+    if (!token) {
+        alert(
+            "Create an account to complete your booking. After you register, you'll be signed in and your appointment will be saved.",
+        );
+        window.location.assign(registerWithBooking);
+        return;
+    }
+
+    const role =
+        typeof window.getRoleFromToken === "function" ? window.getRoleFromToken() : null;
+    if (role !== "guest") {
+        alert(
+            "Bookings use a guest account. Register (or log in as a guest) to complete this booking — your date and time are kept in the link.",
+        );
+        window.location.assign(registerWithBooking);
+        return;
+    }
+
     let guestUser;
     try {
         guestUser = await GetLoggedInUser(token);
     } catch (err) {
         console.error(err);
-        alert("Could not load your profile. Please log in again.");
+        alert("Could not load your profile. Register again to finish your booking.");
+        window.location.assign(registerWithBooking);
         return;
     }
 
     const guestId = Number(guestUser?.id ?? guestUser?.Id);
     if (!Number.isFinite(guestId) || guestId < 1) {
-        alert("Invalid guest session. Please log in again.");
+        alert("Invalid guest session. Register to complete your booking.");
+        window.location.assign(registerWithBooking);
         return;
     }
 
+    const salonForAppt = resolveSalonIdForBooking();
     const appointment = {
         guestId: guestId,
         artistId: selectedArtistId,
-        salonId: selectedSalonId > 0 ? selectedSalonId : 0,
+        salonId: salonForAppt > 0 ? salonForAppt : 0,
         serviceIds: selectedServiceIds,
         startTime: selectedSlotStartIso,
         notes: "",
     };
     try {
-        const result = await PostAppointment(appointment, token);
-        console.log(result);
+        await PostAppointment(appointment, token);
         const salonQ =
-            selectedSalonId > 0 ? `?salonId=${encodeURIComponent(String(selectedSalonId))}` : "";
+            salonForAppt > 0 ? `?salonId=${encodeURIComponent(String(salonForAppt))}` : "";
         window.location.assign(`/Salon/AppointmentCreated${salonQ}`);
     } catch (err) {
         console.error(err);

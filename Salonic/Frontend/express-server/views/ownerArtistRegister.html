@@ -4,36 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salonic — Register artist</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="theme-pink">
-    <nav>
-        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
-        <ul class="nav-links">
-            <li><a href="/ownerhomepage">My salons</a></li>
-            <li><a href="/maker">New salon setup</a></li>
-            <li><a href="/owneruserpage">Account</a></li>
-            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
-        </ul>
+<body class="theme-pink owner-area-page salon-auth-page">
+    <nav class="navbar navbar-expand-lg navbar-light salonic-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand logo p-0" href="/ownerhomepage"><img src="/img/Salonic_Logo.png" alt="Salonic" height="40" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ownerNav" aria-controls="ownerNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="ownerNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-2">
+                    <li class="nav-item"><a class="nav-link" href="/ownerhomepage">My salons</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/maker">New salon setup</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/owneruserpage">Account</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    <main class="auth-page">
-        <h1>Register artist</h1>
-        <p class="subtitle">Template form for adding a new artist to this salon.</p>
-        <p class="auth-switch"><a href="/ownerhomepage">Back to salons</a></p>
-        <form id="owner-artist-register-form" class="auth-form">
-            <input id="ArtistRegName" type="text" name="name" placeholder="Artist name" required>
-            <input id="ArtistRegEmail" type="email" name="email" placeholder="Artist email" required>
-            <input id="ArtistRegPassword" type="password" name="password" placeholder="password" required>
-            <input id="ArtistRegDescription" type="text" name="description" placeholder="Description (optional)">
-            <button type="submit">Create artist</button>
-        </form>
+    <main class="container py-4 py-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6 salonic-main salonic-page-enter auth-page auth-page-card">
+                <h1 class="h3 mb-2">Register artist</h1>
+                <p class="subtitle mb-3">Add a new artist to this salon.</p>
+                <p class="mb-4"><a href="/ownerhomepage" class="link-primary">Back to salons</a></p>
+                <form id="owner-artist-register-form" class="auth-form text-start d-grid gap-3">
+                    <div>
+                        <label for="ArtistRegName" class="form-label">Artist name</label>
+                        <input id="ArtistRegName" class="form-control" type="text" name="name" placeholder="Artist name" required>
+                    </div>
+                    <div>
+                        <label for="ArtistRegEmail" class="form-label">Email</label>
+                        <input id="ArtistRegEmail" class="form-control" type="email" name="email" placeholder="Artist email" required>
+                    </div>
+                    <div>
+                        <label for="ArtistRegPassword" class="form-label">Password</label>
+                        <input id="ArtistRegPassword" class="form-control" type="password" name="password" placeholder="Password" required>
+                    </div>
+                    <div>
+                        <label for="ArtistRegDescription" class="form-label">Description <span class="text-muted">(optional)</span></label>
+                        <input id="ArtistRegDescription" class="form-control" type="text" name="description" placeholder="Short bio">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create artist</button>
+                </form>
+            </div>
+        </div>
     </main>
-    <script src="/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="/common.js"></script>
+    <script src="/ownerArtistRegisterPage.js"></script>
     <script src="/api.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
     <script src="/buttonFeedback.js"></script>
 </body>

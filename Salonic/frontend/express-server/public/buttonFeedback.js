@@ -20,7 +20,7 @@
     }
 
     function isInsideNavbar(el) {
-        return !!(el && el.closest && el.closest('nav'));
+        return !!(el && el.closest && el.closest('.salonic-navbar, nav'));
     }
 
     function animateSparkle(el) {

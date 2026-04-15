@@ -4,34 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salonic — Artist Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <nav>
-        <a id="logoLink" href="#" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic"/></a>
-        <ul class="nav-links">
-            <li><a id="homeLink" href="#">Home</a></li>
-            <li><a id="servicesLink" href="#">Services</a></li>
-            <li><a id="userLink" href="#">User</a></li>
-            <li><a id="addServiceLink" href="#">Add Service</a></li>
-            <li><a id="workingHoursLink" href="#">Hours</a></li>
-            <li><a id="loginLink" href="#">Login</a></li>
-        </ul>
-    </nav>
-    <main>
-        <div id="salon-info">
-            <h1 id="salon-name">Loading...</h1>
-            <p id="salon-description">Loading...</p>
-            <a id="salon-support-email">Loading...</a>
+<body class="artist-area-page">
+    <nav class="navbar navbar-expand-lg navbar-light salonic-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand logo p-0" id="logoLink" href="#"><img src="/img/Salonic_Logo.png" alt="Salonic" height="40" width="auto" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#artistNav" aria-controls="artistNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="artistNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-links gap-lg-2">
+                    <li class="nav-item"><a class="nav-link" id="homeLink" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" id="servicesLink" href="#">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" id="userLink" href="#">User</a></li>
+                    <li class="nav-item"><a class="nav-link" id="addServiceLink" href="#">Add Service</a></li>
+                    <li class="nav-item"><a class="nav-link" id="workingHoursLink" href="#">Hours</a></li>
+                    <li class="nav-item"><a class="nav-link" id="loginLink" href="#">Login</a></li>
+                </ul>
+            </div>
         </div>
-    </main>
-    <script src="/api.js"></script>
-    <script src="/script.js"></script>
-    <script src="/artistNavbar.js"></script>
+    </nav>
+    <main class="container py-4 py-lg-5 salonic-main salonic-main--wide salonic-page-enter salon-home-main">
+        <section class="salon-home-hero rounded-4 p-4 p-lg-5 mb-4 text-center" aria-labelledby="salon-name">
+            <div id="salon-info" class="salon-home-brand">
+                <p class="salon-home-section-title mb-2">Artist portal</p>
+                <h1 id="salon-name" class="salon-home-title mb-3">Loading...</h1>
+                <p id="salon-description" class="salon-home-lead subtitle mb-4">Loading...</p>
+                <a id="salon-support-email" class="btn btn-outline-primary salon-home-contact-link" href="#">Loading...</a>
+            </div>
+        </section>
 
+        <section class="salon-home-tiles" aria-label="Artist shortcuts">
+            <h2 class="salon-home-section-title text-center mb-3">Workspace</h2>
+            <div class="row g-3 g-lg-4">
+                <div class="col-6 col-lg-3">
+                    <a id="artist-home-link-services" class="salon-home-tile" href="#">
+                        <span class="salon-home-tile-icon" aria-hidden="true">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9 3a1 1 0 011-1h1a1 1 0 011 1v1.09a6 6 0 013.91 3.91H17a1 1 0 011 1v1a1 1 0 01-1 1h-1.09a6 6 0 01-3.91 3.91V17a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1.09a6 6 0 01-3.91-3.91H3a1 1 0 01-1-1v-1a1 1 0 011-1h1.09A6 6 0 019 4.09V3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </span>
+                        <span class="salon-home-tile-title">Services</span>
+                        <span class="salon-home-tile-desc">Manage offerings</span>
+                    </a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <a id="artist-home-link-profile" class="salon-home-tile" href="#">
+                        <span class="salon-home-tile-icon" aria-hidden="true">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </span>
+                        <span class="salon-home-tile-title">Profile</span>
+                        <span class="salon-home-tile-desc">Your account</span>
+                    </a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <a id="artist-home-link-hours" class="salon-home-tile" href="#">
+                        <span class="salon-home-tile-icon" aria-hidden="true">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </span>
+                        <span class="salon-home-tile-title">Hours</span>
+                        <span class="salon-home-tile-desc">Schedule &amp; availability</span>
+                    </a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <a id="artist-home-link-add" class="salon-home-tile" href="#">
+                        <span class="salon-home-tile-icon" aria-hidden="true">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </span>
+                        <span class="salon-home-tile-title">Add service</span>
+                        <span class="salon-home-tile-desc">Create a new offering</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="salon-home-role mt-4 mt-lg-5" aria-label="Sign in options" data-hide-role-when="artist">
+            <div class="salon-home-role-card text-center p-4 p-lg-4 rounded-4">
+                <p class="salon-home-role-eyebrow mb-1">Get started</p>
+                <p class="salon-home-role-label mb-3">Browse the guest site or sign in as an artist</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a id="artist-public-guest-site-link" class="btn btn-outline-secondary px-4" href="#">Guest site</a>
+                    <a id="artist-public-artist-login-link" class="btn btn-primary px-4" href="#">Artist login</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="/api.js"></script>
+    <script src="/artistNavbar.js"></script>
+    <script src="/common.js"></script>
+    <script src="/artistHomePage.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
     <script src="/buttonFeedback.js"></script>
 </body>

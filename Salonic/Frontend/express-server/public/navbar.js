@@ -1,6 +1,14 @@
 const params = new URLSearchParams(window.location.search);
 const salonId = params.get("salonId") || params.get("salonid");
 const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
+const artistIdFromUrl = params.get("artistId") || params.get("artistid");
+
+function buildGuestServicesHref() {
+    if (!salonId) return "/Salon/Services";
+    let q = `?salonId=${encodeURIComponent(salonId)}`;
+    if (artistIdFromUrl) q += `&artistId=${encodeURIComponent(artistIdFromUrl)}`;
+    return `/Salon/Services${q}`;
+}
 
 function parseJwtPayloadLocal(token) {
     const part = token.split(".")[1];
@@ -26,7 +34,6 @@ const guestNavLinksWhenLoggedIn = [
     "homeLink",
     "servicesLink",
     "artistsLink",
-    "bookLink",
     "userLink",
 ];
 
@@ -46,11 +53,9 @@ function applyGuestNavbarState() {
     const artists = document.getElementById("artistsLink");
     if (artists) artists.href = `/Salon/Artists${salonQuery}`;
     const services = document.getElementById("servicesLink");
-    if (services) services.href = `/Salon/Services${salonQuery}`;
+    if (services) services.href = buildGuestServicesHref();
     const user = document.getElementById("userLink");
     if (user) user.href = `/Salon/GuestInfo${salonQuery}`;
-    const book = document.getElementById("bookLink");
-    if (book) book.href = `/Salon/Services${salonQuery}`;
 
     const isGuestLoggedIn = resolveRole() === "guest";
 
@@ -87,6 +92,14 @@ function preserveSalonIdOnSalonLinks() {
         const url = new URL(rawHref, window.location.origin);
         if (!url.searchParams.get("salonId")) {
             url.searchParams.set("salonId", salonId);
+        }
+        if (
+            artistIdFromUrl &&
+            url.pathname === "/Salon/Services" &&
+            !url.searchParams.get("artistId") &&
+            !url.searchParams.get("artistid")
+        ) {
+            url.searchParams.set("artistId", artistIdFromUrl);
         }
         el.href = `${url.pathname}${url.search}${url.hash}`;
     });

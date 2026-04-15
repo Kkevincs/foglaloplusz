@@ -47,6 +47,12 @@ namespace Salonic.BLL.Services
             return _mapper.Map<SalonWithIdDTO>(entity);
         }
 
+        public async Task<List<SalonWithIdDTO>> ListPublicAsync()
+        {
+            var salons = await _salonRepository.ListAllAsync();
+            return _mapper.Map<List<SalonWithIdDTO>>(salons);
+        }
+
         public async Task<List<SalonWithIdDTO>> ListForOwnerAsync(int ownerId)
         {
             if (ownerId <= 0)

@@ -89,6 +89,32 @@ namespace Salonic.presentation.Controllers
             }
         }
 
+        [Authorize(Roles = "artist")]
+        [HttpPost("services/import")]
+        [ProducesResponseType(typeof(ServiceCsvImportResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<ServiceCsvImportResponseDTO>> ImportServicesFromCsv(
+            [FromBody] ServiceCsvImportRequestDTO? body)
+        {
+            if (body == null || string.IsNullOrWhiteSpace(body.CsvText))
+                return BadRequest("CSV text is required.");
+
+            if (!TryGetArtistIdFromSub(out var artistId))
+                return Unauthorized();
+
+            try
+            {
+                var result = await _serviceService.ImportServicesFromCsvAsync(artistId, body.CsvText);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Authorize(Roles = "owner,guest,artist")]
         [ProducesResponseType(typeof(List<ArtistWithIdDTO>), StatusCodes.Status200OK)]

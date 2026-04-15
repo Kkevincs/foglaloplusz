@@ -141,6 +141,14 @@ namespace Salonic.BLL.Services
             return _mapper.Map<List<AppointmentsWithIdDTO>>(apps);
         }
 
+        public async Task<List<AppointmentsWithIdDTO>> ListForArtistAsync(int artistId)
+        {
+            if (artistId <= 0)
+                throw new ArgumentException("Artist id must be positive.", nameof(artistId));
+            var apps = await _appointmentRepository.ListByArtistIdAsync(artistId);
+            return _mapper.Map<List<AppointmentsWithIdDTO>>(apps);
+        }
+
         public async Task<List<AppointmentsWithIdDTO>> ListForSalonOwnerAsync(int ownerId, int salonId)
         {
             var salon = await _salonRepository.GetByOwnerAndIdAsync(ownerId, salonId);
@@ -150,5 +158,8 @@ namespace Salonic.BLL.Services
             var appointments = await _appointmentRepository.ListBySalonIdAsync(salonId);
             return _mapper.Map<List<AppointmentsWithIdDTO>>(appointments);
         }
+
+        public Task<bool> CancelForGuestAsync(int guestId, int appointmentId) =>
+            _appointmentRepository.DeleteForGuestAsync(guestId, appointmentId);
     }
 }

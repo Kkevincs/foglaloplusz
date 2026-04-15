@@ -5,6 +5,7 @@ namespace Salonic.DAL.Repositories.Interfaces
     public interface ISalonRepository
     {
         Task<List<Salon>> ListByOwnerIdAsync(int ownerId);
+        Task<List<Salon>> ListAllAsync();
         Task<bool> ExistsByIdAsync(int salonId);
         //Task<string?> GetThemeBySalonIdAsync(int salonId);
         Task<Salon?> GetBySalonIdAsync(int salonId);

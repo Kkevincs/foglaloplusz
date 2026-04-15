@@ -20,6 +20,11 @@ namespace Salonic.DAL.Repositories
                 .OrderBy(s => s.Name)
                 .ToListAsync();
 
+        public Task<List<Salon>> ListAllAsync() =>
+            _context.Salons
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+
         public Task<bool> ExistsByIdAsync(int salonId) =>
             _context.Salons.AnyAsync(s => s.Id == salonId);
 
