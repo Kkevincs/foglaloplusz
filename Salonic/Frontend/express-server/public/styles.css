@@ -1,45 +1,128 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'DM Sans', sans-serif; background: #faf9f7; color: #2d2a26; min-height: 100vh; }
-nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: #fff; border-bottom: 1px solid #eee; }
-.logo { font-weight: 600; font-size: 1.25rem; color: #2d2a26; text-decoration: none; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--surface); border-bottom: 1px solid var(--border); }
+.logo { font-weight: 600; font-size: 1.25rem; color: var(--text); text-decoration: none; }
 .nav-links { display: flex; gap: 1.5rem; list-style: none; }
-.nav-links a { color: #5c5650; text-decoration: none; font-size: 0.9rem; }
-.nav-links a:hover { color: #2d2a26; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+.nav-links a:hover { color: var(--primary); }
 main { max-width: 640px; margin: 4rem auto; padding: 0 1.5rem; text-align: center; }
 h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.75rem; }
-p { color: #5c5650; line-height: 1.6; }
+p { color: var(--muted); line-height: 1.6; }
 
 .services-page, .artists-page { text-align: left; }
 .services-page .subtitle, .artists-page .subtitle { margin-bottom: 1.5rem; }
 .services-list, .artists-list { display: grid; gap: 1rem; }
-.services-list .service-card, .artists-list .artist-card { padding: 1rem; background: #fff; border: 1px solid #eee; border-radius: 6px; }
+.services-list .service-card, .artists-list .artist-card { padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
 .services-list .service-card .name, .artists-list .artist-card .name { font-weight: 600; }
-.services-list .service-card .desc, .artists-list .artist-card .role { font-size: 0.9rem; color: #5c5650; margin-top: 0.25rem; }
+.services-list .service-card .desc, .artists-list .artist-card .role { font-size: 0.9rem; color: var(--muted); margin-top: 0.25rem; }
+
+/* Booking: same chrome for service checkboxes and artist radio (multi vs single select) */
+.booking-card-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+.booking-card-actions-row--cta {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+}
+.booking-choice {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.booking-choice-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+.booking-choice-box {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--text);
+    border-radius: 4px;
+    background: var(--surface);
+    flex-shrink: 0;
+    position: relative;
+    box-sizing: border-box;
+}
+.booking-choice-input:focus-visible + .booking-choice-box {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+.booking-choice-input[type="checkbox"]:checked + .booking-choice-box {
+    background: var(--text);
+    border-color: var(--text);
+}
+.booking-choice-input[type="checkbox"]:checked + .booking-choice-box::after {
+    content: "";
+    position: absolute;
+    left: 0.3rem;
+    top: 0.05rem;
+    width: 0.28rem;
+    height: 0.55rem;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.booking-choice-input[type="radio"]:checked + .booking-choice-box::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    background: var(--text);
+    border-radius: 2px;
+}
+.artist-card .artist-card-cta {
+    display: none;
+}
+.artist-card:has(.booking-choice-input[type="radio"]:checked) .artist-card-cta {
+    display: inline-flex;
+}
+
+.services-cart-holder {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}
 
 .auth-page { max-width: 320px; }
 .auth-form { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
-.auth-form input { padding: 0.6rem 0.75rem; border: 1px solid #eee; border-radius: 6px; font-family: inherit; font-size: 0.95rem; }
-.auth-form button { padding: 0.6rem; background: #2d2a26; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-weight: 600; cursor: pointer; }
-.auth-form button:hover { background: #3d3a36; }
-.role-toggle { display: flex; gap: 0; border: 1px solid #eee; border-radius: 6px; overflow: hidden; }
-.role-toggle label { flex: 1; padding: 0.5rem 0.75rem; text-align: center; font-size: 0.9rem; cursor: pointer; background: #fff; }
-.role-toggle label:has(input:checked) { background: #2d2a26; color: #fff; }
+.auth-form input { padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; background: var(--surface); color: var(--text); }
+.auth-form button { padding: 0.6rem; background: var(--primary); color: #fff; border: none; border-radius: 6px; font-family: inherit; font-weight: 600; cursor: pointer; }
+.auth-form button:hover { background: var(--primary-hover); }
+.role-toggle { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.role-toggle label { flex: 1; padding: 0.5rem 0.75rem; text-align: center; font-size: 0.9rem; cursor: pointer; background: var(--surface); }
+.role-toggle label:has(input:checked) { background: var(--primary); color: #fff; }
 .role-toggle input { position: absolute; opacity: 0; }
-.auth-switch { font-size: 0.9rem; color: #5c5650; }
-.auth-switch a { color: #2d2a26; }
+.auth-switch { font-size: 0.9rem; color: var(--muted); }
+.auth-switch a { color: var(--primary); }
 .auth-switch-spaced { margin-top: 1.25rem; }
 a.auth-cta {
     display: inline-block;
     margin-top: 1rem;
     padding: 0.65rem 1rem;
-    background: #2d2a26;
+    background: var(--primary);
     color: #fff;
     text-decoration: none;
     border-radius: 6px;
     font-weight: 600;
     font-size: 0.95rem;
 }
-a.auth-cta:hover { background: #3d3a36; color: #fff; }
+a.auth-cta:hover { background: var(--primary-hover); color: #fff; }
 
 .portal-page { max-width: 360px; }
 .portal-page .subtitle { margin-bottom: 0.5rem; }
@@ -47,7 +130,7 @@ a.auth-cta:hover { background: #3d3a36; color: #fff; }
 a.portal-btn {
     display: block;
     padding: 0.75rem 1rem;
-    background: #2d2a26;
+    background: var(--primary);
     color: #fff;
     text-decoration: none;
     border-radius: 6px;
@@ -55,17 +138,17 @@ a.portal-btn {
     font-size: 0.95rem;
     text-align: center;
 }
-a.portal-btn:hover { background: #3d3a36; color: #fff; }
-.portal-hint { margin-top: 1.5rem; font-size: 0.8rem; color: #5c5650; }
-.portal-hint code { font-size: 0.85em; background: #eee; padding: 0.1rem 0.35rem; border-radius: 4px; }
+a.portal-btn:hover { background: var(--primary-hover); color: #fff; }
+.portal-hint { margin-top: 1.5rem; font-size: 0.8rem; color: var(--muted); }
+.portal-hint code { font-size: 0.85em; background: var(--surface-soft); padding: 0.1rem 0.35rem; border-radius: 4px; }
 
 .user-page { text-align: left; }
 .user-page .subtitle { margin-bottom: 1.5rem; }
-.user-profile { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; margin-bottom: 2rem; }
-.user-info .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+.user-profile { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 2rem; }
+.user-info .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
 .user-info .info-row:last-child { border-bottom: none; }
-.user-info .info-label { font-weight: 600; color: #2d2a26; }
-.user-info .info-value { color: #5c5650; }
+.user-info .info-label { font-weight: 600; color: var(--text); }
+.user-info .info-value { color: var(--muted); }
 .user-page .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
 .adservice-page { text-align: left; max-width: 640px; }
 .adservice-page .subtitle { margin-bottom: 1.5rem; }
@@ -73,37 +156,37 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
 .adservice-form input,
 .adservice-form textarea {
     padding: 0.6rem 0.75rem;
-    border: 1px solid #eee;
+    border: 1px solid var(--border);
     border-radius: 6px;
     font-family: inherit;
     font-size: 0.95rem;
 }
 .adservice-form textarea { resize: vertical; min-height: 96px; }
-.adservice-form label { display: block; font-size: 0.9rem; color: #5c5650; margin-bottom: 0.25rem; text-align: left; }
+.adservice-form label { display: block; font-size: 0.9rem; color: var(--muted); margin-bottom: 0.25rem; text-align: left; }
 .adservice-form input[type="date"],
 .adservice-form input[type="time"] {
     padding: 0.6rem 0.75rem;
-    border: 1px solid #eee;
+    border: 1px solid var(--border);
     border-radius: 6px;
     font-family: inherit;
     font-size: 0.95rem;
-    color: #2d2a26;
+    color: var(--text);
     max-width: 100%;
 }
 .working-hours-time-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .working-hours-time-field { flex: 1; min-width: 8rem; }
 .working-hours-time-field label { margin-top: 0.25rem; }
 .working-hours-mode-fieldset {
-    border: 1px solid #eee;
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: 0.75rem 1rem 1rem;
     margin: 0;
-    background: #fff;
+    background: var(--surface);
 }
 .working-hours-legend {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #2d2a26;
+    color: var(--text);
     padding: 0 0.35rem;
 }
 .working-hours-mode-row {
@@ -117,15 +200,15 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     align-items: center;
     gap: 0.45rem;
     font-size: 0.92rem;
-    color: #2d2a26;
+    color: var(--text);
     cursor: pointer;
 }
-.working-hours-radio-label input { width: auto; margin: 0; accent-color: #2d2a26; }
+.working-hours-radio-label input { width: auto; margin: 0; accent-color: var(--primary); }
 .working-hours-panel { margin-top: 0.25rem; }
 .working-hours-block-label {
     display: block;
     font-size: 0.9rem;
-    color: #5c5650;
+    color: var(--muted);
     margin-bottom: 0.65rem;
     line-height: 1.45;
 }
@@ -141,7 +224,7 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: #8a847c;
+    color: var(--muted);
     margin-bottom: 0.35rem;
     padding: 0 0.15rem;
 }
@@ -156,8 +239,8 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     gap: 0.5rem 0.65rem;
     align-items: center;
     padding: 0.5rem 0.65rem;
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 6px;
 }
 .working-hours-day-col {
@@ -170,19 +253,19 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
 .working-hours-day-name {
     font-weight: 600;
     font-size: 0.92rem;
-    color: #2d2a26;
+    color: var(--text);
     line-height: 1.2;
 }
 .wh-calendar-date {
     font-size: 0.78rem;
     font-weight: 500;
-    color: #8a847c;
+    color: var(--muted);
     line-height: 1.2;
 }
 .wh-calendar-date.wh-calendar-date--today,
 .wh-calendar-date.wh-calendar-date--tomorrow,
 .wh-calendar-date.wh-calendar-date--range-start {
-    color: #2d2a26;
+    color: var(--text);
     font-weight: 600;
 }
 .working-hours-open-label {
@@ -190,14 +273,14 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     align-items: center;
     gap: 0.35rem;
     font-size: 0.85rem;
-    color: #5c5650;
+    color: var(--muted);
     cursor: pointer;
     margin: 0;
 }
 .working-hours-open-label input {
     margin: 0;
     width: auto;
-    accent-color: #2d2a26;
+    accent-color: var(--primary);
 }
 .working-hours-single-open-label {
     display: flex;
@@ -216,13 +299,13 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
 input[type="time"].wh-time-invalid {
     opacity: 0.55;
     cursor: not-allowed;
-    border-color: #e5e2de;
-    background: #f7f6f4;
-    color: #8a847c;
+    border-color: var(--border);
+    background: var(--surface-soft);
+    color: var(--muted);
 }
 input[type="time"].wh-time-invalid:focus {
     outline: none;
-    border-color: #c4bfb8;
+    border-color: var(--accent);
 }
 @media (max-width: 520px) {
     .working-hours-week-head { display: none; }
@@ -233,18 +316,28 @@ input[type="time"].wh-time-invalid:focus {
     .working-hours-day-col { grid-column: 1 / -1; }
     .working-hours-open-label { grid-column: 1 / -1; }
 }
+/* Primary action: reuse on standalone buttons (e.g. Add to cart) and .adservice-form */
+.btn-primary,
 .adservice-form button {
     width: fit-content;
     padding: 0.6rem 0.9rem;
-    background: #2d2a26;
+    background: var(--primary);
     color: #fff;
     border: none;
     border-radius: 6px;
     font-family: inherit;
     font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
 }
-.adservice-form button:hover { background: #3d3a36; }
+.btn-primary:hover,
+.adservice-form button:hover {
+    background: var(--primary-hover);
+}
+.appointment-layout > .btn-primary {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+}
 
 main.appointment-page { max-width: 900px; }
 .appointment-page { text-align: left; }
@@ -253,19 +346,30 @@ main.appointment-page { max-width: 900px; }
 @media (max-width: 720px) {
   .appointment-layout { grid-template-columns: 1fr; }
 }
-.times-panel { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; }
-.calendar-card { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; margin-bottom: 0; }
+.times-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; }
+.calendar-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 0; }
 .calendar-card .calendar-header { display: block; font-weight: 600; margin-bottom: 0.75rem; }
-.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid #eee; border-radius: 6px; font-family: inherit; font-size: 0.95rem; color: #2d2a26; }
-.calendar-card input[type="date"]:focus { outline: none; border-color: #c4bfb8; }
+.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; color: var(--text); background: var(--surface); }
+.calendar-card input[type="date"]:focus { outline: none; border-color: var(--accent); }
 .appointment-page .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; margin-top: 0; }
 .times-panel .time-slots { margin-top: 0.25rem; }
 .time-slots { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
-.time-slot { padding: 0.5rem 0.85rem; background: #fff; border: 1px solid #eee; border-radius: 6px; font-size: 0.9rem; color: #2d2a26; cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease; }
+.time-slot { padding: 0.5rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; color: var(--text); cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease; }
 .time-slot:hover,
-.time-slot.time-slot-selected { background: #2d2a26; color: #fff; border-color: #2d2a26; font-weight: 600; }
+.time-slot.time-slot-selected { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
 
-/* Optional salon themes (customSalon) — add class on body e.g. theme-pink */
+:root {
+    --bg: #f0f0f0;
+    --text: #0a0a0a;
+    --muted: #525252;
+    --surface: #ffffff;
+    --surface-soft: #e5e5e5;
+    --border: #a3a3a3;
+    --primary: #171717;
+    --primary-hover: #000000;
+    --accent: #404040;
+    --accent-soft: #d4d4d4;
+}
 body.theme-pink {
     --bg: #fff4f7;
     --text: #6f3a80;
@@ -375,13 +479,15 @@ body[class*=" theme-"] .subtitle {
 .auth-form textarea,
 .auth-form select {
     padding: 0.6rem 0.75rem;
-    border: 1px solid #eee;
+    border: 1px solid var(--border);
     border-radius: 6px;
     font-family: inherit;
     font-size: 0.95rem;
+    background: var(--surface);
+    color: var(--text);
 }
 .auth-form input[type="file"] { padding: 0.45rem 0.6rem; }
-.field-label { text-align: left; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.25rem; }
+.field-label { text-align: left; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.25rem; color: var(--text); }
 .form-page { max-width: 720px; text-align: left; margin-left: auto; margin-right: auto; }
 .form-page .subtitle { margin-bottom: 1.5rem; }
 .setup-form { max-width: 100%; }
@@ -403,7 +509,7 @@ body[class*=" theme-"] .subtitle {
     font-size: 1.15rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #2d2a26;
+    color: var(--text);
 }
 .owner-salons-list {
     list-style: none;
@@ -418,8 +524,8 @@ body[class*=" theme-"] .subtitle {
     justify-content: space-between;
     gap: 1rem;
     padding: 1.25rem;
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
 }
 .owner-salon-card-placeholder {
@@ -433,12 +539,12 @@ body[class*=" theme-"] .subtitle {
 }
 .owner-salon-meta {
     font-size: 0.85rem;
-    color: #7a736a;
+    color: var(--muted);
     margin-bottom: 0.5rem;
 }
 .owner-salon-desc {
     font-size: 0.9rem;
-    color: #5c5650;
+    color: var(--muted);
     line-height: 1.5;
     max-width: 28rem;
 }
@@ -453,9 +559,9 @@ body[class*=" theme-"] .subtitle {
     font-size: 0.85rem;
     font-weight: 600;
     border-radius: 6px;
-    border: 1px solid #ddd;
-    background: #fff;
-    color: #2d2a26;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
@@ -465,27 +571,27 @@ button.owner-btn:disabled {
     opacity: 0.7;
 }
 a.owner-btn-primary:hover {
-    background: #3d3a36;
+    background: var(--primary-hover);
     color: #fff;
-    border-color: #3d3a36;
+    border-color: var(--primary-hover);
 }
 .owner-btn-primary {
-    background: #2d2a26;
+    background: var(--primary);
     color: #fff;
-    border-color: #2d2a26;
+    border-color: var(--primary);
 }
 .owner-btn-ghost {
     background: transparent;
 }
 .owner-btn-danger {
-    border-color: #c45c5c;
-    color: #a33030;
-    background: #fff5f5;
+    border-color: var(--accent);
+    color: var(--text);
+    background: var(--accent-soft);
 }
 .owner-btn-danger:hover:not(:disabled) {
-    background: #fde8e8;
-    border-color: #a33030;
-    color: #7a2222;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
 }
 
 .artist-hours-page {
@@ -499,20 +605,20 @@ a.owner-btn-primary:hover {
     margin: -0.5rem 0 1.5rem;
 }
 .artist-hours-switch a {
-    color: #5c5650;
+    color: var(--muted);
     font-weight: 600;
     text-decoration: none;
 }
 .artist-hours-switch a:hover {
-    color: #2d2a26;
+    color: var(--primary);
 }
 .artist-hours-section {
     margin-bottom: 2rem;
 }
 .artist-hours-list {
     list-style: none;
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -521,10 +627,18 @@ a.owner-btn-primary:hover {
     justify-content: space-between;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
 }
 .artist-hours-list li:last-child {
     border-bottom: none;
+}
+
+.artist-hours-list li .artist-service-desc {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--muted);
 }
 
 /* Salon dashboard (owner template) */
@@ -544,7 +658,7 @@ a.owner-btn-primary:hover {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #2d2a26;
+    color: var(--text);
 }
 .salon-dash-artists {
     list-style: none;
@@ -559,8 +673,8 @@ a.owner-btn-primary:hover {
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem 1.15rem;
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
 }
 .salon-dash-card-name {
@@ -570,13 +684,13 @@ a.owner-btn-primary:hover {
 }
 .salon-dash-card-meta {
     font-size: 0.88rem;
-    color: #5c5650;
+    color: var(--muted);
 }
 .salon-dash-table-wrap {
     overflow-x: auto;
-    border: 1px solid #eee;
+    border: 1px solid var(--border);
     border-radius: 8px;
-    background: #fff;
+    background: var(--surface);
 }
 .salon-dash-table {
     width: 100%;
@@ -587,12 +701,12 @@ a.owner-btn-primary:hover {
 .salon-dash-table td {
     padding: 0.65rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
 }
 .salon-dash-table th {
     font-weight: 600;
-    color: #2d2a26;
-    background: #faf9f7;
+    color: var(--text);
+    background: var(--surface-soft);
 }
 .salon-dash-table tbody tr:last-child td {
     border-bottom: none;
@@ -616,14 +730,14 @@ a.owner-btn-primary:hover {
 }
 .salon-schedule-header .subtitle {
     margin-bottom: 1rem;
-    color: #5c5650;
+    color: var(--muted);
 }
 .salon-schedule-label {
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #7a736a;
+    color: var(--muted);
     margin-bottom: 0.35rem;
 }
 .salon-schedule-meta {
@@ -632,11 +746,11 @@ a.owner-btn-primary:hover {
     align-items: center;
     gap: 0.35rem;
     font-size: 0.9rem;
-    color: #5c5650;
+    color: var(--muted);
     margin-top: 0.75rem;
 }
 .salon-schedule-meta-sep {
-    color: #ccc;
+    color: var(--border);
 }
 .salon-schedule-controls {
     display: flex;
@@ -649,9 +763,9 @@ a.owner-btn-primary:hover {
     cursor: not-allowed;
 }
 .salon-schedule-board {
-    border: 1px solid #eee;
+    border: 1px solid var(--border);
     border-radius: 10px;
-    background: #fff;
+    background: var(--surface);
     overflow-x: auto;
     padding: 1rem;
     margin-bottom: 1.25rem;
@@ -661,27 +775,27 @@ a.owner-btn-primary:hover {
     grid-template-columns: 3.5rem repeat(7, minmax(5.5rem, 1fr));
     gap: 2px;
     min-width: 44rem;
-    background: #e8e6e3;
+    background: var(--border);
     border-radius: 6px;
     overflow: hidden;
 }
 .schedule-grid-corner {
-    background: #faf9f7;
+    background: var(--surface-soft);
 }
 .schedule-grid-dayhead {
-    background: #faf9f7;
+    background: var(--surface-soft);
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: #5c5650;
+    color: var(--muted);
     padding: 0.5rem 0.35rem;
     text-align: center;
 }
 .schedule-grid-time {
-    background: #faf9f7;
+    background: var(--surface-soft);
     font-size: 0.72rem;
-    color: #7a736a;
+    color: var(--muted);
     padding: 0.4rem 0.35rem;
     text-align: right;
     align-self: stretch;
@@ -690,7 +804,7 @@ a.owner-btn-primary:hover {
     justify-content: flex-end;
 }
 .schedule-grid-cell {
-    background: #fff;
+    background: var(--surface);
     min-height: 2.6rem;
     padding: 0.35rem;
     font-size: 0.72rem;
@@ -700,8 +814,8 @@ a.owner-btn-primary:hover {
     text-align: center;
 }
 .schedule-cell-muted {
-    color: #b5aea3;
-    background: #fcfbfa;
+    color: var(--muted);
+    background: var(--surface-soft);
 }
 .schedule-cell-pill {
     display: inline-block;
@@ -715,19 +829,19 @@ a.owner-btn-primary:hover {
     white-space: nowrap;
 }
 .schedule-pill-open {
-    background: #e8f4ea;
-    color: #2d6a3a;
+    background: var(--accent-soft);
+    color: var(--text);
 }
 .schedule-pill-booked {
-    background: #ede8f4;
-    color: #4a3d6b;
+    background: var(--accent);
+    color: #fff;
 }
 .salon-schedule-legend {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     font-size: 0.85rem;
-    color: #5c5650;
+    color: var(--muted);
 }
 .schedule-legend-item {
     display: inline-flex;
@@ -741,8 +855,8 @@ a.owner-btn-primary:hover {
     display: inline-block;
 }
 .schedule-legend-muted {
-    background: #ebe8e4;
-    border: 1px solid #ddd;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
 }
 .visually-hidden {
     position: absolute;
@@ -754,4 +868,33 @@ a.owner-btn-primary:hover {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* Toast + button feedback (Anime.js) */
+#salonic-toast-root {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.salonic-toast {
+    padding: 0.65rem 1.35rem;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+    font-size: 0.92rem;
+    font-weight: 600;
+    max-width: min(90vw, 360px);
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
 }

@@ -11,7 +11,7 @@
 </head>
 <body>
     <nav>
-        <a href="/Salon" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
+        <a id="logoLink" href="#" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic"/></a>
         <ul class="nav-links">
             <li><a id="homeLink" href="#">Home</a></li>
             <li><a id="servicesLink" href="#">Services</a></li>
@@ -23,15 +23,18 @@
     </nav>
     <main class="services-page">
         <h1>Services</h1>
-        <p class="subtitle">Choose a service to book.</p>
-        <div id="services-list" class="services-list">
-            
-            <button type="button" onclick="AddToCart()" id="AddToCart">Add to Cart</button>
+        <p class="subtitle">Our artists offer a wide variety of services.</p>
+        <div id="services-list" class="services-list"></div>
+        <div id="services-cart-holder" class="services-cart-holder">
+            <button type="button" id="AddToCart" class="btn-primary" hidden onclick="AddToCart()">Add to cart</button>
         </div>
     </main>
     <script src="/api.js"></script>
         <script src="/navbar.js"></script>
     <script src="/script.js"></script>
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <script src="/buttonFeedback.js"></script>
 </body>
 </html>

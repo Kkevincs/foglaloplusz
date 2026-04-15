@@ -375,3 +375,24 @@ async function setWorkingHoursByWeek(token, date) {
     const data = await response.json();
     return data;
 }
+//async function GetSalonThemeBySalonId(token, salonId) {
+//    const response = await fetch(`https://localhost:7156/api/salon/${salonId}/theme`, {
+//        headers: { authorization: `Bearer ${token}` }
+//    });
+//    return await response.text();
+//}
+async function GetSalonBySalonId(token, salonId) {
+    const response = await fetch(`https://localhost:7156/api/salon/${salonId}/public-profile`, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+    return await response.json();
+}
+//async function applySalonHomepage(salonId) {
+//    const response = await fetch(`https://localhost:7156/api/salon/${salonId}/public-profile`);
+//    const salon = await GetSalonBySalonId();
+//    applyTheme(salon.theme);
+//    document.getElementById('logo').src = salon.logo;
+//    document.getElementById('salon-name').src = salon.logo;
+//    document.getElementById('salon-description').textContent = salon.description;
+//    document.getElementById('salon-support-email').href = `mailto:${salon.supportEmail}`;
+//}

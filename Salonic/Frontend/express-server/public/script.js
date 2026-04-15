@@ -25,8 +25,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         if (!(await assertPublicSalonExistsOrRedirect(guestSalonId))) return;
+        await applySalonThemeForPublicPages();
+        await applySalonPersonalLogo();
     }
-
+    
     if (window.location.pathname === '/ownerhomepage') {
         loadSalons();
         document.getElementById('owner-salons-list')?.addEventListener('click', async (e) => {
@@ -95,6 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('artists-list')) LoadArtists();
     if (document.getElementById('artist-profile')) LoadArtistData();
     if (document.getElementById('owner-profile')) LoadOwnerData();
+    if (document.getElementById('salon-info')) applySalonPersonalHomepage();
 });
 document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('click', e => {
@@ -120,6 +123,53 @@ function getRoleFromToken() {
 }
 
 window.getRoleFromToken = getRoleFromToken;
+
+async function applySalonPersonalHomepage() {
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
+    document.getElementById('salon-name').textContent = salon.name;
+    document.getElementById('salon-description').textContent = salon.description;
+    document.getElementById('salon-support-email').href = `mailto:${salon.email}`;
+    document.getElementById('salon-support-email').textContent = salon.email;
+}
+async function applySalonPersonalLogo() {
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
+    const logoUrl = `http://localhost:5181${salon.logo}`
+    logoLink.innerHTML = `<img src="${logoUrl}" alt="${salon.name}">`;
+}
+
+// Only keep this if you actually need to store multiple salon themes in one browser
+function getCache() {
+    return JSON.parse(localStorage.getItem("salonThemeById") || "{}");
+}
+
+function applyTheme(theme) {
+    if (!theme) return;
+    document.body.className = document.body.className
+        .split(' ')
+        .filter(cls => !cls.startsWith('theme-'))
+        .join(' ');
+    document.body.classList.add(theme.trim());
+}
+async function applySalonThemeForPublicPages() {
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    const cache = getCache();
+    try {
+        const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
+        if (salon) {
+            applyTheme(salon.theme);
+            cache[salonId] = salon.theme;
+            localStorage.setItem("salonThemeById", JSON.stringify(cache));
+            return;
+        }
+    } catch (e) {
+        applyTheme(cache[salonId]);
+    }
+}
 
 /**
  * Guest /Salon routes: salon must exist in the database.
@@ -273,17 +323,18 @@ async function loadWorkingHours() {
     }
     console.log(date)
     const hours = await GetArtistWorkingHoursByMonth(localStorage.getItem('token'), date )
-    const days = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"]
+    const days = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
     hours.forEach(x => {
         const [year, month, dayPart] = x.date.split("-");
         const day = dayPart.slice(0, 2);
-        const dayName = days[new Date(x.date).getDay() - 1]
+        const dow = new Date(x.date).getDay();
+        const dayName = days[(dow + 6) % 7];
         const startTime = String(x.startTime).trim();
         const endTime = String(x.endTime).trim();
         const isClosed =
             (startTime === "0" && endTime === "0") ||
             (startTime === "00:00" && endTime === "00:00");
-        openHours = isClosed ? "closed" : `${startTime} - ${endTime}`;
+        const openHours = isClosed ? "closed" : `${startTime} - ${endTime}`;
         document.getElementById('artist-hours-list').innerHTML += `
 
             <li><span>${dayName} (${day}/${month})</span> <strong>${openHours}</strong></li>
@@ -310,7 +361,14 @@ document.getElementById('salon-setup-form')?.addEventListener('submit',async (e)
         description,
         logoFile
     };
-    await AddSalon(localStorage.getItem('token'), newSalon);
+    const createdSalon = await AddSalon(localStorage.getItem('token'), newSalon);
+
+    const salonId = createdSalon?.id ?? createdSalon?.Id;
+    if (salonId) {
+        const cache = getSalonThemeCache();
+        cache[String(salonId)] = theme;
+        setSalonThemeCache(cache);
+    }
 })
 
 
@@ -420,16 +478,54 @@ document.getElementById('owner-register-form')?.addEventListener('submit', async
     }
 });
 
-async function AddToCart() {
-    
+function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
 
-    const pathSegments = window.location.pathname.split('/');
-    pathSegments.forEach(x => console.log(x))
+function syncServicesCartButton() {
+    const list = document.getElementById('services-list');
+    const btn = document.getElementById('AddToCart');
+    const holder = document.getElementById('services-cart-holder');
+    if (!list || !btn) return;
+    if (holder) holder.appendChild(btn);
+    list.querySelectorAll('.service-card-cart-slot').forEach((el) => el.remove());
+    const checked = list.querySelectorAll('input.booking-choice-input[type="checkbox"]:checked');
+    if (!checked.length) {
+        btn.hidden = true;
+        return;
+    }
+    btn.hidden = false;
+    const cards = [...list.querySelectorAll('.service-card')];
+    let lastCard = null;
+    for (let i = cards.length - 1; i >= 0; i--) {
+        if (cards[i].querySelector('input.booking-choice-input[type="checkbox"]:checked')) {
+            lastCard = cards[i];
+            break;
+        }
+    }
+    if (!lastCard) return;
+    const slot = document.createElement('div');
+    slot.className = 'service-card-cart-slot booking-card-actions-row booking-card-actions-row--cta';
+    lastCard.appendChild(slot);
+    slot.appendChild(btn);
+}
+
+document.addEventListener('change', (e) => {
+    if (e.target.matches('#services-list input.booking-choice-input[type="checkbox"]')) {
+        syncServicesCartButton();
+    }
+});
+
+async function AddToCart() {
     const ids = [];
-    document.querySelectorAll('#services-list input[type="checkbox"]:checked').forEach((cb) => {
+    document.querySelectorAll('#services-list input.booking-choice-input[type="checkbox"]:checked').forEach((cb) => {
         ids.push(cb.id);
     });
-    console.log(ids)
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get("salonId") || params.get("salonid");
     const salonQuery = salonId ? `&salonId=${encodeURIComponent(salonId)}` : "";
@@ -437,7 +533,7 @@ async function AddToCart() {
 }
 
 function SelectArtist(){
-    const selectedRadio = document.querySelector('.artist-radio-cell input[type="radio"]:checked');
+    const selectedRadio = document.querySelector('#artists-list input.booking-choice-input[type="radio"]:checked');
     if (!selectedRadio) return;
     const id = selectedRadio.id;
     const params = new URLSearchParams(window.location.search);
@@ -512,27 +608,30 @@ async function LoadServices() {
         console.warn('Add ?salonId= to the URL to load services.');
         return;
     }
+    const list = document.getElementById('services-list');
+    if (!list) return;
     const services = await GetServices(salonId);
-
-    services.forEach(x => 
-        document.getElementById("services-list").innerHTML += `
+    list.innerHTML = '';
+    services.forEach((x) => {
+        const name = escapeHtml(x.name);
+        const desc = escapeHtml(x.description ?? '');
+        const id = String(x.id);
+        list.innerHTML += `
             <div class="service-card">
-                <div class="name">
-                    ${x.name}
+                <div class="service-card-body">
+                    <div class="name">${name}</div>
+                    <div class="desc">${desc}</div>
                 </div>
-                <div class="desc">
-                    ${x.description}
+                <div class="booking-card-actions-row">
+                    <label class="booking-choice">
+                        <input type="checkbox" class="booking-choice-input" id="${id}" aria-label="Select ${name}">
+                        <span class="booking-choice-box" aria-hidden="true"></span>
+                    </label>
                 </div>
-                <div class="service-checkbox-cell" style="display: flex; justify-content: flex-end; align-items: center;">
-                    <input type="checkbox" id="${x.id}">
-                </div>
-
             </div>
-        
-
-        `
-    )
-
+        `;
+    });
+    syncServicesCartButton();
 }
 
 async function LoadUserData() {
@@ -542,7 +641,7 @@ async function LoadUserData() {
         <div class="user-info">
                 <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
                 <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
+                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">${userData.role}</span></div>
             </div>
 
     `
@@ -555,7 +654,7 @@ async function LoadArtistData() {
         <div class="user-info">
                 <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
                 <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
+                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Artist</span></div>
             </div>
 
     `
@@ -577,28 +676,57 @@ async function LoadOwnerData() {
 }
 
 async function LoadArtists() {
-    const artists = await GetArtists(localStorage.getItem("token"))
-
-    artists.forEach(x => 
-        document.getElementById("artists-list").innerHTML += `
-             <div class="artist-card"><div class="name">${x.name}</div><div class="role">${x.description}</div>
-             <div class="artist-radio-cell" style="display: flex; justify-content: flex-end; align-items: center;">
-                    <input type="radio" name="artist" id="${x.id}">
+    const list = document.getElementById('artists-list');
+    if (!list) return;
+    const artists = await GetArtists(localStorage.getItem('token'));
+    const bookingStep = window.location.pathname === '/Salon/SelectArtist';
+    list.innerHTML = '';
+    artists.forEach((x) => {
+        const name = escapeHtml(x.name ?? '');
+        const desc = escapeHtml(x.description ?? '');
+        const id = String(x.id);
+        if (bookingStep) {
+            list.innerHTML += `
+             <div class="artist-card">
+                <div class="artist-card-text">
+                    <div class="name">${name}</div>
+                    <div class="role">${desc}</div>
                 </div>
-             </div>
-             
-        `
-    )
+                <div class="booking-card-actions-row">
+                    <label class="booking-choice">
+                        <input type="radio" name="booking-artist" class="booking-choice-input" id="${id}" aria-label="Select ${name}">
+                        <span class="booking-choice-box" aria-hidden="true"></span>
+                    </label>
+                    <button type="button" class="btn-primary artist-card-cta" onclick="SelectArtist()">Select artist</button>
+                </div>
+             </div>`;
+        } else {
+            list.innerHTML += `
+             <div class="artist-card">
+                <div class="name">${name}</div>
+                <div class="role">${desc}</div>
+             </div>`;
+        }
+    });
 }
 
-async function loadServicesForArtists(){
-    const services = await getServicesByArtist(localStorage.getItem('token'))
-    services.forEach(x => 
-        document.getElementById("service-card").innerHTML += `
-            <div class="name">${x.name}</div>
-            <div class="desc">${x.durationInMinute}</div>
-        `
-    )
+async function loadServicesForArtists() {
+    const list = document.getElementById("artist-services-list");
+    if (!list) return;
+    const services = await getServicesByArtist(localStorage.getItem("token"));
+    list.innerHTML = "";
+    if (!Array.isArray(services)) return;
+    services.forEach((x) => {
+        const desc = x.description
+            ? `<span class="artist-service-desc">${x.description}</span>`
+            : "";
+        list.innerHTML += `
+            <li>
+                <span><strong>${x.name}</strong>${desc}</span>
+                <strong>${x.durationInMinute} min ${x.price} Ft</strong>
+            </li>
+        `;
+    });
 }
 
 function scheduleGetMondayOfWeek(d) {

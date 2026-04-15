@@ -38,6 +38,9 @@ function setGuestNavItemVisible(anchorId, visible) {
 }
 
 function applyGuestNavbarState() {
+    const logo = document.getElementById("logoLink");
+    if (logo) logo.href = `/Salon${salonQuery}`;
+
     const home = document.getElementById("homeLink");
     if (home) home.href = `/Salon${salonQuery}`;
     const artists = document.getElementById("artistsLink");

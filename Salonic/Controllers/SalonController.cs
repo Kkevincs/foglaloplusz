@@ -5,6 +5,7 @@ using Salonic.BLL.DTOs.AppointmentDTOs;
 using Salonic.BLL.DTOs.ArtistDTOs;
 using Salonic.BLL.DTOs.SalonDTOs;
 using Salonic.BLL.Services.Interfaces;
+using Salonic.DAL.Models;
 using Salonic.FileStorage;
 using Salonic.presentation.Models;
 
@@ -40,6 +41,31 @@ namespace Salonic.presentation.Controllers
             if (!await _salonService.ExistsAsync(salonId))
                 return NotFound();
             return NoContent();
+        }
+
+        //[AllowAnonymous]
+        //[HttpGet("{salonId:int}/theme")]
+        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<ActionResult<string>> GetSalonTheme(int salonId)
+        //{
+        //    var theme = await _salonService.GetThemeBySalonIdAsync(salonId);
+        //    if (theme == null)
+        //        return NotFound();
+        //    return Ok(theme);
+        //}
+        [AllowAnonymous]
+        [HttpGet("{salonId}/public-profile")]
+        [ProducesResponseType(typeof(SalonWithIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<SalonWithIdDTO>> GetPublicProfile(int salonId)
+        {
+            var profile = await _salonService.GetPublicProfileAsync(salonId);
+            if (profile == null) return NotFound();
+
+            return Ok(profile);
         }
 
         [Authorize(Roles = "owner")]

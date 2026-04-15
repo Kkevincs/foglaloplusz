@@ -36,6 +36,17 @@ namespace Salonic.BLL.Services
         public Task<bool> ExistsAsync(int salonId) =>
             salonId <= 0 ? Task.FromResult(false) : _salonRepository.ExistsByIdAsync(salonId);
 
+        //public Task<string?> GetThemeBySalonIdAsync(int salonId) =>
+        //    salonId <= 0 ? Task.FromResult<string?>(null) : _salonRepository.GetThemeBySalonIdAsync(salonId);
+
+        public async Task<SalonWithIdDTO?> GetPublicProfileAsync(int salonId)
+        {
+            if (salonId <= 0) return null;
+            var entity = await _salonRepository.GetBySalonIdAsync(salonId);
+            if (entity == null) return null;
+            return _mapper.Map<SalonWithIdDTO>(entity);
+        }
+
         public async Task<List<SalonWithIdDTO>> ListForOwnerAsync(int ownerId)
         {
             if (ownerId <= 0)
