@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Foglaloplusz.BLL.DTOs.ServiceDTOs
+{
+    public class ServiceWithoutIdDTO
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Price { get; set; }
+        public int DurationInMinute { get; set; }
+    }
+}

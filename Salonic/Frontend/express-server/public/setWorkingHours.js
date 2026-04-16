@@ -49,10 +49,10 @@
             row.dataset.whDate = formatLocalYMD(calendarDay);
             row.innerHTML =
                 '<div class="working-hours-day-col"><span class="working-hours-day-name">' +
-                calendarDay.toLocaleDateString(undefined, { weekday: "short" }) +
+                calendarDay.toLocaleDateString("hu-HU", { weekday: "short" }) +
                 '</span><span class="wh-calendar-date">' +
-                calendarDay.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
-                '</span></div><label class="working-hours-open-label"><input type="checkbox" class="wh-open" checked> Open</label><input type="time" class="wh-start" value="' +
+                calendarDay.toLocaleDateString("hu-HU", { month: "short", day: "numeric" }) +
+                '</span></div><label class="working-hours-open-label"><input type="checkbox" class="wh-open" checked> Nyitva</label><input type="time" class="wh-start" value="' +
                 (isWeekend ? "10:00" : "09:00") +
                 '"><input type="time" class="wh-end" value="' +
                 (isWeekend ? "16:00" : "17:00") +
@@ -121,19 +121,19 @@
 
         const token = localStorage.getItem("token");
         if (!token) {
-            alert("Please log in first.");
+            alert("Először jelentkezz be.");
             return;
         }
 
         try {
             if (singleRadio.checked) {
                 if (!workDate.value) {
-                    alert("Please set the date.");
+                    alert("Add meg a dátumot.");
                     return;
                 }
                 const isOpenDay = singleOpenCheckbox?.checked !== false;
                 if (isOpenDay && (!singleStartInput.value || !singleEndInput.value)) {
-                    alert("Please set start and end time, or uncheck Open to mark the day closed.");
+                    alert("Add meg a kezdő és záró időt, vagy vedd ki a „Nyitva” pipát, ha zárva van a nap.");
                     return;
                 }
 
@@ -144,13 +144,13 @@
                 });
             } else {
                 if (!whRangeStart.value || !whRangeFinish.value) {
-                    alert("Please set start and finish dates.");
+                    alert("Add meg a kezdő és záró dátumot.");
                     return;
                 }
 
                 const rows = Array.from(weekList.querySelectorAll(".working-hours-day-row"));
                 if (!rows.length) {
-                    alert("Please choose a valid date range.");
+                    alert("Válassz érvényes dátumtartományt.");
                     return;
                 }
 
@@ -171,7 +171,7 @@
             const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
             window.location.assign(`/Salon/Artist/Hours${salonQuery}`);
         } catch (_) {
-            alert("Could not save working hours. Please check your inputs and try again.");
+            alert("Nem sikerült menteni a nyitvatartást. Ellenőrizd a mezőket, és próbáld újra.");
         }
     });
 

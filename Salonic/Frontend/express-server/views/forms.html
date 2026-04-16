@@ -1,82 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Salon Setup Form</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>FoglalóPlusz — Szalon beállítása</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="theme-pink owner-area-page">
-    <nav class="navbar navbar-expand-lg navbar-light salonic-navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand logo p-0" href="/ownerhomepage"><img src="/img/Salonic_Logo.png" alt="Salonic" height="40" /></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ownerNav" aria-controls="ownerNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="ownerNav">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-lg-2">
-                    <li class="nav-item"><a class="nav-link" href="/ownerhomepage">My salons</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/maker" aria-current="page">New salon setup</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/owneruserpage">Account</a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
-                </ul>
-            </div>
-        </div>
+<body class="theme-pink">
+    <nav>
+        <a href="/ownerhomepage" class="logo"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
+        <ul class="nav-links">
+            <li><a href="/ownerhomepage">Szalonjaim</a></li>
+            <li><a href="/maker" aria-current="page">Új szalon felvétele</a></li>
+            <li><a href="/owneruserpage">Fiók</a></li>
+            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
+        </ul>
     </nav>
-    <main class="container py-4 py-lg-5 form-page salonic-main salonic-main--wide">
-        <h1 class="h3 mb-2">Create your salon</h1>
-        <p class="subtitle mb-4">Customize how your salon appears to guests.</p>
-        <form id="salon-setup-form" class="auth-form setup-form d-grid gap-3" action="#" method="post" enctype="multipart/form-data">
-            <div>
-                <label for="salon-name" class="form-label">Salon name</label>
-                <input id="salon-name" class="form-control" name="salon_name" type="text" placeholder="Your salon name" required />
-            </div>
-            <div>
-                <label for="salon-logo" class="form-label">Logo</label>
-                <input id="salon-logo" class="form-control" name="salon_logo" type="file" accept="image/*" />
-            </div>
-            <div>
-                <label for="salon-description" class="field-label form-label">Description</label>
-                <textarea id="salon-description" class="form-control" name="salon_description" rows="5" placeholder="Describe your salon and services" required></textarea>
-            </div>
-            <div>
-                <label for="salon-theme" class="form-label">Color theme</label>
-                <select id="salon-theme" class="form-select" name="salon_theme" required>
-                    <option value="theme-pink">Pink</option>
-                    <option value="theme-sky-blue">Sky blue</option>
-                    <option value="theme-ruby">Ruby</option>
-                    <option value="theme-forest-green">Forest green</option>
-                    <option value="theme-amethyst">Amethyst</option>
-                </select>
-            </div>
-            <div>
-                <label for="support-email" class="form-label">Customer support email</label>
-                <input id="support-email" class="form-control" name="support_email" type="email" placeholder="support@example.com" required />
-            </div>
-            <button type="submit" class="btn btn-primary">Save salon details</button>
+    <main class="form-page">
+        <h1>Hozd létre a saját szalonod a FoglalóPluszban</h1>
+        <p class="subtitle">Itt testreszabhatod a szalon webes megjelenését.</p>
+        <form id="salon-setup-form" class="auth-form setup-form" action="#" method="post" enctype="multipart/form-data">
+            <label for="salon-name" class="field-label">Mi a szalon neve?</label>
+            <input id="salon-name" name="salon_name" type="text" placeholder="…" required />
+
+            <label for="salon-logo" class="field-label">Töltsd fel a vállalkozásod logóját</label>
+            <input id="salon-logo" name="salon_logo" type="file" accept="image/*" />
+
+            <label for="salon-description" class="field-label">Írd le a szolgáltatásaidat — ez jelenik meg a kezdőlapon</label>
+            <textarea id="salon-description" name="salon_description" rows="5" placeholder="…" required></textarea>
+
+            <label for="salon-theme" class="field-label">Válassz színt, ami illik a szalon hangulatához</label>
+            <select id="salon-theme" name="salon_theme" required>
+                <option value="theme-pink">Rózsaszín</option>
+                <option value="theme-sky-blue">Égkék</option>
+                <option value="theme-ruby">Rubin</option>
+                <option value="theme-forest-green">Erdőzöld</option>
+                <option value="theme-amethyst">Ametiszt</option>
+            </select>
+
+            <label for="support-email" class="field-label">Ügyfélszolgálati e-mail cím, ahol a vendégek elérnek</label>
+            <input id="support-email" name="support_email" type="email" placeholder="support@gmail.com" required />
+
+            <button type="submit">Szalon adatainak mentése</button>
         </form>
-        </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="/script.js"></script>
     <script src="/api.js"></script>
-    <script src="/common.js"></script>
-    <script src="/formsPage.js"></script>
     <script>
         (function () {
             var themeSelect = document.getElementById("salon-theme");
             if (!themeSelect) return;
-            function applyBodyTheme() {
-                var t = themeSelect.value || "theme-pink";
-                document.body.className = t + " owner-area-page";
+            function syncMakerTheme() {
+                var t = String(themeSelect.value || "").trim();
+                document.body.className = ["portal-body", "owner-app-page", t].filter(Boolean).join(" ");
             }
-            themeSelect.addEventListener("change", applyBodyTheme);
+            themeSelect.addEventListener("change", syncMakerTheme);
+            syncMakerTheme();
         })();
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-    <script src="/buttonFeedback.js"></script>
 </body>
 </html>

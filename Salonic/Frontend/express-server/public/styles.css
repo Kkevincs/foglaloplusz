@@ -1,1125 +1,698 @@
-/* Salonic — load Bootstrap 5 CSS before this file; this layer maps themes + custom components */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
+/* Alap színek (FoglalóPlusz) — nem írják felül a body.theme-* szalon témák */
 :root {
-    --bg: #f6f7f9;
-    --text: #141414;
-    --muted: #5c5f66;
-    --surface: #ffffff;
-    --surface-soft: #eceef2;
-    --border: #d8dce3;
-    --primary: #2d3142;
-    --primary-hover: #1a1d28;
-    --accent: #4a5568;
-    --accent-soft: #e2e6ed;
-    --bs-body-font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --bs-body-bg: var(--bg);
-    --bs-body-color: var(--text);
-    --bs-border-color: var(--border);
-    --bs-primary: var(--primary);
-    --bs-primary-rgb: 45, 49, 66;
-    --bs-link-color: var(--primary);
-    --bs-link-hover-color: var(--primary-hover);
+    --brand-bg-gradient:
+        radial-gradient(ellipse 90% 55% at 100% -5%, rgba(236, 72, 153, 0.22), transparent 52%),
+        radial-gradient(ellipse 75% 50% at -5% 30%, rgba(99, 102, 241, 0.18), transparent 48%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(34, 211, 238, 0.12), transparent 50%),
+        linear-gradient(168deg, #fff0f5 0%, #f0f4ff 32%, #fff7ed 65%, #faf5ff 100%);
+    --brand-text: #1e1b4b;
+    --brand-text-muted: #575069;
+    --brand-heading: #4c1d95;
+    --brand-surface: #ffffff;
+    --brand-surface-tint: rgba(255, 255, 255, 0.88);
+    --brand-border: rgba(167, 139, 250, 0.38);
+    --brand-border-soft: rgba(167, 139, 250, 0.22);
+    --brand-nav-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 245, 255, 0.98) 100%);
+    --brand-link: #6d28d9;
+    --brand-link-hover: #db2777;
+    --brand-btn-primary: linear-gradient(135deg, #db2777 0%, #9333ea 55%, #7c3aed 100%);
+    --brand-btn-primary-solid: #7c3aed;
+    --brand-btn-primary-hover: linear-gradient(135deg, #be185d 0%, #7c3aed 100%);
+    --brand-radius: 10px;
+    --brand-radius-sm: 8px;
+    --brand-shadow: 0 8px 28px rgba(99, 102, 241, 0.12);
+    --brand-shadow-sm: 0 4px 16px rgba(147, 51, 234, 0.1);
+    --brand-input-focus: #a78bfa;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    font-family: var(--bs-body-font-family);
+    font-family: 'DM Sans', sans-serif;
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+    color: var(--brand-text);
     min-height: 100vh;
-    background-color: var(--bs-body-bg);
-    color: var(--bs-body-color);
 }
-
-.salonic-navbar {
-    background-color: var(--surface) !important;
-    border-bottom: 1px solid var(--border) !important;
-    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
-}
-
-.salonic-navbar .navbar-brand.logo {
-    font-weight: 600;
-    font-size: 1.25rem;
-    color: var(--text);
-}
-
-.salonic-navbar .nav-link {
-    color: var(--muted) !important;
-    font-size: 0.9375rem;
-}
-
-.salonic-navbar .nav-link:hover,
-.salonic-navbar .nav-link:focus {
-    color: var(--primary) !important;
-}
-
-.salonic-navbar .nav-links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-main.salonic-main {
-    max-width: 720px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-main.salonic-main--wide {
-    max-width: 960px;
-}
-
-main.salonic-main--xl {
-    max-width: 1100px;
-}
-
-.salonic-main h1 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-}
-
-.salonic-main .subtitle,
-.subtitle {
-    color: var(--muted);
-    line-height: 1.6;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-.salonic-page-enter {
-    animation: salonicFadeUp 0.45s ease-out both;
-}
-
-@keyframes salonicFadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ─── Salon public home (/Salon) + artist portal pages — shell ─── */
-body.salon-home-page,
-body.artist-area-page,
-body.owner-area-page {
-    background: linear-gradient(165deg, var(--bg) 0%, var(--surface-soft) 45%, var(--bg) 100%);
-    background-attachment: fixed;
-}
-
-/* Auth pages (guest + artist login) — elevated card */
-body.salon-auth-page {
-    background: linear-gradient(165deg, var(--bg) 0%, var(--surface-soft) 45%, var(--bg) 100%);
-    background-attachment: fixed;
-}
-
-.salon-auth-page .auth-page-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 1rem;
-    padding: 2rem 1.75rem;
-    box-shadow: 0 14px 44px rgba(15, 23, 42, 0.08);
-}
-
-.salon-auth-page .auth-page-card .h3 {
-    font-weight: 600;
-    letter-spacing: -0.02em;
-}
-
-.owner-shell-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 1rem;
-    padding: 2rem 1.75rem;
-    box-shadow: 0 14px 44px rgba(15, 23, 42, 0.08);
-}
-
-.artist-page-header,
-.owner-page-header {
-    padding: 1.25rem 1.5rem;
-    border-radius: 0.85rem;
-    background: linear-gradient(135deg, rgba(45, 49, 66, 0.06) 0%, rgba(74, 85, 104, 0.08) 100%);
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
-}
-
-.artist-page-header .h3,
-.artist-page-header h1,
-.owner-page-header .h3,
-.owner-page-header h1 {
-    font-weight: 600;
-    letter-spacing: -0.02em;
-}
-
-.artist-content-panel,
-.owner-content-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 0.85rem;
-    padding: 1.5rem;
-    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
-}
-
-.salon-home-main {
-    max-width: 960px;
-}
-
-.salon-home-hero {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, rgba(45, 49, 66, 0.06) 0%, rgba(74, 85, 104, 0.08) 50%, rgba(45, 49, 66, 0.05) 100%);
-    border: 1px solid var(--border);
-    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
-}
-
-.salon-home-hero::before {
-    content: "";
-    position: absolute;
-    inset: -40% -20% auto -20%;
-    height: 120%;
-    background: radial-gradient(ellipse at 50% 0%, rgba(66, 194, 184, 0.12), transparent 55%);
-    pointer-events: none;
-}
-
-.salon-home-brand {
-    position: relative;
-    z-index: 1;
-}
-
-.salon-home-title {
-    font-size: clamp(1.75rem, 4.5vw, 2.35rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-}
-
-.salon-home-lead {
-    font-size: 1.05rem;
-    max-width: 36rem;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.salon-home-section-title {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-}
-
-.salon-home-tile {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-    height: 100%;
-    min-height: 8.5rem;
-    padding: 1.25rem 1.35rem;
-    text-decoration: none;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.salon-home-tile:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
-    border-color: var(--accent-soft);
-    color: var(--text);
-}
-
-.salon-home-tile:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-.salon-home-tile-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 0.65rem;
-    background: var(--surface-soft);
-    color: var(--primary);
-    margin-bottom: 0.25rem;
-}
-
-.salon-home-tile-title {
-    font-weight: 600;
-    font-size: 1.05rem;
-}
-
-.salon-home-tile-desc {
-    font-size: 0.875rem;
-    color: var(--muted);
-    line-height: 1.45;
-}
-
-.salon-home-role-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
-}
-
-.salon-home-role-eyebrow {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-}
-
-.salon-home-role-label {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.95rem;
-}
-
-.appointment-created-hero .appointment-created-icon {
-    color: var(--primary);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .salon-home-tile {
-        transition: none;
-    }
-
-    .salon-home-tile:hover {
-        transform: none;
-    }
-}
-
-/* ─── Services picker (guest booking) — reference: minimal rows + fixed summary bar ─── */
-.services-booking-body {
-    --service-accent: #42c2b8;
-    --service-accent-hover: #3ab3aa;
-    --service-summary-title: #2563eb;
-}
-
-body.services-cart-visible .services-page--picker {
-    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
-}
-
-body.artist-picker-visible .artists-page--picker {
-    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
-}
-
-.artists-list.artist-pick-list {
-    gap: 1rem;
-    background: transparent;
-}
-
-.services-list.service-pick-list {
-    gap: 1rem;
-    background: transparent;
-}
-
-.service-pick-row {
+nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--bs-border-radius, 0.5rem);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    padding: 1rem 2rem;
+    background: var(--brand-nav-bg);
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, #ec4899, #a855f7, #06b6d4) 1;
+    box-shadow: var(--brand-shadow-sm);
 }
+.logo { font-weight: 600; font-size: 1.25rem; color: var(--brand-heading); text-decoration: none; }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; }
+.nav-links a { color: var(--brand-link); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+.nav-links a:hover { color: var(--brand-link-hover); }
+main { max-width: 640px; margin: 4rem auto; padding: 0 1.5rem; text-align: center; }
+h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--brand-heading); }
+p { color: var(--brand-text-muted); line-height: 1.6; }
 
-.service-pick-row__text {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
+.services-page, .artists-page { text-align: left; }
+.services-page .subtitle, .artists-page .subtitle { margin-bottom: 1.5rem; }
+.services-list, .artists-list { display: grid; gap: 1rem; }
+.services-list .service-card, .artists-list .artist-card {
+    padding: 1.1rem;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    box-shadow: var(--brand-shadow-sm);
 }
-.service-pick-row__title {
-    font-weight: 600;
-    font-size: 1.05rem;
-    color: var(--text);
-    line-height: 1.35;
-    margin: 0;
-}
-.service-pick-row__price {
-    font-size: 0.95rem;
-    color: var(--muted);
-    margin-top: 0.35rem;
-}
-.service-pick-row__meta {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 0.35rem;
-    opacity: 0.92;
-}
-
-.service-pick-toggle {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    cursor: pointer;
-    margin: 0;
-}
-.service-pick-toggle-input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-.service-pick-toggle-input:focus-visible + .service-pick-toggle__face {
-    outline: 2px solid var(--service-accent);
-    outline-offset: 2px;
-}
-.service-pick-toggle__face {
-    width: 1.65rem;
-    height: 1.65rem;
-    border-radius: 50%;
-    border: 2px solid #c0c4cc;
-    background: var(--surface);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.15s ease, background 0.15s ease;
-}
-.service-pick-toggle-input:checked + .service-pick-toggle__face {
-    background: var(--service-accent);
-    border-color: var(--service-accent);
-}
-.service-pick-toggle-input:checked + .service-pick-toggle__face::after {
-    content: "";
-    width: 0.32rem;
-    height: 0.55rem;
-    border: solid #fff;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    margin-bottom: 2px;
-}
-
-.services-cart-bar--fixed {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1030;
-    padding: 0.9rem 0;
-    padding-bottom: max(0.9rem, env(safe-area-inset-bottom, 0px));
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06);
-}
-.services-cart-bar-inner {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    max-width: 720px;
-    margin: 0 auto;
-}
-.services-cart-summary {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-}
-.services-cart-count {
-    font-weight: 600;
-    font-size: 1.05rem;
-    color: var(--service-summary-title);
-    line-height: 1.25;
-}
-.services-cart-totals {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin-top: 0.2rem;
-}
-.services-cart-cta {
-    flex-shrink: 0;
-    background: var(--service-accent) !important;
-    border: none !important;
-    color: #fff !important;
-    font-weight: 700;
-    font-size: 0.8rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 0.65rem 1.35rem;
-    border-radius: 0.35rem;
-}
-.services-cart-cta:hover {
-    background: var(--service-accent-hover) !important;
-    color: #fff !important;
-}
-
-.services-page,
-.artists-page {
-    text-align: left;
-}
-.services-page .subtitle,
-.artists-page .subtitle {
-    margin-bottom: 1.5rem;
-}
-.services-list,
-.artists-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-.services-list .service-card,
-.artists-list .artist-card {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--bs-border-radius, 0.5rem);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-}
-.services-list .service-card-body {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-}
-.artists-list .artist-card .artist-card-text {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-}
-.services-list .service-card .name,
-.artists-list .artist-card .name {
-    font-weight: 600;
-}
-.services-list .service-card .desc,
-.artists-list .artist-card .role {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin-top: 0.25rem;
-}
-
-.artists-list .artist-card--browse {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.artists-list .artist-card--browse .artist-card-main {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-}
-
-/* Booking: same chrome for service checkboxes and artist radio (multi vs single select) */
-.booking-card-actions-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--border);
-}
-.booking-card-actions-row--cta {
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-}
-.booking-choice {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 0;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-.booking-choice-input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-.booking-choice-box {
-    width: 1.25rem;
-    height: 1.25rem;
-    border: 2px solid var(--text);
-    border-radius: 4px;
-    background: var(--surface);
-    flex-shrink: 0;
-    position: relative;
-    box-sizing: border-box;
-}
-.booking-choice-input:focus-visible + .booking-choice-box {
-    outline: 2px solid var(--text);
-    outline-offset: 2px;
-}
-.booking-choice-input[type="checkbox"]:checked + .booking-choice-box {
-    background: var(--text);
-    border-color: var(--text);
-}
-.booking-choice-input[type="checkbox"]:checked + .booking-choice-box::after {
-    content: "";
-    position: absolute;
-    left: 0.3rem;
-    top: 0.05rem;
-    width: 0.28rem;
-    height: 0.55rem;
-    border: solid #fff;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
-.booking-choice-input[type="radio"]:checked + .booking-choice-box::after {
-    content: "";
-    position: absolute;
-    inset: 4px;
-    background: var(--text);
-    border-radius: 2px;
-}
-
-.services-cart-holder {
-    margin: 0;
-    padding: 0;
-    min-height: 0;
-}
+.services-list .service-card .name, .artists-list .artist-card .name { font-weight: 700; color: var(--brand-heading); }
+.services-list .service-card .desc, .artists-list .artist-card .role { font-size: 0.9rem; color: var(--brand-text-muted); margin-top: 0.25rem; }
 
 .auth-page { max-width: 320px; }
 .auth-form { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
-.auth-form input { padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; background: var(--surface); color: var(--text); }
-.auth-form button:not(.btn) {
-    padding: 0.6rem;
-    background: var(--primary);
+.auth-form input {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--brand-surface);
+    color: var(--brand-text);
+}
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--brand-input-focus);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+}
+.auth-form button {
+    padding: 0.65rem;
+    background: var(--brand-btn-primary);
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
-.auth-form button:not(.btn):hover {
-    background: var(--primary-hover);
+.auth-form button:hover {
+    background: var(--brand-btn-primary-hover);
+    box-shadow: 0 6px 18px rgba(219, 39, 119, 0.35);
 }
-.role-toggle { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-.role-toggle label { flex: 1; padding: 0.5rem 0.75rem; text-align: center; font-size: 0.9rem; cursor: pointer; background: var(--surface); }
-.role-toggle label:has(input:checked) { background: var(--primary); color: #fff; }
+.role-toggle { display: flex; gap: 0; border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); overflow: hidden; }
+.role-toggle label { flex: 1; padding: 0.5rem 0.75rem; text-align: center; font-size: 0.9rem; cursor: pointer; background: var(--brand-surface); color: var(--brand-text-muted); }
+.role-toggle label:has(input:checked) {
+    background: var(--brand-btn-primary);
+    color: #fff;
+}
 .role-toggle input { position: absolute; opacity: 0; }
-.auth-switch { font-size: 0.9rem; color: var(--muted); }
-.auth-switch a { color: var(--primary); }
+.auth-switch { font-size: 0.9rem; color: var(--brand-text-muted); }
+.auth-switch a { color: var(--brand-link); font-weight: 600; }
+.auth-switch a:hover { color: var(--brand-link-hover); }
 .auth-switch-spaced { margin-top: 1.25rem; }
+
+/* Owner login / register (matches portal + maker flow) */
+.owner-auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.owner-auth-page > main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    text-align: left;
+}
+.owner-auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(180deg, #ffffff 0%, #fefcff 100%);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    padding: 2rem 1.75rem;
+    box-shadow: var(--brand-shadow);
+}
+.owner-auth-card h1 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    line-height: 1.25;
+    color: var(--brand-heading);
+}
+body.portal-body .owner-auth-card h1 {
+    font-size: clamp(1.35rem, 2.5vw, 1.55rem);
+    background: linear-gradient(115deg, #be185d 0%, #9333ea 38%, #2563eb 72%, #059669 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+@supports not (background-clip: text) {
+    body.portal-body .owner-auth-card h1 {
+        color: var(--brand-heading);
+        background: none;
+    }
+}
+.owner-auth-card .subtitle {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+body.portal-body .owner-auth-card .subtitle {
+    color: #4a4458;
+}
+.owner-auth-card .auth-form {
+    margin-bottom: 1.25rem;
+}
+.owner-auth-card .auth-switch {
+    margin-top: 0;
+}
+.owner-auth-card .auth-switch-spaced {
+    margin-top: 1rem;
+}
+body[class^="theme-"] .owner-auth-card,
+body[class*=" theme-"] .owner-auth-card {
+    background: var(--surface);
+    border-color: var(--border);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.07);
+}
+body[class^="theme-"] .owner-auth-card h1,
+body[class*=" theme-"] .owner-auth-card h1 {
+    color: var(--text);
+}
+body[class^="theme-"] .owner-auth-card .auth-switch,
+body[class*=" theme-"] .owner-auth-card .auth-switch {
+    color: var(--muted);
+}
+body[class^="theme-"] .owner-auth-card .auth-switch a,
+body[class*=" theme-"] .owner-auth-card .auth-switch a {
+    color: var(--primary);
+    font-weight: 600;
+}
+body[class^="theme-"] .owner-auth-card .auth-switch a:hover,
+body[class*=" theme-"] .owner-auth-card .auth-switch a:hover {
+    color: var(--primary-hover);
+}
 a.auth-cta {
     display: inline-block;
     margin-top: 1rem;
     padding: 0.65rem 1rem;
-    background: var(--primary);
+    background: var(--brand-btn-primary);
     color: #fff;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: var(--brand-radius-sm);
     font-weight: 600;
     font-size: 0.95rem;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);
 }
-a.auth-cta:hover { background: var(--primary-hover); color: #fff; }
+a.auth-cta:hover { background: var(--brand-btn-primary-hover); color: #fff; }
 
-.portal-page { max-width: 360px; }
-.portal-page .subtitle { margin-bottom: 0.5rem; }
-.portal-buttons { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
-a.portal-btn {
+/* Portál — kezdő oldal (élénk, színes; háttér = :root --brand-bg-gradient) */
+body.portal-body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+}
+/* Tulajdonos alkalmazás: portál háttér + közös main tartó (szalonkészítő, irányítópult, …) */
+body.portal-body.owner-app-page {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+}
+body.portal-body.owner-app-page > main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    text-align: left;
+    box-sizing: border-box;
+}
+body.portal-body.owner-app-page > main.owner-home-page {
+    max-width: 720px;
+}
+body.portal-body.owner-app-page > main.form-page {
+    max-width: 720px;
+}
+body.portal-body.owner-app-page > main.auth-page {
+    max-width: 420px;
+}
+body.portal-body.owner-app-page > main.salon-dashboard-page {
+    max-width: 900px;
+}
+body.portal-body.owner-app-page > main.salon-schedule-page {
+    max-width: 1100px;
+}
+body.portal-body.owner-app-page > main.owner-home-page {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+/* Szalonkészítő: téma preview a mezőkön, de a lap háttér marad a FoglalóPlusz gradiens */
+body.portal-body.owner-app-page[class*="theme-"] {
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+    color: var(--brand-text);
+}
+body.portal-body.owner-app-page .form-page .subtitle,
+body.portal-body.owner-app-page .user-page .subtitle,
+body.portal-body.owner-app-page .owner-home-header .subtitle,
+body.portal-body.owner-app-page .salon-dashboard-header .subtitle,
+body.portal-body.owner-app-page .salon-schedule-header .subtitle {
+    color: #4a4458;
+}
+body.portal-body.owner-app-page main h1 {
+    font-size: clamp(1.45rem, 2.5vw, 1.85rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(115deg, #be185d 0%, #9333ea 38%, #2563eb 72%, #059669 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+@supports not (background-clip: text) {
+    body.portal-body.owner-app-page main h1 {
+        color: var(--brand-heading);
+        background: none;
+    }
+}
+.portal-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 245, 255, 0.95) 100%);
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, #ec4899, #a855f7, #06b6d4, #22c55e) 1;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.08);
+}
+.portal-header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.portal-header-inner--split {
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.portal-nav-links {
+    display: flex;
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+.portal-nav-links a {
+    color: var(--brand-link);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.portal-nav-links a:hover {
+    color: var(--brand-link-hover);
+}
+.portal-brand img {
+    height: 40px;
+    width: auto;
     display: block;
-    padding: 0.75rem 1rem;
-    background: var(--primary);
+    filter: drop-shadow(0 2px 8px rgba(168, 85, 247, 0.2));
+}
+.portal-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    text-align: left;
+}
+.portal-hero {
+    text-align: center;
+    margin-bottom: 2.25rem;
+    padding: 0.5rem 0 1rem;
+}
+.portal-hero h1 {
+    font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+    font-weight: 700;
+    margin-bottom: 0.65rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    background: linear-gradient(115deg, #be185d 0%, #9333ea 38%, #2563eb 72%, #059669 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+@supports not (background-clip: text) {
+    .portal-hero h1 {
+        color: #7c3aed;
+        background: none;
+    }
+}
+.portal-hero .subtitle {
+    max-width: 38rem;
+    margin: 0 auto 0.5rem;
+    font-size: 1.06rem;
+    color: #4a4458;
+    line-height: 1.6;
+}
+.portal-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.1rem;
+    color: #5b21b6;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.portal-section-title::before {
+    content: "";
+    width: 4px;
+    height: 1.15em;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #ec4899, #8b5cf6);
+    flex-shrink: 0;
+}
+.portal-salon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.35rem;
+    margin-bottom: 2.5rem;
+}
+.portal-salon-card {
+    background: linear-gradient(180deg, #ffffff 0%, #fefcff 100%);
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+        0 4px 6px rgba(139, 92, 246, 0.06),
+        0 12px 32px rgba(99, 102, 241, 0.1);
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    border-left: 5px solid #a78bfa;
+}
+.portal-salon-card:hover {
+    box-shadow:
+        0 8px 16px rgba(236, 72, 153, 0.12),
+        0 20px 40px rgba(99, 102, 241, 0.16);
+    transform: translateY(-4px);
+    border-color: rgba(236, 72, 153, 0.45);
+}
+.portal-salon-card.theme-pink { border-left-color: #ec4899; }
+.portal-salon-card.theme-sky-blue { border-left-color: #0ea5e9; }
+.portal-salon-card.theme-ruby { border-left-color: #e11d48; }
+.portal-salon-card.theme-forest-green { border-left-color: #10b981; }
+.portal-salon-card.theme-amethyst { border-left-color: #8b5cf6; }
+.portal-salon-card-media {
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(145deg, #fce7f3 0%, #e9d5ff 45%, #cffafe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.portal-salon-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.portal-salon-card-placeholder {
+    font-size: 1.85rem;
+    font-weight: 700;
+    background: linear-gradient(120deg, #db2777, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.06em;
+}
+@supports not (background-clip: text) {
+    .portal-salon-card-placeholder {
+        color: #a855f7;
+        background: none;
+    }
+}
+.portal-salon-card-body {
+    padding: 1.15rem 1.2rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.65rem;
+}
+.portal-salon-card-title {
+    font-size: 1.12rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+    color: #1e1b4b;
+}
+.portal-salon-card-desc {
+    font-size: 0.9rem;
+    color: #575069;
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.portal-salon-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.35rem;
+}
+a.portal-salon-btn {
+    display: block;
+    padding: 0.6rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+a.portal-salon-btn:hover {
+    transform: translateY(-1px);
+}
+a.portal-salon-btn-primary {
+    background: linear-gradient(135deg, #db2777 0%, #9333ea 55%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.35);
+}
+a.portal-salon-btn-primary:hover {
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4);
+}
+a.portal-salon-btn-secondary {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0d9488;
+    border: 2px solid #5eead4;
+}
+a.portal-salon-btn-secondary:hover {
+    border-color: #14b8a6;
+    color: #0f766e;
+    background: #f0fdfa;
+}
+.portal-salon-loading {
+    padding: 2rem;
+    text-align: center;
+    color: #6b21a8;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+.portal-salon-empty,
+.portal-salon-error {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px dashed #f59e0b;
+    border-radius: 14px;
+    text-align: center;
+    color: #78350f;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+.portal-salon-error {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #f87171;
+    color: #991b1b;
+}
+.portal-owner-strip {
+    margin-top: 1rem;
+    padding: 1.6rem 1.5rem;
+    background: linear-gradient(125deg, #ede9fe 0%, #dbeafe 40%, #d1fae5 100%);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    box-shadow: 0 8px 28px rgba(59, 130, 246, 0.12);
+}
+.portal-owner-strip p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #3730a3;
+    font-weight: 500;
+    max-width: 28rem;
+}
+.portal-owner-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+a.portal-btn {
+    display: inline-block;
+    padding: 0.65rem 1.15rem;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: #fff;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     text-align: center;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-a.portal-btn:hover { background: var(--primary-hover); color: #fff; }
-.portal-hint { margin-top: 1.5rem; font-size: 0.8rem; color: var(--muted); }
-.portal-hint code { font-size: 0.85em; background: var(--surface-soft); padding: 0.1rem 0.35rem; border-radius: 4px; }
+a.portal-btn:hover {
+    color: #fff;
+    box-shadow: 0 6px 22px rgba(124, 58, 237, 0.45);
+    transform: translateY(-1px);
+}
+a.portal-btn-ghost {
+    background: #fff;
+    color: #5b21b6;
+    border: 2px solid #a78bfa;
+    box-shadow: none;
+}
+a.portal-btn-ghost:hover {
+    border-color: #7c3aed;
+    color: #5b21b6;
+    background: #faf5ff;
+    transform: translateY(-1px);
+}
+.portal-hint {
+    margin-top: 1.35rem;
+    font-size: 0.86rem;
+    color: #5b4765;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 10px;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+}
+.portal-hint code {
+    font-size: 0.85em;
+    background: linear-gradient(180deg, #fae8ff 0%, #e9d5ff 100%);
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid #d8b4fe;
+    color: #6b21a8;
+}
+
+@media (max-width: 520px) {
+    .portal-owner-strip {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .portal-owner-actions {
+        flex-direction: column;
+    }
+    a.portal-btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .portal-salon-card,
+    a.portal-salon-btn,
+    a.portal-btn {
+        transition: none;
+    }
+    .portal-salon-card:hover,
+    a.portal-salon-btn:hover,
+    a.portal-btn:hover {
+        transform: none;
+    }
+}
 
 .user-page { text-align: left; }
 .user-page .subtitle { margin-bottom: 1.5rem; }
-.user-profile { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 2rem; }
-.user-info .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.user-profile {
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--brand-shadow-sm);
+}
+.user-info .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--brand-border-soft); }
 .user-info .info-row:last-child { border-bottom: none; }
-.user-info .info-label { font-weight: 600; color: var(--text); }
-.user-info .info-value { color: var(--muted); }
-.user-page .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
-
-/* ─── Guest user dashboard (/Salon/GuestInfo) ─── */
-.guest-user-page {
-    --guest-accent: #42c2b8;
-    --guest-accent-soft: rgba(66, 194, 184, 0.12);
-    --guest-ink: #0f172a;
+.user-info .info-label { font-weight: 600; color: var(--brand-heading); }
+.user-info .info-value { color: var(--brand-text-muted); }
+.user-page .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--brand-heading); }
+/* Tulajdonos profil: ugyanaz a keskeny, középre zárt elrendezés, mint a vendég/szakember user oldalon */
+body.portal-body.owner-app-page > main.user-page {
+    max-width: 640px;
 }
-
-.guest-user-main.salonic-main {
-    max-width: 52rem;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-}
-
-.guest-user-profile-root {
+.owner-profile-placeholder {
     margin-bottom: 0;
 }
-
-.guest-user-hero {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 2rem 1.5rem 2.25rem;
-    margin: 0 -0.25rem 1.75rem;
-    border-radius: 1.25rem;
-    background: linear-gradient(145deg, var(--surface) 0%, var(--surface-soft) 48%, #e8f7f5 100%);
-    border: 1px solid var(--border);
-    box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.04),
-        0 12px 40px -12px rgba(15, 23, 42, 0.08);
-    overflow: hidden;
-}
-
-.guest-user-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% -20%, var(--guest-accent-soft), transparent 70%);
-    pointer-events: none;
-}
-
-.guest-user-hero > * {
-    position: relative;
-    z-index: 1;
-}
-
-.guest-user-avatar {
-    width: 4.5rem;
-    height: 4.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #fff;
-    background: linear-gradient(135deg, var(--guest-accent) 0%, #2ea89e 100%);
-    box-shadow: 0 8px 24px -6px rgba(66, 194, 184, 0.55);
-    margin-bottom: 1.1rem;
-}
-
-.guest-user-eyebrow {
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    margin: 0 0 0.35rem;
-}
-
-.guest-user-title {
-    font-size: clamp(1.5rem, 4vw, 1.85rem);
-    font-weight: 700;
-    color: var(--guest-ink);
-    margin: 0 0 0.35rem;
-    line-height: 1.2;
-}
-
-.guest-user-email {
-    font-size: 0.95rem;
-    color: var(--muted);
-    margin: 0 0 1rem;
-    word-break: break-word;
-}
-
-.guest-user-role-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.35rem 0.85rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--guest-accent);
-    background: var(--guest-accent-soft);
-    border-radius: 999px;
-    border: 1px solid rgba(66, 194, 184, 0.25);
-}
-
-.guest-user-meta-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-}
-
-@media (min-width: 576px) {
-    .guest-user-meta-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-.guest-meta-tile {
-    padding: 1rem 1.1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 0.85rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .guest-meta-tile {
-        transition: none;
-    }
-}
-
-.guest-meta-tile:hover {
-    border-color: rgba(66, 194, 184, 0.35);
-    box-shadow: 0 4px 14px -4px rgba(15, 23, 42, 0.08);
-}
-
-.guest-meta-tile__label {
-    display: block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin-bottom: 0.35rem;
-}
-
-.guest-meta-tile__value {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text);
-    word-break: break-word;
-}
-
-/* Owner account (/owneruserpage) — same hero + meta tiles as guest/artist; theme-driven accents */
-body.owner-user-page .guest-user-hero {
-    margin: 0 0 1.5rem;
-    background: linear-gradient(145deg, var(--surface) 0%, var(--surface-soft) 52%, var(--accent-soft) 100%);
-    box-shadow:
-        0 1px 2px rgba(15, 23, 42, 0.06),
-        0 18px 50px -18px rgba(15, 23, 42, 0.14);
-}
-
-body.owner-user-page .guest-user-hero::before {
-    background: radial-gradient(
-        ellipse 85% 65% at 50% -25%,
-        rgba(var(--bs-primary-rgb), 0.22),
-        transparent 72%
-    );
-}
-
-body.owner-user-page .guest-user-avatar {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-    box-shadow: 0 12px 32px -10px rgba(var(--bs-primary-rgb), 0.55);
-}
-
-body.owner-user-page .guest-user-title {
-    color: var(--text);
-}
-
-body.owner-user-page .guest-user-role-pill {
-    color: var(--primary);
-    background: rgba(var(--bs-primary-rgb), 0.12);
-    border-color: rgba(var(--bs-primary-rgb), 0.3);
-}
-
-body.owner-user-page .guest-meta-tile:hover {
-    border-color: rgba(var(--bs-primary-rgb), 0.35);
-    box-shadow: 0 6px 20px -8px rgba(var(--bs-primary-rgb), 0.22);
-}
-
-.guest-appts-section {
-    margin-top: 0.5rem;
-}
-
-.guest-appts-section.artist-content-panel {
-    margin-top: 0;
-}
-
-.guest-section-head {
-    margin-bottom: 1.25rem;
-}
-
-.guest-section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--guest-ink);
-    margin: 0 0 0.25rem;
-    letter-spacing: -0.02em;
-}
-
-.guest-section-subtitle {
-    font-size: 0.9rem;
-    color: var(--muted);
+.profile-empty-hint {
     margin: 0;
+    font-size: 0.95rem;
+    color: var(--brand-text-muted);
+    line-height: 1.6;
 }
-
-.guest-appointments-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.guest-appt-card {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1rem 1.25rem;
-    align-items: start;
-    padding: 1.15rem 1.2rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 1rem;
-    border-left: 4px solid var(--guest-accent);
-    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.06);
-}
-
-.guest-appt-card__date {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 3.5rem;
-    padding: 0.5rem 0.4rem;
-    background: var(--guest-accent-soft);
-    border-radius: 0.65rem;
-    border: 1px solid rgba(66, 194, 184, 0.2);
-}
-
-.guest-appt-card__dow {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    line-height: 1;
-}
-
-.guest-appt-card__day {
-    font-size: 1.65rem;
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--guest-ink);
-}
-
-.guest-appt-card__mon {
-    font-size: 0.75rem;
+.profile-empty-hint a {
+    color: var(--brand-link);
     font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    text-decoration: none;
 }
-
-.guest-appt-card__body {
-    min-width: 0;
+.profile-empty-hint a:hover {
+    color: var(--brand-link-hover);
+    text-decoration: underline;
 }
-
-.guest-appt-card__time {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--guest-ink);
-    margin-bottom: 0.35rem;
-}
-
-.guest-appt-card__full-date {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-bottom: 0.65rem;
-}
-
-.guest-appt-card__artist {
-    font-size: 0.92rem;
-    color: var(--text);
-    margin-bottom: 0.35rem;
-}
-
-.guest-appt-card__artist span {
-    color: var(--muted);
-    font-weight: 500;
-}
-
-.guest-appt-card__services {
-    font-size: 0.88rem;
-    color: var(--muted);
-    line-height: 1.45;
-}
-
-.guest-appt-card__notes {
-    margin-top: 0.65rem;
-    padding-top: 0.65rem;
-    border-top: 1px dashed var(--border);
-    font-size: 0.85rem;
-    color: var(--muted);
-    font-style: italic;
-}
-
-.guest-appt-card__footer {
-    margin-top: 1rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.guest-appt-cancel-btn {
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-.guest-appt-empty {
-    text-align: center;
-    padding: 2.25rem 1.5rem;
-    background: linear-gradient(180deg, var(--surface-soft) 0%, var(--surface) 100%);
-    border: 1px dashed var(--border);
-    border-radius: 1rem;
-}
-
-.guest-appt-empty__title {
-    font-weight: 600;
-    color: var(--text);
-    margin: 0 0 0.35rem;
-    font-size: 1rem;
-}
-
-.guest-appt-empty__hint {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin: 0;
-    max-width: 22rem;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.5;
-}
-
-.guest-appt-loading {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.guest-appt-loading__bar {
-    height: 5.5rem;
-    border-radius: 1rem;
-    background: linear-gradient(
-        90deg,
-        var(--surface-soft) 0%,
-        #f0f2f5 50%,
-        var(--surface-soft) 100%
-    );
-    background-size: 200% 100%;
-    animation: guest-shimmer 1.2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .guest-appt-loading__bar {
-        animation: none;
-        background: var(--surface-soft);
-    }
-}
-
-@keyframes guest-shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
-}
-.artist-csv-import code {
-    font-size: 0.85em;
-    background: var(--surface-soft);
-    padding: 0.15rem 0.35rem;
-    border-radius: 4px;
-}
-
-.artist-csv-file-input {
-    max-width: 18rem;
-}
-
-.artist-csv-result {
-    padding: 0.85rem 1rem;
-    background: var(--surface-soft);
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-}
-
 .adservice-page { text-align: left; max-width: 640px; }
 .adservice-page .subtitle { margin-bottom: 1.5rem; }
 .adservice-form { display: flex; flex-direction: column; gap: 0.75rem; }
 .adservice-form input,
 .adservice-form textarea {
     padding: 0.6rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-size: 0.95rem;
+    background: var(--brand-surface);
+    color: var(--brand-text);
 }
 .adservice-form textarea { resize: vertical; min-height: 96px; }
-.adservice-form label { display: block; font-size: 0.9rem; color: var(--muted); margin-bottom: 0.25rem; text-align: left; }
+.adservice-form label { display: block; font-size: 0.9rem; color: var(--brand-text-muted); margin-bottom: 0.25rem; text-align: left; }
 .adservice-form input[type="date"],
 .adservice-form input[type="time"] {
     padding: 0.6rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-size: 0.95rem;
-    color: var(--text);
+    color: var(--brand-text);
     max-width: 100%;
 }
 .working-hours-time-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .working-hours-time-field { flex: 1; min-width: 8rem; }
 .working-hours-time-field label { margin-top: 0.25rem; }
 .working-hours-mode-fieldset {
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     padding: 0.75rem 1rem 1rem;
     margin: 0;
-    background: var(--surface);
+    background: var(--brand-surface);
 }
 .working-hours-legend {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--brand-heading);
     padding: 0 0.35rem;
 }
 .working-hours-mode-row {
@@ -1133,15 +706,15 @@ body.owner-user-page .guest-meta-tile:hover {
     align-items: center;
     gap: 0.45rem;
     font-size: 0.92rem;
-    color: var(--text);
+    color: var(--brand-text);
     cursor: pointer;
 }
-.working-hours-radio-label input { width: auto; margin: 0; accent-color: var(--primary); }
+.working-hours-radio-label input { width: auto; margin: 0; accent-color: var(--brand-btn-primary-solid); }
 .working-hours-panel { margin-top: 0.25rem; }
 .working-hours-block-label {
     display: block;
     font-size: 0.9rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     margin-bottom: 0.65rem;
     line-height: 1.45;
 }
@@ -1157,7 +730,7 @@ body.owner-user-page .guest-meta-tile:hover {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     margin-bottom: 0.35rem;
     padding: 0 0.15rem;
 }
@@ -1172,9 +745,9 @@ body.owner-user-page .guest-meta-tile:hover {
     gap: 0.5rem 0.65rem;
     align-items: center;
     padding: 0.5rem 0.65rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
 }
 .working-hours-day-col {
     display: flex;
@@ -1186,19 +759,19 @@ body.owner-user-page .guest-meta-tile:hover {
 .working-hours-day-name {
     font-weight: 600;
     font-size: 0.92rem;
-    color: var(--text);
+    color: var(--brand-heading);
     line-height: 1.2;
 }
 .wh-calendar-date {
     font-size: 0.78rem;
     font-weight: 500;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     line-height: 1.2;
 }
 .wh-calendar-date.wh-calendar-date--today,
 .wh-calendar-date.wh-calendar-date--tomorrow,
 .wh-calendar-date.wh-calendar-date--range-start {
-    color: var(--text);
+    color: var(--brand-link);
     font-weight: 600;
 }
 .working-hours-open-label {
@@ -1206,14 +779,14 @@ body.owner-user-page .guest-meta-tile:hover {
     align-items: center;
     gap: 0.35rem;
     font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     cursor: pointer;
     margin: 0;
 }
 .working-hours-open-label input {
     margin: 0;
     width: auto;
-    accent-color: var(--primary);
+    accent-color: var(--brand-btn-primary-solid);
 }
 .working-hours-single-open-label {
     display: flex;
@@ -1232,13 +805,13 @@ body.owner-user-page .guest-meta-tile:hover {
 input[type="time"].wh-time-invalid {
     opacity: 0.55;
     cursor: not-allowed;
-    border-color: var(--border);
-    background: var(--surface-soft);
-    color: var(--muted);
+    border-color: var(--brand-border-soft);
+    background: rgba(250, 245, 255, 0.92);
+    color: var(--brand-text-muted);
 }
 input[type="time"].wh-time-invalid:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: var(--brand-border);
 }
 @media (max-width: 520px) {
     .working-hours-week-head { display: none; }
@@ -1249,44 +822,19 @@ input[type="time"].wh-time-invalid:focus {
     .working-hours-day-col { grid-column: 1 / -1; }
     .working-hours-open-label { grid-column: 1 / -1; }
 }
-/* Primary action: reuse on standalone buttons (e.g. Add to cart) and .adservice-form */
-/* Bootstrap primary buttons use theme colors */
-.btn-primary {
-    --bs-btn-bg: var(--primary);
-    --bs-btn-border-color: var(--primary);
-    --bs-btn-hover-bg: var(--primary-hover);
-    --bs-btn-hover-border-color: var(--primary-hover);
-    --bs-btn-active-bg: var(--primary-hover);
-    --bs-btn-active-border-color: var(--primary-hover);
-    --bs-btn-disabled-bg: var(--primary);
-    --bs-btn-disabled-border-color: var(--primary);
-    font-weight: 600;
-}
-
-.adservice-form button[type="submit"],
-.adservice-form .btn-primary {
+.adservice-form button {
     width: fit-content;
-}
-
-.adservice-form button:not(.btn) {
     padding: 0.6rem 0.9rem;
-    background: var(--primary);
+    background: var(--brand-btn-primary);
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-weight: 600;
-    font-size: 0.95rem;
     cursor: pointer;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.28);
 }
-.adservice-form button:not(.btn):hover {
-    background: var(--primary-hover);
-}
-
-.appointment-layout > .btn.btn-primary {
-    grid-column: 1 / -1;
-    margin-top: 0.25rem;
-}
+.adservice-form button:hover { background: var(--brand-btn-primary-hover); }
 
 main.appointment-page { max-width: 900px; }
 .appointment-page { text-align: left; }
@@ -1295,18 +843,25 @@ main.appointment-page { max-width: 900px; }
 @media (max-width: 720px) {
   .appointment-layout { grid-template-columns: 1fr; }
 }
-.times-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; }
-.calendar-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 0; }
-.calendar-card .calendar-header { display: block; font-weight: 600; margin-bottom: 0.75rem; }
-.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.95rem; color: var(--text); background: var(--surface); }
-.calendar-card input[type="date"]:focus { outline: none; border-color: var(--accent); }
+.times-panel { background: var(--brand-surface); border: 1px solid var(--brand-border); border-radius: var(--brand-radius-sm); padding: 1rem; box-shadow: var(--brand-shadow-sm); }
+.calendar-card { background: var(--brand-surface); border: 1px solid var(--brand-border); border-radius: var(--brand-radius-sm); padding: 1rem; margin-bottom: 0; box-shadow: var(--brand-shadow-sm); }
+.calendar-card .calendar-header { display: block; font-weight: 700; margin-bottom: 0.75rem; color: var(--brand-heading); }
+.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); font-family: inherit; font-size: 0.95rem; color: var(--brand-text); }
+.calendar-card input[type="date"]:focus { outline: none; border-color: var(--brand-input-focus); }
 .appointment-page .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; margin-top: 0; }
 .times-panel .time-slots { margin-top: 0.25rem; }
 .time-slots { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
-.time-slot { padding: 0.5rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; color: var(--text); cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease; }
+.time-slot { padding: 0.5rem 0.85rem; background: var(--brand-surface); border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); font-size: 0.9rem; color: var(--brand-text); cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease, box-shadow 0.15s ease; }
 .time-slot:hover,
-.time-slot.time-slot-selected { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
+.time-slot.time-slot-selected {
+    background: var(--brand-btn-primary);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35);
+}
 
+/* Optional salon themes (customSalon) — add class on body e.g. theme-pink */
 body.theme-pink {
     --bg: #fff4f7;
     --text: #6f3a80;
@@ -1318,11 +873,6 @@ body.theme-pink {
     --primary-hover: #d97384;
     --accent: #9c94dc;
     --accent-soft: #fad3dd;
-    --bs-body-bg: var(--bg);
-    --bs-body-color: var(--text);
-    --bs-border-color: var(--border);
-    --bs-primary: var(--primary);
-    --bs-primary-rgb: 236, 132, 148;
 }
 body.theme-sky-blue {
     --bg: #f1f8ff;
@@ -1335,11 +885,6 @@ body.theme-sky-blue {
     --primary-hover: #3d8ec5;
     --accent: #7ec4f3;
     --accent-soft: #d6eeff;
-    --bs-body-bg: var(--bg);
-    --bs-body-color: var(--text);
-    --bs-border-color: var(--border);
-    --bs-primary: var(--primary);
-    --bs-primary-rgb: 77, 163, 221;
 }
 body.theme-ruby {
     --bg: #fff4f6;
@@ -1352,11 +897,6 @@ body.theme-ruby {
     --primary-hover: #ad2447;
     --accent: #e16b8a;
     --accent-soft: #ffd6e1;
-    --bs-body-bg: var(--bg);
-    --bs-body-color: var(--text);
-    --bs-border-color: var(--border);
-    --bs-primary: var(--primary);
-    --bs-primary-rgb: 199, 47, 86;
 }
 body.theme-forest-green {
     --bg: #f3fbf6;
@@ -1369,11 +909,6 @@ body.theme-forest-green {
     --primary-hover: #338251;
     --accent: #6bc58b;
     --accent-soft: #d5efde;
-    --bs-body-bg: var(--bg);
-    --bs-body-color: var(--text);
-    --bs-border-color: var(--border);
-    --bs-primary: var(--primary);
-    --bs-primary-rgb: 63, 154, 100;
 }
 body.theme-amethyst {
     --bg: #f7f4ff;
@@ -1386,37 +921,30 @@ body.theme-amethyst {
     --primary-hover: #774ac0;
     --accent: #b191ec;
     --accent-soft: #e3d7ff;
-    --bs-body-bg: var(--bg);
-    --bs-body-color: var(--text);
-    --bs-border-color: var(--border);
-    --bs-primary: var(--primary);
-    --bs-primary-rgb: 141, 96, 214;
 }
 body[class^="theme-"],
 body[class*=" theme-"] {
-    background-color: var(--bs-body-bg);
-    color: var(--bs-body-color);
+    background: var(--bg);
+    color: var(--text);
 }
-
-/* Owner pages: gradient shell (uses theme tokens) over solid theme fill */
-body.owner-area-page[class^="theme-"],
-body.owner-area-page[class*=" theme-"] {
-    background: linear-gradient(165deg, var(--bg) 0%, var(--surface-soft) 45%, var(--bg) 100%);
-    background-attachment: fixed;
+body[class^="theme-"] h1,
+body[class*=" theme-"] h1 {
+    color: var(--text);
 }
-
-body[class^="theme-"] .salonic-navbar,
-body[class*=" theme-"] .salonic-navbar {
-    background-color: var(--surface) !important;
-    border-bottom-color: var(--border) !important;
+body[class^="theme-"] nav,
+body[class*=" theme-"] nav {
+    background: var(--surface);
+    border-image: none;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
-body[class^="theme-"] .salonic-navbar .nav-link,
-body[class*=" theme-"] .salonic-navbar .nav-link {
-    color: var(--muted) !important;
+body[class^="theme-"] .nav-links a,
+body[class*=" theme-"] .nav-links a {
+    color: var(--muted);
 }
-body[class^="theme-"] .salonic-navbar .nav-link:hover,
-body[class*=" theme-"] .salonic-navbar .nav-link:hover {
-    color: var(--primary) !important;
+body[class^="theme-"] .nav-links a:hover,
+body[class*=" theme-"] .nav-links a:hover {
+    color: var(--primary);
 }
 body[class^="theme-"] .auth-form input,
 body[class*=" theme-"] .auth-form input,
@@ -1428,12 +956,12 @@ body[class*=" theme-"] .auth-form select {
     background: var(--surface);
     color: var(--text);
 }
-body[class^="theme-"] .auth-form button:not(.btn),
-body[class*=" theme-"] .auth-form button:not(.btn) {
+body[class^="theme-"] .auth-form button,
+body[class*=" theme-"] .auth-form button {
     background: var(--primary);
 }
-body[class^="theme-"] .auth-form button:not(.btn):hover,
-body[class*=" theme-"] .auth-form button:not(.btn):hover {
+body[class^="theme-"] .auth-form button:hover,
+body[class*=" theme-"] .auth-form button:hover {
     background: var(--primary-hover);
 }
 body[class^="theme-"] .field-label,
@@ -1449,38 +977,37 @@ body[class*=" theme-"] .subtitle {
 .auth-form textarea,
 .auth-form select {
     padding: 0.6rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-size: 0.95rem;
-    background: var(--surface);
-    color: var(--text);
+    background: var(--brand-surface);
+    color: var(--brand-text);
 }
 .auth-form input[type="file"] { padding: 0.45rem 0.6rem; }
-.field-label { text-align: left; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.25rem; color: var(--text); }
+.field-label { text-align: left; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.25rem; }
 .form-page { max-width: 720px; text-align: left; margin-left: auto; margin-right: auto; }
 .form-page .subtitle { margin-bottom: 1.5rem; }
 .setup-form { max-width: 100%; }
 
-/* Owner homepage (template) — width from Bootstrap .container when used */
+/* Owner homepage (template) */
 .owner-home-page {
-    max-width: none;
-    margin: 0;
-    padding: 0;
+    max-width: 720px;
+    margin: 3rem auto;
+    padding: 0 1.5rem 4rem;
     text-align: left;
 }
-.owner-page-header .subtitle {
-    margin-bottom: 0;
+.owner-home-header .subtitle {
+    margin-bottom: 1.5rem;
 }
-
 .owner-home-toolbar {
     margin-bottom: 1.75rem;
 }
 .owner-section-title {
     font-size: 1.15rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1rem;
-    color: var(--text);
+    color: var(--brand-heading);
 }
 .owner-salons-list {
     list-style: none;
@@ -1495,9 +1022,10 @@ body[class*=" theme-"] .subtitle {
     justify-content: space-between;
     gap: 1rem;
     padding: 1.25rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    box-shadow: var(--brand-shadow-sm);
 }
 .owner-salon-card-placeholder {
     border-style: dashed;
@@ -1505,17 +1033,18 @@ body[class*=" theme-"] .subtitle {
 }
 .owner-salon-name {
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0.35rem;
+    color: var(--brand-heading);
 }
 .owner-salon-meta {
     font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     margin-bottom: 0.5rem;
 }
 .owner-salon-desc {
     font-size: 0.9rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     line-height: 1.5;
     max-width: 28rem;
 }
@@ -1529,40 +1058,42 @@ body[class*=" theme-"] .subtitle {
     font-family: inherit;
     font-size: 0.85rem;
     font-weight: 600;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
+    border-radius: var(--brand-radius-sm);
+    border: 1px solid var(--brand-border);
+    background: var(--brand-surface);
+    color: var(--brand-link);
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
+    transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 button.owner-btn:disabled {
     cursor: not-allowed;
     opacity: 0.7;
 }
 a.owner-btn-primary:hover {
-    background: var(--primary-hover);
+    filter: brightness(1.05);
     color: #fff;
-    border-color: var(--primary-hover);
+    border-color: transparent;
 }
 .owner-btn-primary {
-    background: var(--primary);
+    background: var(--brand-btn-primary);
     color: #fff;
-    border-color: var(--primary);
+    border-color: transparent;
+    box-shadow: 0 3px 12px rgba(147, 51, 234, 0.3);
 }
 .owner-btn-ghost {
     background: transparent;
 }
 .owner-btn-danger {
-    border-color: var(--accent);
-    color: var(--text);
-    background: var(--accent-soft);
+    border-color: #c45c5c;
+    color: #a33030;
+    background: #fff5f5;
 }
 .owner-btn-danger:hover:not(:disabled) {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
+    background: #fde8e8;
+    border-color: #a33030;
+    color: #7a2222;
 }
 
 .artist-hours-page {
@@ -1576,63 +1107,53 @@ a.owner-btn-primary:hover {
     margin: -0.5rem 0 1.5rem;
 }
 .artist-hours-switch a {
-    color: var(--muted);
+    color: var(--brand-link);
     font-weight: 600;
     text-decoration: none;
 }
 .artist-hours-switch a:hover {
-    color: var(--primary);
+    color: var(--brand-link-hover);
 }
 .artist-hours-section {
     margin-bottom: 2rem;
 }
 .artist-hours-list {
     list-style: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
     overflow: hidden;
+    box-shadow: var(--brand-shadow-sm);
 }
 .artist-hours-list li {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--brand-border-soft);
 }
 .artist-hours-list li:last-child {
     border-bottom: none;
 }
 
-.artist-hours-list li .artist-service-desc {
-    display: block;
-    margin-top: 0.25rem;
-    font-size: 0.9rem;
-    font-weight: 400;
-    color: var(--muted);
-}
-
 /* Salon dashboard (owner template) */
 .salon-dashboard-page {
-    max-width: none;
-    margin: 0;
-    padding: 0;
+    max-width: 900px;
+    margin: 2.5rem auto 4rem;
+    padding: 0 1.5rem;
     text-align: left;
 }
 .salon-dashboard-header .subtitle {
     margin-bottom: 2rem;
-}
-.salon-dashboard-header.owner-page-header .subtitle {
-    margin-bottom: 0;
 }
 .salon-dash-section {
     margin-bottom: 2.5rem;
 }
 .salon-dash-section-title {
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1rem;
-    color: var(--text);
+    color: var(--brand-heading);
 }
 .salon-dash-artists {
     list-style: none;
@@ -1647,24 +1168,27 @@ a.owner-btn-primary:hover {
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem 1.15rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
+    box-shadow: var(--brand-shadow-sm);
 }
 .salon-dash-card-name {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0.25rem;
+    color: var(--brand-heading);
 }
 .salon-dash-card-meta {
     font-size: 0.88rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
 }
 .salon-dash-table-wrap {
     overflow-x: auto;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
+    background: var(--brand-surface);
+    box-shadow: var(--brand-shadow-sm);
 }
 .salon-dash-table {
     width: 100%;
@@ -1675,12 +1199,12 @@ a.owner-btn-primary:hover {
 .salon-dash-table td {
     padding: 0.65rem 1rem;
     text-align: left;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--brand-border-soft);
 }
 .salon-dash-table th {
     font-weight: 600;
-    color: var(--text);
-    background: var(--surface-soft);
+    color: var(--brand-heading);
+    background: linear-gradient(180deg, #faf5ff 0%, #f5f3ff 100%);
 }
 .salon-dash-table tbody tr:last-child td {
     border-bottom: none;
@@ -1691,9 +1215,9 @@ a.owner-btn-primary:hover {
 
 /* Salon dashboard — artist schedule (template) */
 .salon-schedule-page {
-    max-width: none;
-    margin: 0;
-    padding: 0;
+    max-width: 1100px;
+    margin: 2rem auto 4rem;
+    padding: 0 1.25rem;
     text-align: left;
 }
 .salon-schedule-toolbar {
@@ -1704,14 +1228,14 @@ a.owner-btn-primary:hover {
 }
 .salon-schedule-header .subtitle {
     margin-bottom: 1rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
 }
 .salon-schedule-label {
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--brand-link);
     margin-bottom: 0.35rem;
 }
 .salon-schedule-meta {
@@ -1720,11 +1244,11 @@ a.owner-btn-primary:hover {
     align-items: center;
     gap: 0.35rem;
     font-size: 0.9rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     margin-top: 0.75rem;
 }
 .salon-schedule-meta-sep {
-    color: var(--border);
+    color: #ccc;
 }
 .salon-schedule-controls {
     display: flex;
@@ -1737,39 +1261,40 @@ a.owner-btn-primary:hover {
     cursor: not-allowed;
 }
 .salon-schedule-board {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    background: var(--brand-surface);
     overflow-x: auto;
     padding: 1rem;
     margin-bottom: 1.25rem;
+    box-shadow: var(--brand-shadow-sm);
 }
 .schedule-grid {
     display: grid;
     grid-template-columns: 3.5rem repeat(7, minmax(5.5rem, 1fr));
     gap: 2px;
     min-width: 44rem;
-    background: var(--border);
+    background: linear-gradient(135deg, #e9d5ff 0%, #fce7f3 50%, #cffafe 100%);
     border-radius: 6px;
     overflow: hidden;
 }
 .schedule-grid-corner {
-    background: var(--surface-soft);
+    background: linear-gradient(145deg, #faf5ff 0%, #fefce8 100%);
 }
 .schedule-grid-dayhead {
-    background: var(--surface-soft);
+    background: linear-gradient(180deg, #faf5ff 0%, #f5f3ff 100%);
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: var(--muted);
+    color: var(--brand-text-muted);
     padding: 0.5rem 0.35rem;
     text-align: center;
 }
 .schedule-grid-time {
-    background: var(--surface-soft);
+    background: linear-gradient(135deg, #faf5ff 0%, #ecfeff 100%);
     font-size: 0.72rem;
-    color: var(--muted);
+    color: #7a736a;
     padding: 0.4rem 0.35rem;
     text-align: right;
     align-self: stretch;
@@ -1778,7 +1303,7 @@ a.owner-btn-primary:hover {
     justify-content: flex-end;
 }
 .schedule-grid-cell {
-    background: var(--surface);
+    background: var(--brand-surface);
     min-height: 2.6rem;
     padding: 0.35rem;
     font-size: 0.72rem;
@@ -1788,8 +1313,8 @@ a.owner-btn-primary:hover {
     text-align: center;
 }
 .schedule-cell-muted {
-    color: var(--muted);
-    background: var(--surface-soft);
+    color: #b5aea3;
+    background: #fcfbfa;
 }
 .schedule-cell-pill {
     display: inline-block;
@@ -1803,19 +1328,19 @@ a.owner-btn-primary:hover {
     white-space: nowrap;
 }
 .schedule-pill-open {
-    background: var(--accent-soft);
-    color: var(--text);
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
 }
 .schedule-pill-booked {
-    background: var(--accent);
-    color: #fff;
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    color: #5b21b6;
 }
 .salon-schedule-legend {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--brand-text-muted);
 }
 .schedule-legend-item {
     display: inline-flex;
@@ -1829,8 +1354,8 @@ a.owner-btn-primary:hover {
     display: inline-block;
 }
 .schedule-legend-muted {
-    background: var(--surface-soft);
-    border: 1px solid var(--border);
+    background: #ebe8e4;
+    border: 1px solid #ddd;
 }
 .visually-hidden {
     position: absolute;
@@ -1842,33 +1367,4 @@ a.owner-btn-primary:hover {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-}
-
-/* Toast + button feedback (Anime.js) */
-#salonic-toast-root {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10000;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.salonic-toast {
-    padding: 0.65rem 1.35rem;
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
-    font-size: 0.92rem;
-    font-weight: 600;
-    max-width: min(90vw, 360px);
-    text-align: center;
-    opacity: 0;
-    pointer-events: none;
 }

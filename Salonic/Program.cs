@@ -2,16 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Salonic.BLL.Profiles;
-using Salonic.BLL.Services;
-using Salonic.BLL.Services.Interfaces;
-using Salonic.DAL.Data;
-using Salonic.DAL.Repositories;
-using Salonic.DAL.Repositories.Interfaces;
-using Salonic.FileStorage;
+using Foglaloplusz.BLL.Profiles;
+using Foglaloplusz.BLL.Services;
+using Foglaloplusz.BLL.Services.Interfaces;
+using Foglaloplusz.DAL.Data;
+using Foglaloplusz.DAL.Repositories;
+using Foglaloplusz.DAL.Repositories.Interfaces;
+using Foglaloplusz.FileStorage;
 using System.Security.Claims;
 
-namespace Salonic
+namespace Foglaloplusz
 {
     public class Program
     {
@@ -61,7 +61,7 @@ namespace Salonic
             var connectionString = builder.Configuration.GetConnectionString("AppConnectionString");
             builder.Services.AddDbContext<AppDbContext>(options =>
                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-               mysqloptions => mysqloptions.MigrationsAssembly("Salonic.DAL")
+               mysqloptions => mysqloptions.MigrationsAssembly("Foglaloplusz.DAL")
             ));
             // Add services to the container.
 
@@ -122,14 +122,14 @@ namespace Salonic
 
             builder.Services.AddAuthorization(options =>
             {
-                options.FallbackPolicy = null; // ← no global policy
+                options.FallbackPolicy = null;
             });
 
 
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -138,7 +138,7 @@ namespace Salonic
 
             var webRoot = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
             Directory.CreateDirectory(Path.Combine(webRoot, "uploads", "salons"));
-            // Static files must run before UseRouting so /uploads/... is served from wwwroot (not 404).
+            
             app.UseStaticFiles();
 
             app.UseRouting();

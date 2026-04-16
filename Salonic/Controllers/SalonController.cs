@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Salonic.BLL.DTOs.AppointmentDTOs;
-using Salonic.BLL.DTOs.ArtistDTOs;
-using Salonic.BLL.DTOs.SalonDTOs;
-using Salonic.BLL.Services.Interfaces;
-using Salonic.DAL.Models;
-using Salonic.FileStorage;
-using Salonic.presentation.Models;
+using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
+using Foglaloplusz.BLL.DTOs.ArtistDTOs;
+using Foglaloplusz.BLL.DTOs.SalonDTOs;
+using Foglaloplusz.BLL.Services.Interfaces;
+using Foglaloplusz.FileStorage;
+using Foglaloplusz.presentation.Models;
 
-namespace Salonic.presentation.Controllers
+namespace Foglaloplusz.presentation.Controllers
 {
     [Route("api/salon")]
     [ApiController]
@@ -52,23 +51,20 @@ namespace Salonic.presentation.Controllers
             return NoContent();
         }
 
-        //[AllowAnonymous]
-        //[HttpGet("{salonId:int}/theme")]
-        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<ActionResult<string>> GetSalonTheme(int salonId)
-        //{
-        //    var theme = await _salonService.GetThemeBySalonIdAsync(salonId);
-        //    if (theme == null)
-        //        return NotFound();
-        //    return Ok(theme);
-        //}
+        /// <summary>Public list of all salons for the landing portal (browse).</summary>
         [AllowAnonymous]
-        [HttpGet("{salonId}/public-profile")]
+        [HttpGet("directory")]
+        [ProducesResponseType(typeof(List<SalonDirectoryCardDTO>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<SalonDirectoryCardDTO>>> GetPublicDirectory()
+        {
+            var list = await _salonService.ListPublicDirectoryAsync();
+            return Ok(list);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{salonId:int}/public-profile")]
         [ProducesResponseType(typeof(SalonWithIdDTO), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SalonWithIdDTO>> GetPublicProfile(int salonId)
         {
             var profile = await _salonService.GetPublicProfileAsync(salonId);

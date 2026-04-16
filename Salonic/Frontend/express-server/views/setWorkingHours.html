@@ -1,109 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Set working hours</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>FoglalóPlusz — Nyitvatartás beállítása</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="artist-area-page">
-    <nav class="navbar navbar-expand-lg navbar-light salonic-navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand logo p-0" id="logoLink" href="#"><img src="/img/Salonic_Logo.png" alt="Salonic" height="40" /></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#artistNav" aria-controls="artistNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="artistNav">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-links gap-lg-2">
-                    <li class="nav-item"><a class="nav-link" id="homeLink" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" id="servicesLink" href="#">Services</a></li>
-                    <li class="nav-item"><a class="nav-link" id="userLink" href="#">User</a></li>
-                    <li class="nav-item"><a class="nav-link" id="addServiceLink" href="#">Add Service</a></li>
-                    <li class="nav-item"><a class="nav-link" id="workingHoursLink" href="#">Hours</a></li>
-                    <li class="nav-item"><a class="nav-link" id="loginLink" href="#">Login</a></li>
-                </ul>
-            </div>
-        </div>
+<body>
+    <nav>
+        <a id="logoLink" href="#" class="logo">FoglalóPlusz</a>
+        <ul class="nav-links">
+            <li><a id="homeLink" href="#">Kezdőlap</a></li>
+            <li><a id="servicesLink" href="#">Szolgáltatások</a></li>
+            <li><a id="userLink" href="#">Profil</a></li>
+            <li><a id="addServiceLink" href="#">Új szolgáltatás</a></li>
+            <li><a id="workingHoursLink" href="#">Nyitvatartás</a></li>
+            <li><a id="loginLink" href="#">Bejelentkezés</a></li>
+        </ul>
     </nav>
-    <main class="container py-4 py-lg-5 adservice-page salonic-main salonic-main--wide salonic-page-enter">
-        <header class="artist-page-header mb-4">
-            <h1 class="h3 mb-2">Set working hours</h1>
-            <p class="subtitle mb-2">Single day or a date range; one row per day in the range.</p>
-            <p class="artist-hours-switch mb-0"><a id="artist-hours-to-view" href="#">View my hours</a></p>
-        </header>
+    <main class="adservice-page">
+        <h1>Nyitvatartás beállítása</h1>
+        <p class="subtitle">Egy nap vagy dátumtartomány; a tartományban minden nap külön sor.</p>
+        <p class="artist-hours-switch"><a id="artist-hours-to-view" href="#">Nyitvatartásom megtekintése</a></p>
 
-        <div class="artist-content-panel">
-        <form id="working-hours-form" class="adservice-form d-grid gap-3">
+        <form id="working-hours-form" class="adservice-form">
             <fieldset class="working-hours-mode-fieldset">
-                <legend class="working-hours-legend">Schedule type</legend>
+                <legend class="working-hours-legend">Beosztás típusa</legend>
                 <div class="working-hours-mode-row">
                     <label class="working-hours-radio-label">
-                        <input type="radio" name="scheduleMode" value="1" id="schedule-mode-single" checked>
-                        Single day
+                        <input type="radio" name="scheduleMode" value=1 id="schedule-mode-single" checked>
+                        Egy nap
                     </label>
                     <label class="working-hours-radio-label">
-                        <input type="radio" name="scheduleMode" value="2" id="schedule-mode-week">
-                        Weekly schedule
+                        <input type="radio" name="scheduleMode" value=2 id="schedule-mode-week">
+                        Több napos beosztás
                     </label>
                 </div>
             </fieldset>
 
             <div id="single-day-panel" class="working-hours-panel">
-                <label for="work-date" class="form-label">Date</label>
-                <input id="work-date" class="form-control" type="date" name="date">
+                <label for="work-date">Dátum</label>
+                <input id="work-date" type="date" name="date">
                 <label class="working-hours-open-label working-hours-single-open-label" for="wh-single-open">
                     <input type="checkbox" id="wh-single-open" name="singleDayOpen" checked>
-                    Open this day
+                    Nyitva ezen a napon
                 </label>
                 <div class="working-hours-time-row" id="single-day-times">
                     <div class="working-hours-time-field">
-                        <label for="wh-single-start">Start</label>
-                        <input id="wh-single-start" class="form-control" type="time" name="startTime">
+                        <label for="wh-single-start">Kezdés</label>
+                        <input id="wh-single-start" type="time" name="startTime">
                     </div>
                     <div class="working-hours-time-field">
-                        <label for="wh-single-end">End</label>
-                        <input id="wh-single-end" class="form-control" type="time" name="endTime">
+                        <label for="wh-single-end">Zárás</label>
+                        <input id="wh-single-end" type="time" name="endTime">
                     </div>
                 </div>
             </div>
 
             <div id="weekly-panel" class="working-hours-panel" hidden>
-                <p class="working-hours-block-label"><strong>Start</strong> / <strong>Finish</strong> dates, then set each day. Uncheck <strong>Open</strong> to close.</p>
+                <p class="working-hours-block-label"><strong>Kezdő</strong> és <strong>záró</strong> dátum, majd naponta állítsd be. Vedd ki a <strong>Nyitva</strong> pipát, ha zárva van.</p>
                 <div class="working-hours-range-row working-hours-time-row" id="weekly-range-fields">
                     <div class="working-hours-time-field">
-                        <label for="wh-range-start">Start</label>
-                        <input type="date" id="wh-range-start" class="form-control" name="weeklyRangeStart" autocomplete="off">
+                        <label for="wh-range-start">Kezdő dátum</label>
+                        <input type="date" id="wh-range-start" name="weeklyRangeStart" autocomplete="off">
                     </div>
                     <div class="working-hours-time-field">
-                        <label for="wh-range-finish">Finish</label>
-                        <input type="date" id="wh-range-finish" class="form-control" name="weeklyRangeFinish" autocomplete="off">
+                        <label for="wh-range-finish">Záró dátum</label>
+                        <input type="date" id="wh-range-finish" name="weeklyRangeFinish" autocomplete="off">
                     </div>
                 </div>
                 <div class="working-hours-week-head" aria-hidden="true">
-                    <span>Day</span>
-                    <span>Open</span>
-                    <span>Start</span>
-                    <span>End</span>
+                    <span>Nap</span>
+                    <span>Nyitva</span>
+                    <span>Kezdés</span>
+                    <span>Zárás</span>
                 </div>
-                <div id="weekly-rows-root" class="working-hours-week-list" role="group" aria-label="Hours per day">
+                <div id="weekly-rows-root" class="working-hours-week-list" role="group" aria-label="Órák naponta">
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" id="working-hours-save">Save hours</button>
+            <button type="submit" id="working-hours-save">Nyitvatartás mentése</button>
         </form>
-        </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="/api.js"></script>
-    <script src="/common.js"></script>
     <script src="/setWorkingHours.js"></script>
-    <script src="/setWorkingHoursPage.js"></script>
+    <script src="/api.js"></script>
+    <script src="/script.js"></script>
     <script src="/artistNavbar.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-    <script src="/buttonFeedback.js"></script>
 </body>
 </html>

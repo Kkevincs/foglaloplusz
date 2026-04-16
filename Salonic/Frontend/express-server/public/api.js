@@ -324,7 +324,7 @@ async function PostAppointment(appointment, token) {
         } catch (_) {
             if (msg.length > 300) msg = msg.slice(0, 300) + "…";
         }
-        throw new Error(typeof msg === "string" ? msg : "Request failed");
+        throw new Error(typeof msg === "string" ? msg : "A kérés sikertelen volt.");
     }
     if (!text) return null;
     try {
@@ -445,24 +445,18 @@ async function setWorkingHoursByWeek(token, date) {
     const data = await response.json();
     return data;
 }
-//async function GetSalonThemeBySalonId(token, salonId) {
-//    const response = await fetch(`https://localhost:7156/api/salon/${salonId}/theme`, {
-//        headers: { authorization: `Bearer ${token}` }
-//    });
-//    return await response.text();
-//}
+/** Nyilvános szalonlista a portálhoz (bejelentkezés nélkül). */
+async function GetPublicSalonDirectory() {
+    const response = await fetch("https://localhost:7156/api/salon/directory");
+    if (!response.ok) {
+        throw new Error("Nem sikerült betölteni a szalonok listáját.");
+    }
+    return response.json();
+}
+
 async function GetSalonBySalonId(token, salonId) {
     const response = await fetch(`https://localhost:7156/api/salon/${salonId}/public-profile`, {
         headers: { authorization: `Bearer ${token}` }
     });
     return await response.json();
 }
-//async function applySalonHomepage(salonId) {
-//    const response = await fetch(`https://localhost:7156/api/salon/${salonId}/public-profile`);
-//    const salon = await GetSalonBySalonId();
-//    applyTheme(salon.theme);
-//    document.getElementById('logo').src = salon.logo;
-//    document.getElementById('salon-name').src = salon.logo;
-//    document.getElementById('salon-description').textContent = salon.description;
-//    document.getElementById('salon-support-email').href = `mailto:${salon.supportEmail}`;
-//}

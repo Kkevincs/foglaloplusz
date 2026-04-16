@@ -66,7 +66,7 @@ function applyGuestNavbarState() {
     const loginLink = document.getElementById("loginLink");
     if (loginLink) {
         if (isGuestLoggedIn) {
-            loginLink.textContent = "Log out";
+            loginLink.textContent = "Kijelentkezés";
             loginLink.href = `/Salon/Login${salonQuery}`;
             loginLink.onclick = function (e) {
                 e.preventDefault();
@@ -74,7 +74,7 @@ function applyGuestNavbarState() {
                 window.location.assign(`/Salon/Login${salonQuery}`);
             };
         } else {
-            loginLink.textContent = "Login";
+            loginLink.textContent = "Bejelentkezés";
             loginLink.href = `/Salon/Login${salonQuery}`;
             loginLink.onclick = null;
         }

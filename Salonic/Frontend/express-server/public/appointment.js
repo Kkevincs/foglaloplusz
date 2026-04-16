@@ -12,9 +12,7 @@ function appointmentFormatLocalYMD(date) {
     return `${y}-${m}-${day}`;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await initSalonGuestPublicShell();
-
+document.addEventListener("DOMContentLoaded", () => {
     const dateInput = document.getElementById("appointment-date");
     if (!dateInput) return;
 
@@ -75,95 +73,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 });
 
-function resolveSalonIdForBooking() {
-    if (selectedSalonId > 0) return selectedSalonId;
-    const p = new URLSearchParams(window.location.search);
-    const id = Number(p.get("salonId") || p.get("salonid"));
-    return Number.isFinite(id) && id > 0 ? id : 0;
-}
-
-function buildPendingBookingRegisterUrl() {
-    const salon = resolveSalonIdForBooking();
-    const p = new URLSearchParams();
-    if (salon > 0) p.set("salonId", String(salon));
-    p.set("serviceids", selectedServiceIds.join(","));
-    p.set("artistid", String(selectedArtistId));
-    p.set("appointmentDate", selectedDate);
-    p.set("startTime", selectedSlotStartIso);
-    return `/Salon/Register?${p.toString()}`;
-}
-
 window.SaveDate = async function SaveDate() {
     if (!selectedDate || !selectedSlotStartIso) {
-        alert("Choose a date and a time slot.");
+        alert("Válassz dátumot és időpontot.");
         return;
     }
 
     if (selectedDate < appointmentFormatLocalYMD(new Date())) {
-        alert("Choose today or a future date.");
+        alert("Válassz a mai napot vagy egy későbbi dátumot.");
         return;
     }
 
     if (selectedServiceIds.length === 0 || selectedArtistId <= 0) {
-        alert("Missing services or artist. Go back and select again.");
+        alert("Hiányoznak a szolgáltatások vagy a szakember. Lépj vissza, és válassz újra.");
         return;
     }
 
-    const registerWithBooking = buildPendingBookingRegisterUrl();
-
-    const token = (localStorage.getItem("token") || "").trim();
-
-    if (!token) {
-        alert(
-            "Create an account to complete your booking. After you register, you'll be signed in and your appointment will be saved.",
-        );
-        window.location.assign(registerWithBooking);
-        return;
-    }
-
-    const role =
-        typeof window.getRoleFromToken === "function" ? window.getRoleFromToken() : null;
-    if (role !== "guest") {
-        alert(
-            "Bookings use a guest account. Register (or log in as a guest) to complete this booking — your date and time are kept in the link.",
-        );
-        window.location.assign(registerWithBooking);
-        return;
-    }
-
+    const token = localStorage.getItem("token");
     let guestUser;
     try {
         guestUser = await GetLoggedInUser(token);
     } catch (err) {
         console.error(err);
-        alert("Could not load your profile. Register again to finish your booking.");
-        window.location.assign(registerWithBooking);
+        alert("Nem sikerült betölteni a profilodat. Jelentkezz be újra.");
         return;
     }
 
     const guestId = Number(guestUser?.id ?? guestUser?.Id);
     if (!Number.isFinite(guestId) || guestId < 1) {
-        alert("Invalid guest session. Register to complete your booking.");
-        window.location.assign(registerWithBooking);
+        alert("Érvénytelen vendég munkamenet. Jelentkezz be újra.");
         return;
     }
 
-    const salonForAppt = resolveSalonIdForBooking();
     const appointment = {
         guestId: guestId,
         artistId: selectedArtistId,
-        salonId: salonForAppt > 0 ? salonForAppt : 0,
+        salonId: selectedSalonId > 0 ? selectedSalonId : 0,
         serviceIds: selectedServiceIds,
         startTime: selectedSlotStartIso,
         notes: "",
     };
     try {
-        await PostAppointment(appointment, token);
+        const result = await PostAppointment(appointment, token);
+        console.log(result);
         const salonQ =
-            salonForAppt > 0 ? `?salonId=${encodeURIComponent(String(salonForAppt))}` : "";
+            selectedSalonId > 0 ? `?salonId=${encodeURIComponent(String(selectedSalonId))}` : "";
         window.location.assign(`/Salon/AppointmentCreated${salonQ}`);
     } catch (err) {
         console.error(err);
-        alert(err?.message || "Could not book this time. Try another slot.");
+        alert(err?.message || "Nem sikerült lefoglalni ezt az időpontot. Próbálj másik időpontot.");
     }
 };
