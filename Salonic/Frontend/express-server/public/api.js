@@ -171,6 +171,12 @@ async function GetMySalons(token) {
     return data;
 }
 
+async function GetPublicSalons() {
+    const response = await fetch(`https://localhost:7156/api/salon/public`);
+    const data = await response.json();
+    return data;
+}
+
 async function DeleteSalon(token, salonId) {
     const response = await fetch(`https://localhost:7156/api/salon/${salonId}`, {
         method: "DELETE",
@@ -234,17 +240,56 @@ async function GetArtists(token) {
     return data;       
 }
 
-async function getAppointmentByGuestId(token)
-{
-    const response = await fetch("https://localhost:7156/api/appointment/guest", {
+async function getAppointmentByArtistId(token) {
+    const response = await fetch('https://localhost:7156/api/appointment/artist', {
         headers: {
-            "authorization" : `Bearer ${token}`
-        }
-    })
-
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `HTTP ${response.status}`);
+    }
     const data = await response.json();
     return data;
+}
 
+async function getAppointmentByGuestId(token) {
+    const response = await fetch('https://localhost:7156/api/appointment/guest', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+}
+
+async function cancelGuestAppointment(token, appointmentId) {
+    const response = await fetch(
+        `https://localhost:7156/api/appointment/guest/${encodeURIComponent(appointmentId)}`,
+        {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        },
+    );
+    if (!response.ok) {
+        const text = await response.text();
+        let msg = text || `HTTP ${response.status}`;
+        try {
+            const j = JSON.parse(text);
+            if (typeof j === 'string') msg = j;
+            else msg = j?.detail || j?.title || j?.message || msg;
+        } catch (_) {
+            /* use msg */
+        }
+        throw new Error(msg);
+    }
 }
 
 async function getServiceById(salonId, id, token) {
@@ -348,6 +393,31 @@ async function AddArtistService(service, token) {
     return data;
 }
 
+/** Bulk import: servicename;duration;description;price per line (semicolon-separated). */
+async function importArtistServicesFromCsv(csvText, token) {
+    const response = await fetch('https://localhost:7156/api/Artist/services/import', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify({ csvText }),
+    });
+    const text = await response.text();
+    if (!response.ok) {
+        let msg = text || `HTTP ${response.status}`;
+        try {
+            const j = JSON.parse(text);
+            if (typeof j === 'string') msg = j;
+            else msg = j?.detail || j?.title || j?.message || msg;
+        } catch (_) {
+            /* keep msg */
+        }
+        throw new Error(msg);
+    }
+    return JSON.parse(text);
+}
+
 async function setWorkingHoursByDay(token, date) {
     const response = await fetch('https://localhost:7156/api/workinghours', {
         method: 'POST',
@@ -375,7 +445,6 @@ async function setWorkingHoursByWeek(token, date) {
     const data = await response.json();
     return data;
 }
-
 /** Nyilvános szalonlista a portálhoz (bejelentkezés nélkül). */
 async function GetPublicSalonDirectory() {
     const response = await fetch("https://localhost:7156/api/salon/directory");
@@ -383,4 +452,11 @@ async function GetPublicSalonDirectory() {
         throw new Error("Nem sikerült betölteni a szalonok listáját.");
     }
     return response.json();
+}
+
+async function GetSalonBySalonId(token, salonId) {
+    const response = await fetch(`https://localhost:7156/api/salon/${salonId}/public-profile`, {
+        headers: { authorization: `Bearer ${token}` }
+    });
+    return await response.json();
 }

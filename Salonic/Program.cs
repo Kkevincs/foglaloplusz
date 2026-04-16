@@ -148,6 +148,8 @@ namespace Foglaloplusz
             app.UseAuthorization();
             app.MapControllers();
 
+            
+
             app.Run();
         }
     }

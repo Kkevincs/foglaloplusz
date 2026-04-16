@@ -10,5 +10,7 @@ namespace Foglaloplusz.BLL.Services.Interfaces
         Task<BookingNamesResponseDTO> GetBookingDisplayNamesAsync(BookingNamesRequestDTO request);
         Task<ServiceWithIdDTO?> GetByIdForArtistAsync(int artistId, int salonId, int serviceId);
         Task<ServiceWithIdDTO> CreateForCurrentArtistAsync(int artistId, ServiceWithoutIdDTO dto);
+
+        Task<ServiceCsvImportResponseDTO> ImportServicesFromCsvAsync(int artistId, string csv);
     }
 }

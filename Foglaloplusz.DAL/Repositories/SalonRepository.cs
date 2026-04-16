@@ -26,8 +26,29 @@ namespace Foglaloplusz.DAL.Repositories
                 .OrderBy(s => s.Name)
                 .ToListAsync();
 
+        public Task<List<Salon>> ListAllAsync() =>
+            _context.Salons
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+
         public Task<bool> ExistsByIdAsync(int salonId) =>
             _context.Salons.AnyAsync(s => s.Id == salonId);
+
+        //public async Task<string?> GetThemeBySalonIdAsync(int salonId)
+        //{
+        //    var row = await _context.Salons
+        //        .AsNoTracking()
+        //        .Where(s => s.Id == salonId)
+        //        .Select(s => new { s.Theme })
+        //        .FirstOrDefaultAsync();
+        //    if (row == null)
+        //        return null;
+        //    return row.Theme ?? string.Empty;
+        //}
+        
+        public Task<Salon?> GetBySalonIdAsync(int salonId) =>
+            _context.Salons
+                .FirstOrDefaultAsync(s => s.Id == salonId);
 
         public Task<Salon?> GetByOwnerAndIdAsync(int ownerId, int salonId) =>
             _context.Salons

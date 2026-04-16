@@ -54,6 +54,44 @@ namespace Foglaloplusz.presentation.Controllers
             return Ok(list);
         }
 
+        [Authorize(Roles = "artist")]
+        [HttpGet("artist")]
+        [ProducesResponseType(typeof(List<AppointmentsWithIdDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<List<AppointmentsWithIdDTO>>> GetByArtistId()
+        {
+            if (!TryGetIntClaim("sub", out var artistId))
+                return Unauthorized();
+
+            try
+            {
+                var list = await _appointmentService.ListForArtistAsync(artistId);
+                return Ok(list);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize(Roles = "guest")]
+        [HttpDelete("guest/{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CancelForGuest(int id)
+        {
+            if (!TryGetIntClaim("sub", out var guestId))
+                return Unauthorized();
+
+            var ok = await _appointmentService.CancelForGuestAsync(guestId, id);
+            if (!ok) return NotFound();
+            return NoContent();
+        }
+
         [Authorize(Roles = "guest")]
         [HttpPost]
         [ProducesResponseType(typeof(AppointmentsWithoutIdDTO), StatusCodes.Status200OK)]

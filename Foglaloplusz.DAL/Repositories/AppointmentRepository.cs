@@ -20,6 +20,13 @@ namespace Foglaloplusz.DAL.Repositories
                 .Where(x => x.GuestId == guestId)
                 .ToListAsync();
 
+        public Task<List<Appointment>> ListByArtistIdAsync(int artistId) =>
+            _context.Appointments
+                .Include(a => a.Services)
+                .Where(x => x.ArtistId == artistId)
+                .OrderBy(a => a.StartTime)
+                .ToListAsync();
+
         public Task<List<Appointment>> ListBySalonIdAsync(int salonId) =>
             _context.Appointments
                 .Include(a => a.Services)
@@ -57,6 +64,17 @@ namespace Foglaloplusz.DAL.Repositories
         {
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> DeleteForGuestAsync(int guestId, int appointmentId)
+        {
+            var a = await _context.Appointments
+                .Include(x => x.Services)
+                .FirstOrDefaultAsync(x => x.Id == appointmentId && x.GuestId == guestId);
+            if (a == null) return false;
+            _context.Appointments.Remove(a);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

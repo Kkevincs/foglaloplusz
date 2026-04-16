@@ -32,6 +32,15 @@ namespace Foglaloplusz.presentation.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("public")]
+        [ProducesResponseType(typeof(List<SalonWithIdDTO>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<SalonWithIdDTO>>> GetPublicSalons()
+        {
+            var list = await _salonService.ListPublicAsync();
+            return Ok(list);
+        }
+
+        [AllowAnonymous]
         [HttpGet("{salonId:int}/exists")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,6 +59,18 @@ namespace Foglaloplusz.presentation.Controllers
         {
             var list = await _salonService.ListPublicDirectoryAsync();
             return Ok(list);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{salonId:int}/public-profile")]
+        [ProducesResponseType(typeof(SalonWithIdDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<SalonWithIdDTO>> GetPublicProfile(int salonId)
+        {
+            var profile = await _salonService.GetPublicProfileAsync(salonId);
+            if (profile == null) return NotFound();
+
+            return Ok(profile);
         }
 
         [Authorize(Roles = "owner")]
