@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Artist Hours</title>
+    <title>FoglalóPlusz — Nyitvatartásom</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -11,53 +11,53 @@
 </head>
 <body>
     <nav>
-        <a id="logoLink" href="#" class="logo">Salonic</a>
+        <a id="logoLink" href="#" class="logo">FoglalóPlusz</a>
         <ul class="nav-links">
-            <li><a id="homeLink" href="#">Home</a></li>
-            <li><a id="servicesLink" href="#">Services</a></li>
-            <li><a id="userLink" href="#">User</a></li>
-            <li><a id="addServiceLink" href="#">Add Service</a></li>
-            <li><a id="workingHoursLink" href="#">Hours</a></li>
-            <li><a id="loginLink" href="#">Login</a></li>
+            <li><a id="homeLink" href="#">Kezdőlap</a></li>
+            <li><a id="servicesLink" href="#">Szolgáltatások</a></li>
+            <li><a id="userLink" href="#">Profil</a></li>
+            <li><a id="addServiceLink" href="#">Új szolgáltatás</a></li>
+            <li><a id="workingHoursLink" href="#">Nyitvatartás</a></li>
+            <li><a id="loginLink" href="#">Bejelentkezés</a></li>
         </ul>
     </nav>
     <main class="artist-hours-page">
-        <h1>My working hours</h1>
-        <p class="subtitle">View your current schedule and update it below. (Template only)</p>
-        <p class="artist-hours-switch"><a id="artist-hours-to-set" href="#">Add or set hours by date</a></p>
+        <h1>Nyitvatartásom</h1>
+        <p class="subtitle">A jelenlegi beosztásod és frissítés alább.</p>
+        <p class="artist-hours-switch"><a id="artist-hours-to-set" href="#">Nyitvatartás megadása dátum szerint</a></p>
 
         <section class="artist-hours-section" aria-labelledby="current-hours-heading">
-            <h2 id="current-hours-heading" class="section-title">Current hours</h2>
+            <h2 id="current-hours-heading" class="section-title">Aktuális nyitvatartás</h2>
             <ul id="artist-hours-list" class="artist-hours-list">
             </ul>
         </section>
 
         <section class="artist-hours-section" aria-labelledby="modify-hours-heading">
-            <h2 id="modify-hours-heading" class="section-title">Modify hours</h2>
+            <h2 id="modify-hours-heading" class="section-title">Módosítás</h2>
             <form class="adservice-form">
-                <label for="hours-day">Day</label>
+                <label for="hours-day">Nap</label>
                 <select id="hours-day" name="hours-day">
-                    <option>Monday</option>
-                    <option>Tuesday</option>
-                    <option>Wednesday</option>
-                    <option>Thursday</option>
-                    <option>Friday</option>
-                    <option>Saturday</option>
-                    <option>Sunday</option>
+                    <option>Hétfő</option>
+                    <option>Kedd</option>
+                    <option>Szerda</option>
+                    <option>Csütörtök</option>
+                    <option>Péntek</option>
+                    <option>Szombat</option>
+                    <option>Vasárnap</option>
                 </select>
 
                 <div class="working-hours-time-row">
                     <div class="working-hours-time-field">
-                        <label for="hours-start">Start</label>
+                        <label for="hours-start">Kezdés</label>
                         <input id="hours-start" type="time" name="hours-start">
                     </div>
                     <div class="working-hours-time-field">
-                        <label for="hours-end">End</label>
+                        <label for="hours-end">Zárás</label>
                         <input id="hours-end" type="time" name="hours-end">
                     </div>
                 </div>
 
-                <button type="button">Save changes</button>
+                <button type="button">Változtatások mentése</button>
             </form>
         </section>
     </main>

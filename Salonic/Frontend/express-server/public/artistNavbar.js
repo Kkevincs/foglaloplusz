@@ -31,7 +31,7 @@ function applyArtistNavbarState() {
 
     const loginLink = document.getElementById("loginLink");
     if (loginLink && isArtistLoggedIn) {
-        loginLink.textContent = "Logout";
+        loginLink.textContent = "Kijelentkezés";
         loginLink.href = `/Salon/Artist/Login${salonQuery}`;
         loginLink.onclick = function (e) {
             e.preventDefault();
@@ -39,7 +39,7 @@ function applyArtistNavbarState() {
             window.location.assign(`/Salon/Artist/Login${salonQuery}`);
         };
     } else if (loginLink) {
-        loginLink.textContent = "Login";
+        loginLink.textContent = "Bejelentkezés";
         loginLink.href = `/Salon/Artist/Login${salonQuery}`;
         loginLink.onclick = null;
     }

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Salonic.presentation.Models
+namespace Foglaloplusz.presentation.Models
 {
     public class SalonCreateForm
     {

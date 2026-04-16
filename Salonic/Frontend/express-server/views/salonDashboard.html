@@ -1,32 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Salon dashboard</title>
+    <title>FoglalóPlusz — Szalon irányítópult</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <nav>
-        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
-        <ul class="nav-links">
-            <li><a href="/ownerhomepage">My salons</a></li>
-            <li><a href="/maker">New salon setup</a></li>
-            <li><a href="/owneruserpage">Account</a></li>
-            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
-        </ul>
-    </nav>
+<body class="portal-body owner-app-page">
+    <header class="portal-header">
+        <div class="portal-header-inner portal-header-inner--split">
+            <a href="/ownerhomepage" class="portal-brand"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
+            <ul class="portal-nav-links">
+                <li><a href="/ownerhomepage">Szalonjaim</a></li>
+                <li><a href="/maker">Új szalon felvétele</a></li>
+                <li><a href="/owneruserpage">Fiók</a></li>
+                <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
+            </ul>
+        </div>
+    </header>
     <main class="salon-dashboard-page">
         <header class="salon-dashboard-header">
-            <h1>Bloom Hair Studio</h1>
-            <p class="subtitle">Salon dashboard — template only. Artists, services, and appointments will load here later.</p>
+            <h1>Szalon irányítópult</h1>
+            <p class="subtitle">Szakemberek, szolgáltatások és időpontok egy helyen.</p>
         </header>
 
         <section class="salon-dash-section" aria-labelledby="dash-artists-heading">
-            <h2 id="dash-artists-heading" class="salon-dash-section-title">Artists</h2>
+            <h2 id="dash-artists-heading" class="salon-dash-section-title">Szakemberek</h2>
             <ul id="salon-dash-artists" class="salon-dash-artists">
                 
                 
@@ -34,14 +36,14 @@
         </section>
 
         <section class="salon-dash-section" aria-labelledby="dash-services-heading">
-            <h2 id="dash-services-heading" class="salon-dash-section-title">Services</h2>
+            <h2 id="dash-services-heading" class="salon-dash-section-title">Szolgáltatások</h2>
             <div class="salon-dash-table-wrap">
                 <table class="salon-dash-table">
                     <thead>
                         <tr>
-                            <th scope="col">Service</th>
-                            <th scope="col">Duration</th>
-                            <th scope="col">Price</th>
+                            <th scope="col">Szolgáltatás</th>
+                            <th scope="col">Időtartam</th>
+                            <th scope="col">Ár</th>
                         </tr>
                     </thead>
                     <tbody id="services-table">
@@ -53,15 +55,15 @@
         </section>
 
         <section class="salon-dash-section" aria-labelledby="dash-appointments-heading">
-            <h2 id="dash-appointments-heading" class="salon-dash-section-title">Appointments</h2>
+            <h2 id="dash-appointments-heading" class="salon-dash-section-title">Időpontok</h2>
             <div class="salon-dash-table-wrap">
                 <table class="salon-dash-table salon-dash-table-appointments">
                     <thead>
                         <tr>
-                            <th scope="col">Date &amp; time</th>
-                            <th scope="col">Guest</th>
-                            <th scope="col">Artist</th>
-                            <th scope="col">Service</th>
+                            <th scope="col">Dátum és idő</th>
+                            <th scope="col">Szakember</th>
+                            <th scope="col">Vendég</th>
+                            <th scope="col">Szolgáltatás</th>
                         </tr>
                     </thead>
                     <tbody id="apps-table">

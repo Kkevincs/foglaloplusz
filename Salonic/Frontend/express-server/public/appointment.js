@@ -75,17 +75,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.SaveDate = async function SaveDate() {
     if (!selectedDate || !selectedSlotStartIso) {
-        alert("Choose a date and a time slot.");
+        alert("Válassz dátumot és időpontot.");
         return;
     }
 
     if (selectedDate < appointmentFormatLocalYMD(new Date())) {
-        alert("Choose today or a future date.");
+        alert("Válassz a mai napot vagy egy későbbi dátumot.");
         return;
     }
 
     if (selectedServiceIds.length === 0 || selectedArtistId <= 0) {
-        alert("Missing services or artist. Go back and select again.");
+        alert("Hiányoznak a szolgáltatások vagy a szakember. Lépj vissza, és válassz újra.");
         return;
     }
 
@@ -95,13 +95,13 @@ window.SaveDate = async function SaveDate() {
         guestUser = await GetLoggedInUser(token);
     } catch (err) {
         console.error(err);
-        alert("Could not load your profile. Please log in again.");
+        alert("Nem sikerült betölteni a profilodat. Jelentkezz be újra.");
         return;
     }
 
     const guestId = Number(guestUser?.id ?? guestUser?.Id);
     if (!Number.isFinite(guestId) || guestId < 1) {
-        alert("Invalid guest session. Please log in again.");
+        alert("Érvénytelen vendég munkamenet. Jelentkezz be újra.");
         return;
     }
 
@@ -121,6 +121,6 @@ window.SaveDate = async function SaveDate() {
         window.location.assign(`/Salon/AppointmentCreated${salonQ}`);
     } catch (err) {
         console.error(err);
-        alert(err?.message || "Could not book this time. Try another slot.");
+        alert(err?.message || "Nem sikerült lefoglalni ezt az időpontot. Próbálj másik időpontot.");
     }
 };

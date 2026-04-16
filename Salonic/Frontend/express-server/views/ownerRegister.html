@@ -1,31 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Salon owner registration</title>
+    <title>FoglalóPlusz — Tulajdonos regisztráció</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <nav>
-        <a href="/maker" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
-        <ul class="nav-links">
-            <li><a href="/ownerlogin">Log in</a></li>
-        </ul>
-    </nav>
-    <main class="auth-page">
-        <h1>Register as salon owner</h1>
-        <form id="owner-register-form" class="auth-form">
-            <input id="OwnerRegName" type="text" name="name" placeholder="Full name" required>
-            <input id="OwnerRegEmail" type="email" name="email" placeholder="Email" required>
-            <input id="OwnerRegPassword" type="password" name="password" placeholder="Password" required>
-            <button type="submit">Create owner account</button>
-        </form>
-        <p class="auth-switch">Already have an account? <a href="/ownerlogin">Log in</a></p>
-        <p class="auth-switch auth-switch-spaced">After registering, you can <a href="/maker">set up your salon</a>.</p>
+<body class="portal-body owner-auth-page">
+    <header class="portal-header">
+        <div class="portal-header-inner portal-header-inner--split">
+            <a href="/portal" class="portal-brand"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
+            <ul class="portal-nav-links">
+                <li><a href="/portal">Portál</a></li>
+                <li><a href="/ownerlogin">Bejelentkezés</a></li>
+            </ul>
+        </div>
+    </header>
+    <main>
+        <div class="owner-auth-card">
+            <h1>Tulajdonos fiók létrehozása</h1>
+            <p class="subtitle">Regisztrálj, hogy szalonokat hozz létre, meghívd a szakembereket és a FoglalóPluszon kezeld a vállalkozásod.</p>
+            <form id="owner-register-form" class="auth-form" autocomplete="on">
+                <label class="field-label" for="OwnerRegName">Teljes név</label>
+                <input id="OwnerRegName" type="text" name="name" placeholder="A neved" required autocomplete="name">
+
+                <label class="field-label" for="OwnerRegEmail">E-mail</label>
+                <input id="OwnerRegEmail" type="email" name="email" placeholder="te@pelda.hu" required autocomplete="email">
+
+                <label class="field-label" for="OwnerRegPassword">Jelszó</label>
+                <input id="OwnerRegPassword" type="password" name="password" placeholder="Erős jelszó" required autocomplete="new-password">
+
+                <button type="submit">Tulajdonos fiók létrehozása</button>
+            </form>
+            <p class="auth-switch">Már van fiókod? <a href="/ownerlogin">Bejelentkezés</a></p>
+            <p class="auth-switch auth-switch-spaced">A regisztráció után a <a href="/maker">szalon létrehozásával</a> folytathatod.</p>
+        </div>
     </main>
     <script src="/api.js"></script>
     <script src="/script.js"></script>

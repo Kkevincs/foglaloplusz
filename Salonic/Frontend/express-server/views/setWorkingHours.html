@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Set working hours</title>
+    <title>FoglalóPlusz — Nyitvatartás beállítása</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -11,78 +11,78 @@
 </head>
 <body>
     <nav>
-        <a id="logoLink" href="#" class="logo">Salonic</a>
+        <a id="logoLink" href="#" class="logo">FoglalóPlusz</a>
         <ul class="nav-links">
-            <li><a id="homeLink" href="#">Home</a></li>
-            <li><a id="servicesLink" href="#">Services</a></li>
-            <li><a id="userLink" href="#">User</a></li>
-            <li><a id="addServiceLink" href="#">Add Service</a></li>
-            <li><a id="workingHoursLink" href="#">Hours</a></li>
-            <li><a id="loginLink" href="#">Login</a></li>
+            <li><a id="homeLink" href="#">Kezdőlap</a></li>
+            <li><a id="servicesLink" href="#">Szolgáltatások</a></li>
+            <li><a id="userLink" href="#">Profil</a></li>
+            <li><a id="addServiceLink" href="#">Új szolgáltatás</a></li>
+            <li><a id="workingHoursLink" href="#">Nyitvatartás</a></li>
+            <li><a id="loginLink" href="#">Bejelentkezés</a></li>
         </ul>
     </nav>
     <main class="adservice-page">
-        <h1>Set working hours</h1>
-        <p class="subtitle">Single day or a date range; one row per day in the range.</p>
-        <p class="artist-hours-switch"><a id="artist-hours-to-view" href="#">View my hours</a></p>
+        <h1>Nyitvatartás beállítása</h1>
+        <p class="subtitle">Egy nap vagy dátumtartomány; a tartományban minden nap külön sor.</p>
+        <p class="artist-hours-switch"><a id="artist-hours-to-view" href="#">Nyitvatartásom megtekintése</a></p>
 
         <form id="working-hours-form" class="adservice-form">
             <fieldset class="working-hours-mode-fieldset">
-                <legend class="working-hours-legend">Schedule type</legend>
+                <legend class="working-hours-legend">Beosztás típusa</legend>
                 <div class="working-hours-mode-row">
                     <label class="working-hours-radio-label">
                         <input type="radio" name="scheduleMode" value=1 id="schedule-mode-single" checked>
-                        Single day
+                        Egy nap
                     </label>
                     <label class="working-hours-radio-label">
                         <input type="radio" name="scheduleMode" value=2 id="schedule-mode-week">
-                        Weekly schedule
+                        Több napos beosztás
                     </label>
                 </div>
             </fieldset>
 
             <div id="single-day-panel" class="working-hours-panel">
-                <label for="work-date">Date</label>
+                <label for="work-date">Dátum</label>
                 <input id="work-date" type="date" name="date">
                 <label class="working-hours-open-label working-hours-single-open-label" for="wh-single-open">
                     <input type="checkbox" id="wh-single-open" name="singleDayOpen" checked>
-                    Open this day
+                    Nyitva ezen a napon
                 </label>
                 <div class="working-hours-time-row" id="single-day-times">
                     <div class="working-hours-time-field">
-                        <label for="wh-single-start">Start</label>
+                        <label for="wh-single-start">Kezdés</label>
                         <input id="wh-single-start" type="time" name="startTime">
                     </div>
                     <div class="working-hours-time-field">
-                        <label for="wh-single-end">End</label>
+                        <label for="wh-single-end">Zárás</label>
                         <input id="wh-single-end" type="time" name="endTime">
                     </div>
                 </div>
             </div>
 
             <div id="weekly-panel" class="working-hours-panel" hidden>
-                <p class="working-hours-block-label"><strong>Start</strong> / <strong>Finish</strong> dates, then set each day. Uncheck <strong>Open</strong> to close.</p>
+                <p class="working-hours-block-label"><strong>Kezdő</strong> és <strong>záró</strong> dátum, majd naponta állítsd be. Vedd ki a <strong>Nyitva</strong> pipát, ha zárva van.</p>
                 <div class="working-hours-range-row working-hours-time-row" id="weekly-range-fields">
                     <div class="working-hours-time-field">
-                        <label for="wh-range-start">Start</label>
+                        <label for="wh-range-start">Kezdő dátum</label>
                         <input type="date" id="wh-range-start" name="weeklyRangeStart" autocomplete="off">
                     </div>
                     <div class="working-hours-time-field">
-                        <label for="wh-range-finish">Finish</label>
+                        <label for="wh-range-finish">Záró dátum</label>
                         <input type="date" id="wh-range-finish" name="weeklyRangeFinish" autocomplete="off">
                     </div>
                 </div>
                 <div class="working-hours-week-head" aria-hidden="true">
-                    <span>Day</span>
-                    <span>Open</span>
-                    <span>Start</span>
-                    <span>End</span>
+                    <span>Nap</span>
+                    <span>Nyitva</span>
+                    <span>Kezdés</span>
+                    <span>Zárás</span>
                 </div>
-                <div id="weekly-rows-root" class="working-hours-week-list" role="group" aria-label="Hours per day">
+                <div id="weekly-rows-root" class="working-hours-week-list" role="group" aria-label="Órák naponta">
                 </div>
             </div>
 
-            <button type="submit" id="working-hours-save">Save hours</button>
+            <button type="submit" id="working-hours-save">Nyitvatartás mentése</button>
         </form>
     </main>
     <script src="/setWorkingHours.js"></script>

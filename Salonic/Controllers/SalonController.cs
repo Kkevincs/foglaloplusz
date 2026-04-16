@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Salonic.BLL.DTOs.AppointmentDTOs;
-using Salonic.BLL.DTOs.ArtistDTOs;
-using Salonic.BLL.DTOs.SalonDTOs;
-using Salonic.BLL.Services.Interfaces;
-using Salonic.FileStorage;
-using Salonic.presentation.Models;
+using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
+using Foglaloplusz.BLL.DTOs.ArtistDTOs;
+using Foglaloplusz.BLL.DTOs.SalonDTOs;
+using Foglaloplusz.BLL.Services.Interfaces;
+using Foglaloplusz.FileStorage;
+using Foglaloplusz.presentation.Models;
 
-namespace Salonic.presentation.Controllers
+namespace Foglaloplusz.presentation.Controllers
 {
     [Route("api/salon")]
     [ApiController]
@@ -40,6 +40,16 @@ namespace Salonic.presentation.Controllers
             if (!await _salonService.ExistsAsync(salonId))
                 return NotFound();
             return NoContent();
+        }
+
+        /// <summary>Public list of all salons for the landing portal (browse).</summary>
+        [AllowAnonymous]
+        [HttpGet("directory")]
+        [ProducesResponseType(typeof(List<SalonDirectoryCardDTO>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<SalonDirectoryCardDTO>>> GetPublicDirectory()
+        {
+            var list = await _salonService.ListPublicDirectoryAsync();
+            return Ok(list);
         }
 
         [Authorize(Roles = "owner")]

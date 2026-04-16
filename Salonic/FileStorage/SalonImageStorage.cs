@@ -1,6 +1,6 @@
-using Salonic.BLL.Services.Interfaces;
+using Foglaloplusz.BLL.Services.Interfaces;
 
-namespace Salonic.FileStorage
+namespace Foglaloplusz.FileStorage
 {
     public interface ISalonImageStorage
     {

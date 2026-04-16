@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!btn) return;
             const salonId = btn.getAttribute('data-salon-id');
             if (!salonId) return;
-            if (!confirm('Remove this salon permanently? All artists, services, appointments, and working hours for this salon will be deleted.')) {
+            if (!confirm('Biztosan véglegesen törlöd ezt a szalont? Minden kapcsolódó szakember, szolgáltatás, időpont és nyitvatartás törlődik.')) {
                 return;
             }
             const token = localStorage.getItem('token');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await loadSalons();
             } catch (err) {
                 console.error(err);
-                alert(err?.message || 'Could not remove salon.');
+                alert(err?.message || 'Nem sikerült törölni a szalont.');
                 btn.disabled = false;
             }
         });
@@ -277,13 +277,14 @@ async function loadWorkingHours() {
     hours.forEach(x => {
         const [year, month, dayPart] = x.date.split("-");
         const day = dayPart.slice(0, 2);
-        const dayName = days[new Date(x.date).getDay() - 1]
+        const dow = new Date(x.date).getDay();
+        const dayName = days[dow === 0 ? 6 : dow - 1];
         const startTime = String(x.startTime).trim();
         const endTime = String(x.endTime).trim();
         const isClosed =
             (startTime === "0" && endTime === "0") ||
             (startTime === "00:00" && endTime === "00:00");
-        openHours = isClosed ? "closed" : `${startTime} - ${endTime}`;
+        openHours = isClosed ? "zárva" : `${startTime} – ${endTime}`;
         document.getElementById('artist-hours-list').innerHTML += `
 
             <li><span>${dayName} (${day}/${month})</span> <strong>${openHours}</strong></li>
@@ -333,7 +334,7 @@ document.getElementById('guest-login-form')?.addEventListener('submit', async (e
         const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : '';
         window.location.assign(`/Salon/GuestInfo${salonQuery}`);
     } else {
-        alert('Login failed. Check your email and password.');
+        alert('Sikertelen bejelentkezés. Ellenőrizd az e-mail címet és a jelszót.');
     }
 });
 
@@ -453,7 +454,7 @@ async function loadServicesBySalon(id) {
         document.getElementById("services-table").innerHTML += `
                         <tr>
                             <td>${x.name}</td>
-                            <td>${x.durationInMinute} min</td>
+                            <td>${x.durationInMinute} perc</td>
                             <td>${x.price} Ft</td>
                         </tr>
         `
@@ -474,7 +475,7 @@ async function loadArtistsBySalonId(id) {
                         <h3 class="salon-dash-card-name">${x.name}</h3>
                         <p class="salon-dash-card-meta">${x.description}</p>
                     </div>
-                    <a href="/salondashboard/schedule?salonId=${salonIdEnc}&artistId=${x.id}&artistName=${nameEnc}" class="owner-btn">View schedule</a>
+                    <a href="/salondashboard/schedule?salonId=${salonIdEnc}&artistId=${x.id}&artistName=${nameEnc}" class="owner-btn">Naptár megtekintése</a>
                 </li>
         `;
     });
@@ -496,9 +497,9 @@ async function loadSalons(){
                         <p class="owner-salon-desc">${x.description}</p>
                     </div>
                     <div class="owner-salon-actions">
-                        <a href="/salondashboard?salonId=${x.id}" class="owner-btn">Open dashboard</a>
-                        <a href="/ownerartistregister?salonId=${x.id}" class="owner-btn owner-btn-ghost">Edit</a>
-                        <button type="button" class="owner-btn owner-btn-danger" data-action="remove-salon" data-salon-id="${x.id}">Remove salon</button>
+                        <a href="/salondashboard?salonId=${x.id}" class="owner-btn">Irányítópult megnyitása</a>
+                        <a href="/ownerartistregister?salonId=${x.id}" class="owner-btn owner-btn-ghost">Szerkesztés</a>
+                        <button type="button" class="owner-btn owner-btn-danger" data-action="remove-salon" data-salon-id="${x.id}">Szalon eltávolítása</button>
                     </div>
                 </li>
         `
@@ -509,7 +510,7 @@ async function LoadServices() {
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get('salonId');
     if (!salonId) {
-        console.warn('Add ?salonId= to the URL to load services.');
+        console.warn('Adj meg ?salonId= paramétert az URL-ben a szolgáltatások betöltéséhez.');
         return;
     }
     const services = await GetServices(salonId);
@@ -540,9 +541,9 @@ async function LoadUserData() {
 
     document.getElementById("user-profile").innerHTML = `
         <div class="user-info">
-                <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
-                <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
+                <div class="info-row"><span class="info-label">Név</span><span class="info-value" id="user-name">${userData.name}</span></div>
+                <div class="info-row"><span class="info-label">E-mail</span><span class="info-value" id="user-email">${userData.email}</span></div>
+                <div class="info-row"><span class="info-label">Szerepkör</span><span class="info-value" id="user-role">Vendég</span></div>
             </div>
 
     `
@@ -569,9 +570,9 @@ async function LoadOwnerData() {
 
     el.innerHTML = `
         <div class="user-info">
-                <div class="info-row"><span class="info-label">Name</span><span class="info-value">${userData.name}</span></div>
-                <div class="info-row"><span class="info-label">Email</span><span class="info-value">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Role</span><span class="info-value">Owner</span></div>
+                <div class="info-row"><span class="info-label">Név</span><span class="info-value">${userData.name}</span></div>
+                <div class="info-row"><span class="info-label">E-mail</span><span class="info-value">${userData.email}</span></div>
+                <div class="info-row"><span class="info-label">Szerepkör</span><span class="info-value">Tulajdonos</span></div>
             </div>
     `;
 }
@@ -659,12 +660,12 @@ function renderOwnerScheduleGrid(mount, data) {
             } else if (status === 'booked') {
                 const pill = document.createElement('span');
                 pill.className = 'schedule-cell-pill schedule-pill-booked';
-                pill.textContent = (cell && cell.detail) ? cell.detail : 'Booked';
+                pill.textContent = (cell && cell.detail) ? cell.detail : 'Foglalt';
                 cellWrap.appendChild(pill);
             } else {
                 const pill = document.createElement('span');
                 pill.className = 'schedule-cell-pill schedule-pill-open';
-                pill.textContent = 'Open';
+                pill.textContent = 'Szabad';
                 cellWrap.appendChild(pill);
             }
             grid.appendChild(cellWrap);
@@ -740,10 +741,10 @@ async function loadOwnerArtistSchedulePage() {
 
     const weekLabel = document.getElementById('schedule-week-label');
     if (weekLabel) {
-        weekLabel.textContent = `Week of ${monday.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+        weekLabel.textContent = `Hét kezdete: ${monday.toLocaleDateString('hu-HU', { day: 'numeric', month: 'short', year: 'numeric' })}`;
     }
 
-    if (mount) mount.innerHTML = '<p class="subtitle">Loading schedule…</p>';
+    if (mount) mount.innerHTML = '<p class="subtitle">Naptár betöltése…</p>';
 
     const token = localStorage.getItem('token');
     const weekStartIso = scheduleFormatIsoLocal(monday);
@@ -755,7 +756,7 @@ async function loadOwnerArtistSchedulePage() {
     } catch (err) {
         console.error(err);
         if (mount) {
-            const msg = err && err.message ? err.message : 'Could not load schedule.';
+            const msg = err && err.message ? err.message : 'Nem sikerült betölteni a naptárat.';
             mount.innerHTML = `<p class="subtitle" role="alert">${msg}</p>`;
         }
     }

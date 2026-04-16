@@ -1,29 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Salon owner login</title>
+    <title>FoglalóPlusz — Tulajdonos bejelentkezés</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <nav>
-        <a href="/maker" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
-        <ul class="nav-links">
-            <li><a href="/ownerregister">Register</a></li>
-        </ul>
-    </nav>
-    <main class="auth-page">
-        <h1>Salon owner login</h1>
-        <form id="owner-login-form" class="auth-form">
-            <input id="OwnerLoginEmail" type="email" name="email" placeholder="Email" required>
-            <input id="OwnerLoginPassword" type="password" name="password" placeholder="Password" required>
-            <button type="submit">Log in</button>
-        </form>
-        <p class="auth-switch">New to Salonic? <a href="/ownerregister">Create an owner account</a></p>
+<body class="portal-body owner-auth-page">
+    <header class="portal-header">
+        <div class="portal-header-inner portal-header-inner--split">
+            <a href="/portal" class="portal-brand"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
+            <ul class="portal-nav-links">
+                <li><a href="/portal">Portál</a></li>
+                <li><a href="/ownerregister">Regisztráció</a></li>
+            </ul>
+        </div>
+    </header>
+    <main>
+        <div class="owner-auth-card">
+            <h1>Tulajdonos bejelentkezés</h1>
+            <p class="subtitle">Jelentkezz be a szalonjaid és a csapat kezeléséhez.</p>
+            <form id="owner-login-form" class="auth-form" autocomplete="on">
+                <label class="field-label" for="OwnerLoginEmail">E-mail</label>
+                <input id="OwnerLoginEmail" type="email" name="email" placeholder="te@pelda.hu" required autocomplete="username">
+
+                <label class="field-label" for="OwnerLoginPassword">Jelszó</label>
+                <input id="OwnerLoginPassword" type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+
+                <button type="submit">Belépés</button>
+            </form>
+            <p class="auth-switch">Új vagy a FoglalóPluszban? <a href="/ownerregister">Tulajdonos fiók létrehozása</a></p>
+            <p class="auth-switch auth-switch-spaced">Nem tulajdonos vagy? <a href="/portal">Vissza a portálra</a></p>
+        </div>
     </main>
     <script src="/api.js"></script>
     <script src="/script.js"></script>

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Salonic.BLL.DTOs.ServiceDTOs;
-using Salonic.BLL.Services.Interfaces;
+using Foglaloplusz.BLL.DTOs.ServiceDTOs;
+using Foglaloplusz.BLL.Services.Interfaces;
 
-namespace Salonic.presentation.Controllers
+namespace Foglaloplusz.presentation.Controllers
 {
     [Route("api/salon/{salonId:int}/services")]
     [ApiController]

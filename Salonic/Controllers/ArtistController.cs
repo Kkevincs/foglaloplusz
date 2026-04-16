@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Salonic.BLL.DTOs.ArtistDTOs;
-using Salonic.BLL.DTOs.ServiceDTOs;
-using Salonic.BLL.Services.Interfaces;
+using Foglaloplusz.BLL.DTOs.ArtistDTOs;
+using Foglaloplusz.BLL.DTOs.ServiceDTOs;
+using Foglaloplusz.BLL.Services.Interfaces;
 
-namespace Salonic.presentation.Controllers
+namespace Foglaloplusz.presentation.Controllers
 {
     [Route("api/Artist")]
     [ApiController]

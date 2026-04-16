@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Salonic.BLL.DTOs.UserDTOs;
-using Salonic.BLL.Services.Interfaces;
+using Foglaloplusz.BLL.DTOs.UserDTOs;
+using Foglaloplusz.BLL.Services.Interfaces;
 
-namespace Salonic.presentation.Controllers
+namespace Foglaloplusz.presentation.Controllers
 {
     [Route("api/authentication")]
     [AllowAnonymous]

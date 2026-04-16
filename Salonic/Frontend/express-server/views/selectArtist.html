@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Select artist</title>
+    <title>FoglalóPlusz — Szakember választása</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -11,22 +11,22 @@
 </head>
 <body>
     <nav>
-        <a href="/Salon" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
+        <a href="/Salon" class="logo"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
         <ul class="nav-links">
-            <li><a id="homeLink" href="#">Home</a></li>
-            <li><a id="servicesLink" href="#">Services</a></li>
-            <li><a id="artistsLink" href="#">Artists</a></li>
-            <li><a id="bookLink" href="/Salon/Services">Book</a></li>
-            <li><a id="userLink" href="#">User</a></li>
-            <li><a id="loginLink" href="#">Login</a></li>
+            <li><a id="homeLink" href="#">Kezdőlap</a></li>
+            <li><a id="servicesLink" href="#">Szolgáltatások</a></li>
+            <li><a id="artistsLink" href="#">Szakemberek</a></li>
+            <li><a id="bookLink" href="/Salon/Services">Foglalás</a></li>
+            <li><a id="userLink" href="#">Profil</a></li>
+            <li><a id="loginLink" href="#">Bejelentkezés</a></li>
         </ul>
     </nav>
     <main class="artists-page">
-        <h1>Artists</h1>
-        <p class="subtitle">Meet our team.</p>
+        <h1>Szakemberek</h1>
+        <p class="subtitle">Ismerd meg a csapatunkat.</p>
         <div id="artists-list" class="artists-list">
             
-            <button type="button" onclick="SelectArtist()" id="SelectedArtist">Select Artist</button>
+            <button type="button" onclick="SelectArtist()" id="SelectedArtist">Szakember kiválasztása</button>
         </div>
     </main>
     <script src="/api.js"></script>

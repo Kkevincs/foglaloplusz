@@ -1,109 +1,698 @@
+/* Alap színek (FoglalóPlusz) — nem írják felül a body.theme-* szalon témák */
+:root {
+    --brand-bg-gradient:
+        radial-gradient(ellipse 90% 55% at 100% -5%, rgba(236, 72, 153, 0.22), transparent 52%),
+        radial-gradient(ellipse 75% 50% at -5% 30%, rgba(99, 102, 241, 0.18), transparent 48%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(34, 211, 238, 0.12), transparent 50%),
+        linear-gradient(168deg, #fff0f5 0%, #f0f4ff 32%, #fff7ed 65%, #faf5ff 100%);
+    --brand-text: #1e1b4b;
+    --brand-text-muted: #575069;
+    --brand-heading: #4c1d95;
+    --brand-surface: #ffffff;
+    --brand-surface-tint: rgba(255, 255, 255, 0.88);
+    --brand-border: rgba(167, 139, 250, 0.38);
+    --brand-border-soft: rgba(167, 139, 250, 0.22);
+    --brand-nav-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 245, 255, 0.98) 100%);
+    --brand-link: #6d28d9;
+    --brand-link-hover: #db2777;
+    --brand-btn-primary: linear-gradient(135deg, #db2777 0%, #9333ea 55%, #7c3aed 100%);
+    --brand-btn-primary-solid: #7c3aed;
+    --brand-btn-primary-hover: linear-gradient(135deg, #be185d 0%, #7c3aed 100%);
+    --brand-radius: 10px;
+    --brand-radius-sm: 8px;
+    --brand-shadow: 0 8px 28px rgba(99, 102, 241, 0.12);
+    --brand-shadow-sm: 0 4px 16px rgba(147, 51, 234, 0.1);
+    --brand-input-focus: #a78bfa;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'DM Sans', sans-serif; background: #faf9f7; color: #2d2a26; min-height: 100vh; }
-nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: #fff; border-bottom: 1px solid #eee; }
-.logo { font-weight: 600; font-size: 1.25rem; color: #2d2a26; text-decoration: none; }
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+    color: var(--brand-text);
+    min-height: 100vh;
+}
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: var(--brand-nav-bg);
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, #ec4899, #a855f7, #06b6d4) 1;
+    box-shadow: var(--brand-shadow-sm);
+}
+.logo { font-weight: 600; font-size: 1.25rem; color: var(--brand-heading); text-decoration: none; }
 .nav-links { display: flex; gap: 1.5rem; list-style: none; }
-.nav-links a { color: #5c5650; text-decoration: none; font-size: 0.9rem; }
-.nav-links a:hover { color: #2d2a26; }
+.nav-links a { color: var(--brand-link); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+.nav-links a:hover { color: var(--brand-link-hover); }
 main { max-width: 640px; margin: 4rem auto; padding: 0 1.5rem; text-align: center; }
-h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.75rem; }
-p { color: #5c5650; line-height: 1.6; }
+h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--brand-heading); }
+p { color: var(--brand-text-muted); line-height: 1.6; }
 
 .services-page, .artists-page { text-align: left; }
 .services-page .subtitle, .artists-page .subtitle { margin-bottom: 1.5rem; }
 .services-list, .artists-list { display: grid; gap: 1rem; }
-.services-list .service-card, .artists-list .artist-card { padding: 1rem; background: #fff; border: 1px solid #eee; border-radius: 6px; }
-.services-list .service-card .name, .artists-list .artist-card .name { font-weight: 600; }
-.services-list .service-card .desc, .artists-list .artist-card .role { font-size: 0.9rem; color: #5c5650; margin-top: 0.25rem; }
+.services-list .service-card, .artists-list .artist-card {
+    padding: 1.1rem;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    box-shadow: var(--brand-shadow-sm);
+}
+.services-list .service-card .name, .artists-list .artist-card .name { font-weight: 700; color: var(--brand-heading); }
+.services-list .service-card .desc, .artists-list .artist-card .role { font-size: 0.9rem; color: var(--brand-text-muted); margin-top: 0.25rem; }
 
 .auth-page { max-width: 320px; }
 .auth-form { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
-.auth-form input { padding: 0.6rem 0.75rem; border: 1px solid #eee; border-radius: 6px; font-family: inherit; font-size: 0.95rem; }
-.auth-form button { padding: 0.6rem; background: #2d2a26; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-weight: 600; cursor: pointer; }
-.auth-form button:hover { background: #3d3a36; }
-.role-toggle { display: flex; gap: 0; border: 1px solid #eee; border-radius: 6px; overflow: hidden; }
-.role-toggle label { flex: 1; padding: 0.5rem 0.75rem; text-align: center; font-size: 0.9rem; cursor: pointer; background: #fff; }
-.role-toggle label:has(input:checked) { background: #2d2a26; color: #fff; }
+.auth-form input {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--brand-surface);
+    color: var(--brand-text);
+}
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--brand-input-focus);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+}
+.auth-form button {
+    padding: 0.65rem;
+    background: var(--brand-btn-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--brand-radius-sm);
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.auth-form button:hover {
+    background: var(--brand-btn-primary-hover);
+    box-shadow: 0 6px 18px rgba(219, 39, 119, 0.35);
+}
+.role-toggle { display: flex; gap: 0; border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); overflow: hidden; }
+.role-toggle label { flex: 1; padding: 0.5rem 0.75rem; text-align: center; font-size: 0.9rem; cursor: pointer; background: var(--brand-surface); color: var(--brand-text-muted); }
+.role-toggle label:has(input:checked) {
+    background: var(--brand-btn-primary);
+    color: #fff;
+}
 .role-toggle input { position: absolute; opacity: 0; }
-.auth-switch { font-size: 0.9rem; color: #5c5650; }
-.auth-switch a { color: #2d2a26; }
+.auth-switch { font-size: 0.9rem; color: var(--brand-text-muted); }
+.auth-switch a { color: var(--brand-link); font-weight: 600; }
+.auth-switch a:hover { color: var(--brand-link-hover); }
 .auth-switch-spaced { margin-top: 1.25rem; }
+
+/* Owner login / register (matches portal + maker flow) */
+.owner-auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.owner-auth-page > main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    text-align: left;
+}
+.owner-auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: linear-gradient(180deg, #ffffff 0%, #fefcff 100%);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    padding: 2rem 1.75rem;
+    box-shadow: var(--brand-shadow);
+}
+.owner-auth-card h1 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    line-height: 1.25;
+    color: var(--brand-heading);
+}
+body.portal-body .owner-auth-card h1 {
+    font-size: clamp(1.35rem, 2.5vw, 1.55rem);
+    background: linear-gradient(115deg, #be185d 0%, #9333ea 38%, #2563eb 72%, #059669 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+@supports not (background-clip: text) {
+    body.portal-body .owner-auth-card h1 {
+        color: var(--brand-heading);
+        background: none;
+    }
+}
+.owner-auth-card .subtitle {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+body.portal-body .owner-auth-card .subtitle {
+    color: #4a4458;
+}
+.owner-auth-card .auth-form {
+    margin-bottom: 1.25rem;
+}
+.owner-auth-card .auth-switch {
+    margin-top: 0;
+}
+.owner-auth-card .auth-switch-spaced {
+    margin-top: 1rem;
+}
+body[class^="theme-"] .owner-auth-card,
+body[class*=" theme-"] .owner-auth-card {
+    background: var(--surface);
+    border-color: var(--border);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.07);
+}
+body[class^="theme-"] .owner-auth-card h1,
+body[class*=" theme-"] .owner-auth-card h1 {
+    color: var(--text);
+}
+body[class^="theme-"] .owner-auth-card .auth-switch,
+body[class*=" theme-"] .owner-auth-card .auth-switch {
+    color: var(--muted);
+}
+body[class^="theme-"] .owner-auth-card .auth-switch a,
+body[class*=" theme-"] .owner-auth-card .auth-switch a {
+    color: var(--primary);
+    font-weight: 600;
+}
+body[class^="theme-"] .owner-auth-card .auth-switch a:hover,
+body[class*=" theme-"] .owner-auth-card .auth-switch a:hover {
+    color: var(--primary-hover);
+}
 a.auth-cta {
     display: inline-block;
     margin-top: 1rem;
     padding: 0.65rem 1rem;
-    background: #2d2a26;
+    background: var(--brand-btn-primary);
     color: #fff;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: var(--brand-radius-sm);
     font-weight: 600;
     font-size: 0.95rem;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.3);
 }
-a.auth-cta:hover { background: #3d3a36; color: #fff; }
+a.auth-cta:hover { background: var(--brand-btn-primary-hover); color: #fff; }
 
-.portal-page { max-width: 360px; }
-.portal-page .subtitle { margin-bottom: 0.5rem; }
-.portal-buttons { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
-a.portal-btn {
+/* Portál — kezdő oldal (élénk, színes; háttér = :root --brand-bg-gradient) */
+body.portal-body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+}
+/* Tulajdonos alkalmazás: portál háttér + közös main tartó (szalonkészítő, irányítópult, …) */
+body.portal-body.owner-app-page {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+}
+body.portal-body.owner-app-page > main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    text-align: left;
+    box-sizing: border-box;
+}
+body.portal-body.owner-app-page > main.owner-home-page {
+    max-width: 720px;
+}
+body.portal-body.owner-app-page > main.form-page {
+    max-width: 720px;
+}
+body.portal-body.owner-app-page > main.auth-page {
+    max-width: 420px;
+}
+body.portal-body.owner-app-page > main.salon-dashboard-page {
+    max-width: 900px;
+}
+body.portal-body.owner-app-page > main.salon-schedule-page {
+    max-width: 1100px;
+}
+body.portal-body.owner-app-page > main.owner-home-page {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+/* Szalonkészítő: téma preview a mezőkön, de a lap háttér marad a FoglalóPlusz gradiens */
+body.portal-body.owner-app-page[class*="theme-"] {
+    background: var(--brand-bg-gradient);
+    background-attachment: fixed;
+    color: var(--brand-text);
+}
+body.portal-body.owner-app-page .form-page .subtitle,
+body.portal-body.owner-app-page .user-page .subtitle,
+body.portal-body.owner-app-page .owner-home-header .subtitle,
+body.portal-body.owner-app-page .salon-dashboard-header .subtitle,
+body.portal-body.owner-app-page .salon-schedule-header .subtitle {
+    color: #4a4458;
+}
+body.portal-body.owner-app-page main h1 {
+    font-size: clamp(1.45rem, 2.5vw, 1.85rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(115deg, #be185d 0%, #9333ea 38%, #2563eb 72%, #059669 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+@supports not (background-clip: text) {
+    body.portal-body.owner-app-page main h1 {
+        color: var(--brand-heading);
+        background: none;
+    }
+}
+.portal-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 245, 255, 0.95) 100%);
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, #ec4899, #a855f7, #06b6d4, #22c55e) 1;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.08);
+}
+.portal-header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.portal-header-inner--split {
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.portal-nav-links {
+    display: flex;
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+.portal-nav-links a {
+    color: var(--brand-link);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.portal-nav-links a:hover {
+    color: var(--brand-link-hover);
+}
+.portal-brand img {
+    height: 40px;
+    width: auto;
     display: block;
-    padding: 0.75rem 1rem;
-    background: #2d2a26;
+    filter: drop-shadow(0 2px 8px rgba(168, 85, 247, 0.2));
+}
+.portal-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    text-align: left;
+}
+.portal-hero {
+    text-align: center;
+    margin-bottom: 2.25rem;
+    padding: 0.5rem 0 1rem;
+}
+.portal-hero h1 {
+    font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+    font-weight: 700;
+    margin-bottom: 0.65rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    background: linear-gradient(115deg, #be185d 0%, #9333ea 38%, #2563eb 72%, #059669 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+@supports not (background-clip: text) {
+    .portal-hero h1 {
+        color: #7c3aed;
+        background: none;
+    }
+}
+.portal-hero .subtitle {
+    max-width: 38rem;
+    margin: 0 auto 0.5rem;
+    font-size: 1.06rem;
+    color: #4a4458;
+    line-height: 1.6;
+}
+.portal-section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.1rem;
+    color: #5b21b6;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.portal-section-title::before {
+    content: "";
+    width: 4px;
+    height: 1.15em;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #ec4899, #8b5cf6);
+    flex-shrink: 0;
+}
+.portal-salon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.35rem;
+    margin-bottom: 2.5rem;
+}
+.portal-salon-card {
+    background: linear-gradient(180deg, #ffffff 0%, #fefcff 100%);
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+        0 4px 6px rgba(139, 92, 246, 0.06),
+        0 12px 32px rgba(99, 102, 241, 0.1);
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    border-left: 5px solid #a78bfa;
+}
+.portal-salon-card:hover {
+    box-shadow:
+        0 8px 16px rgba(236, 72, 153, 0.12),
+        0 20px 40px rgba(99, 102, 241, 0.16);
+    transform: translateY(-4px);
+    border-color: rgba(236, 72, 153, 0.45);
+}
+.portal-salon-card.theme-pink { border-left-color: #ec4899; }
+.portal-salon-card.theme-sky-blue { border-left-color: #0ea5e9; }
+.portal-salon-card.theme-ruby { border-left-color: #e11d48; }
+.portal-salon-card.theme-forest-green { border-left-color: #10b981; }
+.portal-salon-card.theme-amethyst { border-left-color: #8b5cf6; }
+.portal-salon-card-media {
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(145deg, #fce7f3 0%, #e9d5ff 45%, #cffafe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.portal-salon-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.portal-salon-card-placeholder {
+    font-size: 1.85rem;
+    font-weight: 700;
+    background: linear-gradient(120deg, #db2777, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.06em;
+}
+@supports not (background-clip: text) {
+    .portal-salon-card-placeholder {
+        color: #a855f7;
+        background: none;
+    }
+}
+.portal-salon-card-body {
+    padding: 1.15rem 1.2rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.65rem;
+}
+.portal-salon-card-title {
+    font-size: 1.12rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+    color: #1e1b4b;
+}
+.portal-salon-card-desc {
+    font-size: 0.9rem;
+    color: #575069;
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.portal-salon-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.35rem;
+}
+a.portal-salon-btn {
+    display: block;
+    padding: 0.6rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+a.portal-salon-btn:hover {
+    transform: translateY(-1px);
+}
+a.portal-salon-btn-primary {
+    background: linear-gradient(135deg, #db2777 0%, #9333ea 55%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.35);
+}
+a.portal-salon-btn-primary:hover {
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4);
+}
+a.portal-salon-btn-secondary {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0d9488;
+    border: 2px solid #5eead4;
+}
+a.portal-salon-btn-secondary:hover {
+    border-color: #14b8a6;
+    color: #0f766e;
+    background: #f0fdfa;
+}
+.portal-salon-loading {
+    padding: 2rem;
+    text-align: center;
+    color: #6b21a8;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+.portal-salon-empty,
+.portal-salon-error {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px dashed #f59e0b;
+    border-radius: 14px;
+    text-align: center;
+    color: #78350f;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+.portal-salon-error {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #f87171;
+    color: #991b1b;
+}
+.portal-owner-strip {
+    margin-top: 1rem;
+    padding: 1.6rem 1.5rem;
+    background: linear-gradient(125deg, #ede9fe 0%, #dbeafe 40%, #d1fae5 100%);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    box-shadow: 0 8px 28px rgba(59, 130, 246, 0.12);
+}
+.portal-owner-strip p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #3730a3;
+    font-weight: 500;
+    max-width: 28rem;
+}
+.portal-owner-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+a.portal-btn {
+    display: inline-block;
+    padding: 0.65rem 1.15rem;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: #fff;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     text-align: center;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-a.portal-btn:hover { background: #3d3a36; color: #fff; }
-.portal-hint { margin-top: 1.5rem; font-size: 0.8rem; color: #5c5650; }
-.portal-hint code { font-size: 0.85em; background: #eee; padding: 0.1rem 0.35rem; border-radius: 4px; }
+a.portal-btn:hover {
+    color: #fff;
+    box-shadow: 0 6px 22px rgba(124, 58, 237, 0.45);
+    transform: translateY(-1px);
+}
+a.portal-btn-ghost {
+    background: #fff;
+    color: #5b21b6;
+    border: 2px solid #a78bfa;
+    box-shadow: none;
+}
+a.portal-btn-ghost:hover {
+    border-color: #7c3aed;
+    color: #5b21b6;
+    background: #faf5ff;
+    transform: translateY(-1px);
+}
+.portal-hint {
+    margin-top: 1.35rem;
+    font-size: 0.86rem;
+    color: #5b4765;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 10px;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+}
+.portal-hint code {
+    font-size: 0.85em;
+    background: linear-gradient(180deg, #fae8ff 0%, #e9d5ff 100%);
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid #d8b4fe;
+    color: #6b21a8;
+}
+
+@media (max-width: 520px) {
+    .portal-owner-strip {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .portal-owner-actions {
+        flex-direction: column;
+    }
+    a.portal-btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .portal-salon-card,
+    a.portal-salon-btn,
+    a.portal-btn {
+        transition: none;
+    }
+    .portal-salon-card:hover,
+    a.portal-salon-btn:hover,
+    a.portal-btn:hover {
+        transform: none;
+    }
+}
 
 .user-page { text-align: left; }
 .user-page .subtitle { margin-bottom: 1.5rem; }
-.user-profile { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; margin-bottom: 2rem; }
-.user-info .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+.user-profile {
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--brand-shadow-sm);
+}
+.user-info .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--brand-border-soft); }
 .user-info .info-row:last-child { border-bottom: none; }
-.user-info .info-label { font-weight: 600; color: #2d2a26; }
-.user-info .info-value { color: #5c5650; }
-.user-page .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+.user-info .info-label { font-weight: 600; color: var(--brand-heading); }
+.user-info .info-value { color: var(--brand-text-muted); }
+.user-page .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--brand-heading); }
+/* Tulajdonos profil: ugyanaz a keskeny, középre zárt elrendezés, mint a vendég/szakember user oldalon */
+body.portal-body.owner-app-page > main.user-page {
+    max-width: 640px;
+}
+.owner-profile-placeholder {
+    margin-bottom: 0;
+}
+.profile-empty-hint {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--brand-text-muted);
+    line-height: 1.6;
+}
+.profile-empty-hint a {
+    color: var(--brand-link);
+    font-weight: 600;
+    text-decoration: none;
+}
+.profile-empty-hint a:hover {
+    color: var(--brand-link-hover);
+    text-decoration: underline;
+}
 .adservice-page { text-align: left; max-width: 640px; }
 .adservice-page .subtitle { margin-bottom: 1.5rem; }
 .adservice-form { display: flex; flex-direction: column; gap: 0.75rem; }
 .adservice-form input,
 .adservice-form textarea {
     padding: 0.6rem 0.75rem;
-    border: 1px solid #eee;
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-size: 0.95rem;
+    background: var(--brand-surface);
+    color: var(--brand-text);
 }
 .adservice-form textarea { resize: vertical; min-height: 96px; }
-.adservice-form label { display: block; font-size: 0.9rem; color: #5c5650; margin-bottom: 0.25rem; text-align: left; }
+.adservice-form label { display: block; font-size: 0.9rem; color: var(--brand-text-muted); margin-bottom: 0.25rem; text-align: left; }
 .adservice-form input[type="date"],
 .adservice-form input[type="time"] {
     padding: 0.6rem 0.75rem;
-    border: 1px solid #eee;
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-size: 0.95rem;
-    color: #2d2a26;
+    color: var(--brand-text);
     max-width: 100%;
 }
 .working-hours-time-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .working-hours-time-field { flex: 1; min-width: 8rem; }
 .working-hours-time-field label { margin-top: 0.25rem; }
 .working-hours-mode-fieldset {
-    border: 1px solid #eee;
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     padding: 0.75rem 1rem 1rem;
     margin: 0;
-    background: #fff;
+    background: var(--brand-surface);
 }
 .working-hours-legend {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #2d2a26;
+    color: var(--brand-heading);
     padding: 0 0.35rem;
 }
 .working-hours-mode-row {
@@ -117,15 +706,15 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     align-items: center;
     gap: 0.45rem;
     font-size: 0.92rem;
-    color: #2d2a26;
+    color: var(--brand-text);
     cursor: pointer;
 }
-.working-hours-radio-label input { width: auto; margin: 0; accent-color: #2d2a26; }
+.working-hours-radio-label input { width: auto; margin: 0; accent-color: var(--brand-btn-primary-solid); }
 .working-hours-panel { margin-top: 0.25rem; }
 .working-hours-block-label {
     display: block;
     font-size: 0.9rem;
-    color: #5c5650;
+    color: var(--brand-text-muted);
     margin-bottom: 0.65rem;
     line-height: 1.45;
 }
@@ -141,7 +730,7 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: #8a847c;
+    color: var(--brand-text-muted);
     margin-bottom: 0.35rem;
     padding: 0 0.15rem;
 }
@@ -156,9 +745,9 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     gap: 0.5rem 0.65rem;
     align-items: center;
     padding: 0.5rem 0.65rem;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 6px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
 }
 .working-hours-day-col {
     display: flex;
@@ -170,19 +759,19 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
 .working-hours-day-name {
     font-weight: 600;
     font-size: 0.92rem;
-    color: #2d2a26;
+    color: var(--brand-heading);
     line-height: 1.2;
 }
 .wh-calendar-date {
     font-size: 0.78rem;
     font-weight: 500;
-    color: #8a847c;
+    color: var(--brand-text-muted);
     line-height: 1.2;
 }
 .wh-calendar-date.wh-calendar-date--today,
 .wh-calendar-date.wh-calendar-date--tomorrow,
 .wh-calendar-date.wh-calendar-date--range-start {
-    color: #2d2a26;
+    color: var(--brand-link);
     font-weight: 600;
 }
 .working-hours-open-label {
@@ -190,14 +779,14 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
     align-items: center;
     gap: 0.35rem;
     font-size: 0.85rem;
-    color: #5c5650;
+    color: var(--brand-text-muted);
     cursor: pointer;
     margin: 0;
 }
 .working-hours-open-label input {
     margin: 0;
     width: auto;
-    accent-color: #2d2a26;
+    accent-color: var(--brand-btn-primary-solid);
 }
 .working-hours-single-open-label {
     display: flex;
@@ -216,13 +805,13 @@ a.portal-btn:hover { background: #3d3a36; color: #fff; }
 input[type="time"].wh-time-invalid {
     opacity: 0.55;
     cursor: not-allowed;
-    border-color: #e5e2de;
-    background: #f7f6f4;
-    color: #8a847c;
+    border-color: var(--brand-border-soft);
+    background: rgba(250, 245, 255, 0.92);
+    color: var(--brand-text-muted);
 }
 input[type="time"].wh-time-invalid:focus {
     outline: none;
-    border-color: #c4bfb8;
+    border-color: var(--brand-border);
 }
 @media (max-width: 520px) {
     .working-hours-week-head { display: none; }
@@ -236,15 +825,16 @@ input[type="time"].wh-time-invalid:focus {
 .adservice-form button {
     width: fit-content;
     padding: 0.6rem 0.9rem;
-    background: #2d2a26;
+    background: var(--brand-btn-primary);
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 4px 14px rgba(147, 51, 234, 0.28);
 }
-.adservice-form button:hover { background: #3d3a36; }
+.adservice-form button:hover { background: var(--brand-btn-primary-hover); }
 
 main.appointment-page { max-width: 900px; }
 .appointment-page { text-align: left; }
@@ -253,17 +843,23 @@ main.appointment-page { max-width: 900px; }
 @media (max-width: 720px) {
   .appointment-layout { grid-template-columns: 1fr; }
 }
-.times-panel { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; }
-.calendar-card { background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 1rem; margin-bottom: 0; }
-.calendar-card .calendar-header { display: block; font-weight: 600; margin-bottom: 0.75rem; }
-.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid #eee; border-radius: 6px; font-family: inherit; font-size: 0.95rem; color: #2d2a26; }
-.calendar-card input[type="date"]:focus { outline: none; border-color: #c4bfb8; }
+.times-panel { background: var(--brand-surface); border: 1px solid var(--brand-border); border-radius: var(--brand-radius-sm); padding: 1rem; box-shadow: var(--brand-shadow-sm); }
+.calendar-card { background: var(--brand-surface); border: 1px solid var(--brand-border); border-radius: var(--brand-radius-sm); padding: 1rem; margin-bottom: 0; box-shadow: var(--brand-shadow-sm); }
+.calendar-card .calendar-header { display: block; font-weight: 700; margin-bottom: 0.75rem; color: var(--brand-heading); }
+.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); font-family: inherit; font-size: 0.95rem; color: var(--brand-text); }
+.calendar-card input[type="date"]:focus { outline: none; border-color: var(--brand-input-focus); }
 .appointment-page .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; margin-top: 0; }
 .times-panel .time-slots { margin-top: 0.25rem; }
 .time-slots { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
-.time-slot { padding: 0.5rem 0.85rem; background: #fff; border: 1px solid #eee; border-radius: 6px; font-size: 0.9rem; color: #2d2a26; cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease; }
+.time-slot { padding: 0.5rem 0.85rem; background: var(--brand-surface); border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); font-size: 0.9rem; color: var(--brand-text); cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease, box-shadow 0.15s ease; }
 .time-slot:hover,
-.time-slot.time-slot-selected { background: #2d2a26; color: #fff; border-color: #2d2a26; font-weight: 600; }
+.time-slot.time-slot-selected {
+    background: var(--brand-btn-primary);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35);
+}
 
 /* Optional salon themes (customSalon) — add class on body e.g. theme-pink */
 body.theme-pink {
@@ -331,10 +927,16 @@ body[class*=" theme-"] {
     background: var(--bg);
     color: var(--text);
 }
+body[class^="theme-"] h1,
+body[class*=" theme-"] h1 {
+    color: var(--text);
+}
 body[class^="theme-"] nav,
 body[class*=" theme-"] nav {
     background: var(--surface);
-    border-bottom-color: var(--border);
+    border-image: none;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
 body[class^="theme-"] .nav-links a,
 body[class*=" theme-"] .nav-links a {
@@ -375,10 +977,12 @@ body[class*=" theme-"] .subtitle {
 .auth-form textarea,
 .auth-form select {
     padding: 0.6rem 0.75rem;
-    border: 1px solid #eee;
-    border-radius: 6px;
+    border: 1px solid var(--brand-border-soft);
+    border-radius: var(--brand-radius-sm);
     font-family: inherit;
     font-size: 0.95rem;
+    background: var(--brand-surface);
+    color: var(--brand-text);
 }
 .auth-form input[type="file"] { padding: 0.45rem 0.6rem; }
 .field-label { text-align: left; font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.25rem; }
@@ -401,9 +1005,9 @@ body[class*=" theme-"] .subtitle {
 }
 .owner-section-title {
     font-size: 1.15rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1rem;
-    color: #2d2a26;
+    color: var(--brand-heading);
 }
 .owner-salons-list {
     list-style: none;
@@ -418,9 +1022,10 @@ body[class*=" theme-"] .subtitle {
     justify-content: space-between;
     gap: 1rem;
     padding: 1.25rem;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    box-shadow: var(--brand-shadow-sm);
 }
 .owner-salon-card-placeholder {
     border-style: dashed;
@@ -428,17 +1033,18 @@ body[class*=" theme-"] .subtitle {
 }
 .owner-salon-name {
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0.35rem;
+    color: var(--brand-heading);
 }
 .owner-salon-meta {
     font-size: 0.85rem;
-    color: #7a736a;
+    color: var(--brand-text-muted);
     margin-bottom: 0.5rem;
 }
 .owner-salon-desc {
     font-size: 0.9rem;
-    color: #5c5650;
+    color: var(--brand-text-muted);
     line-height: 1.5;
     max-width: 28rem;
 }
@@ -452,27 +1058,29 @@ body[class*=" theme-"] .subtitle {
     font-family: inherit;
     font-size: 0.85rem;
     font-weight: 600;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    background: #fff;
-    color: #2d2a26;
+    border-radius: var(--brand-radius-sm);
+    border: 1px solid var(--brand-border);
+    background: var(--brand-surface);
+    color: var(--brand-link);
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
+    transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 button.owner-btn:disabled {
     cursor: not-allowed;
     opacity: 0.7;
 }
 a.owner-btn-primary:hover {
-    background: #3d3a36;
+    filter: brightness(1.05);
     color: #fff;
-    border-color: #3d3a36;
+    border-color: transparent;
 }
 .owner-btn-primary {
-    background: #2d2a26;
+    background: var(--brand-btn-primary);
     color: #fff;
-    border-color: #2d2a26;
+    border-color: transparent;
+    box-shadow: 0 3px 12px rgba(147, 51, 234, 0.3);
 }
 .owner-btn-ghost {
     background: transparent;
@@ -499,29 +1107,30 @@ a.owner-btn-primary:hover {
     margin: -0.5rem 0 1.5rem;
 }
 .artist-hours-switch a {
-    color: #5c5650;
+    color: var(--brand-link);
     font-weight: 600;
     text-decoration: none;
 }
 .artist-hours-switch a:hover {
-    color: #2d2a26;
+    color: var(--brand-link-hover);
 }
 .artist-hours-section {
     margin-bottom: 2rem;
 }
 .artist-hours-list {
     list-style: none;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
     overflow: hidden;
+    box-shadow: var(--brand-shadow-sm);
 }
 .artist-hours-list li {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--brand-border-soft);
 }
 .artist-hours-list li:last-child {
     border-bottom: none;
@@ -542,9 +1151,9 @@ a.owner-btn-primary:hover {
 }
 .salon-dash-section-title {
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1rem;
-    color: #2d2a26;
+    color: var(--brand-heading);
 }
 .salon-dash-artists {
     list-style: none;
@@ -559,24 +1168,27 @@ a.owner-btn-primary:hover {
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem 1.15rem;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
+    box-shadow: var(--brand-shadow-sm);
 }
 .salon-dash-card-name {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0.25rem;
+    color: var(--brand-heading);
 }
 .salon-dash-card-meta {
     font-size: 0.88rem;
-    color: #5c5650;
+    color: var(--brand-text-muted);
 }
 .salon-dash-table-wrap {
     overflow-x: auto;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    background: #fff;
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius-sm);
+    background: var(--brand-surface);
+    box-shadow: var(--brand-shadow-sm);
 }
 .salon-dash-table {
     width: 100%;
@@ -587,12 +1199,12 @@ a.owner-btn-primary:hover {
 .salon-dash-table td {
     padding: 0.65rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--brand-border-soft);
 }
 .salon-dash-table th {
     font-weight: 600;
-    color: #2d2a26;
-    background: #faf9f7;
+    color: var(--brand-heading);
+    background: linear-gradient(180deg, #faf5ff 0%, #f5f3ff 100%);
 }
 .salon-dash-table tbody tr:last-child td {
     border-bottom: none;
@@ -616,14 +1228,14 @@ a.owner-btn-primary:hover {
 }
 .salon-schedule-header .subtitle {
     margin-bottom: 1rem;
-    color: #5c5650;
+    color: var(--brand-text-muted);
 }
 .salon-schedule-label {
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #7a736a;
+    color: var(--brand-link);
     margin-bottom: 0.35rem;
 }
 .salon-schedule-meta {
@@ -632,7 +1244,7 @@ a.owner-btn-primary:hover {
     align-items: center;
     gap: 0.35rem;
     font-size: 0.9rem;
-    color: #5c5650;
+    color: var(--brand-text-muted);
     margin-top: 0.75rem;
 }
 .salon-schedule-meta-sep {
@@ -649,37 +1261,38 @@ a.owner-btn-primary:hover {
     cursor: not-allowed;
 }
 .salon-schedule-board {
-    border: 1px solid #eee;
-    border-radius: 10px;
-    background: #fff;
+    border: 1px solid var(--brand-border);
+    border-radius: var(--brand-radius);
+    background: var(--brand-surface);
     overflow-x: auto;
     padding: 1rem;
     margin-bottom: 1.25rem;
+    box-shadow: var(--brand-shadow-sm);
 }
 .schedule-grid {
     display: grid;
     grid-template-columns: 3.5rem repeat(7, minmax(5.5rem, 1fr));
     gap: 2px;
     min-width: 44rem;
-    background: #e8e6e3;
+    background: linear-gradient(135deg, #e9d5ff 0%, #fce7f3 50%, #cffafe 100%);
     border-radius: 6px;
     overflow: hidden;
 }
 .schedule-grid-corner {
-    background: #faf9f7;
+    background: linear-gradient(145deg, #faf5ff 0%, #fefce8 100%);
 }
 .schedule-grid-dayhead {
-    background: #faf9f7;
+    background: linear-gradient(180deg, #faf5ff 0%, #f5f3ff 100%);
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: #5c5650;
+    color: var(--brand-text-muted);
     padding: 0.5rem 0.35rem;
     text-align: center;
 }
 .schedule-grid-time {
-    background: #faf9f7;
+    background: linear-gradient(135deg, #faf5ff 0%, #ecfeff 100%);
     font-size: 0.72rem;
     color: #7a736a;
     padding: 0.4rem 0.35rem;
@@ -690,7 +1303,7 @@ a.owner-btn-primary:hover {
     justify-content: flex-end;
 }
 .schedule-grid-cell {
-    background: #fff;
+    background: var(--brand-surface);
     min-height: 2.6rem;
     padding: 0.35rem;
     font-size: 0.72rem;
@@ -715,19 +1328,19 @@ a.owner-btn-primary:hover {
     white-space: nowrap;
 }
 .schedule-pill-open {
-    background: #e8f4ea;
-    color: #2d6a3a;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
 }
 .schedule-pill-booked {
-    background: #ede8f4;
-    color: #4a3d6b;
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    color: #5b21b6;
 }
 .salon-schedule-legend {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     font-size: 0.85rem;
-    color: #5c5650;
+    color: var(--brand-text-muted);
 }
 .schedule-legend-item {
     display: inline-flex;

@@ -34,8 +34,9 @@ app.get("/portal", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "portalHome.html"));
 });
 
-app.get("", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "ownerRegister.html"));
+// Kezdőlap: portál (vendég / szakember / tulajdonos választás)
+app.get("/", (req, res) => {
+  res.redirect(302, "/portal");
 });
 app.get("/maker", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "forms.html"));

@@ -1,36 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Your salons</title>
+    <title>FoglalóPlusz — Szalonjaim</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <nav>
-        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
-        <ul class="nav-links">
-            <li><a href="/ownerhomepage">My salons</a></li>
-            <li><a href="/maker">New salon setup</a></li>
-            <li><a href="/owneruserpage">Account</a></li>
-            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
-        </ul>
-    </nav>
+<body class="portal-body owner-app-page">
+    <header class="portal-header">
+        <div class="portal-header-inner portal-header-inner--split">
+            <a href="/ownerhomepage" class="portal-brand"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
+            <ul class="portal-nav-links">
+                <li><a href="/ownerhomepage" aria-current="page">Szalonjaim</a></li>
+                <li><a href="/maker">Új szalon felvétele</a></li>
+                <li><a href="/owneruserpage">Fiók</a></li>
+                <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
+            </ul>
+        </div>
+    </header>
     <main class="owner-home-page">
         <header class="owner-home-header">
-            <h1>Your salons</h1>
-            <p class="subtitle">Overview of every location you manage on Salonic. (Template — data will load here later.)</p>
+            <h1>Szalonjaid</h1>
+            <p class="subtitle">Minden helyszín áttekintése, amit a FoglalóPluszon kezelsz.</p>
         </header>
 
-        <section class="owner-home-toolbar" aria-label="Actions">
-            <a href="/maker" class="owner-btn owner-btn-primary">Add salon</a>
+        <section class="owner-home-toolbar" aria-label="Műveletek">
+            <a href="/maker" class="owner-btn owner-btn-primary">Új szalon</a>
         </section>
 
         <section aria-labelledby="salons-heading">
-            <h2 id="salons-heading" class="owner-section-title">All locations</h2>
+            <h2 id="salons-heading" class="owner-section-title">Összes helyszín</h2>
             <ul id="owner-salons-list" class="owner-salons-list">
                 
             </ul>

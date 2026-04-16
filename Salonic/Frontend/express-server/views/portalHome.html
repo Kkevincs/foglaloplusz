@@ -1,24 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Choose portal</title>
+    <title>FoglalóPlusz — Kezdőlap</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <main class="portal-page">
-        <h1>Salonic</h1>
-        <p class="subtitle">Pick how you want to continue.</p>
-        <div class="portal-buttons">
-            <a class="portal-btn" href="/Salon?salonId=1">Salon (guest)</a>
-            <a class="portal-btn" href="/Salon/Artist?salonId=1">Artist</a>
-            <a class="portal-btn" href="/ownerlogin">Owner</a>
+<body class="portal-body">
+    <header class="portal-header">
+        <div class="portal-header-inner">
+            <a href="/portal" class="portal-brand"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
         </div>
-        <p class="portal-hint">Salon links use <code>salonId=1</code> as a sample — change the ID in the URL for your salon.</p>
+    </header>
+
+    <main class="portal-page">
+        <section class="portal-hero" aria-labelledby="portal-hero-title">
+            <h1 id="portal-hero-title">Üdv a FoglalóPluszon</h1>
+            <p class="subtitle">Válassz szalont a listából, és foglalj időpontot vendégként — vagy lépj be szakemberként. A szalon tulajdonosa a saját fiókjából kezelhet mindent.</p>
+        </section>
+
+        <section aria-labelledby="salons-heading">
+            <h2 id="salons-heading" class="portal-section-title">Szalonok böngészése</h2>
+            <p id="portal-salon-loading" class="portal-salon-loading">Szalonok betöltése…</p>
+            <p id="portal-salon-error" class="portal-salon-error" hidden role="alert"></p>
+            <p id="portal-salon-empty" class="portal-salon-empty" hidden>Még nincs regisztrált szalon. Ha te vagy a tulajdonos, hozd létre az elsőt.</p>
+            <div id="portal-salon-grid" class="portal-salon-grid"></div>
+        </section>
+
+        <section class="portal-owner-strip" aria-labelledby="owner-heading">
+            <div>
+                <h2 id="owner-heading" class="visually-hidden">Tulajdonosoknak</h2>
+                <p>Szalon tulajdonos vagy? Hozd létre a profilod, add meg a szalon adatait, és hívd a csapatod.</p>
+            </div>
+            <div class="portal-owner-actions">
+                <a class="portal-btn" href="/ownerlogin">Tulajdonos bejelentkezés</a>
+                <a class="portal-btn portal-btn-ghost" href="/ownerregister">Regisztráció</a>
+            </div>
+        </section>
+
+        <p class="portal-hint">A vendég- és szakember nézetekhez a kártyán lévő gombok a megfelelő <code>salonId</code> paraméterrel nyitják meg az oldalt.</p>
     </main>
+
+    <script src="/api.js"></script>
+    <script src="/portal.js"></script>
 </body>
 </html>

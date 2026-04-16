@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Salon Setup Form</title>
+    <title>FoglalóPlusz — Szalon beállítása</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -11,40 +11,40 @@
 </head>
 <body class="theme-pink">
     <nav>
-        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
+        <a href="/ownerhomepage" class="logo"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
         <ul class="nav-links">
-            <li><a href="/ownerhomepage">My salons</a></li>
-            <li><a href="/maker" aria-current="page">New salon setup</a></li>
-            <li><a href="/owneruserpage">Account</a></li>
-            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
+            <li><a href="/ownerhomepage">Szalonjaim</a></li>
+            <li><a href="/maker" aria-current="page">Új szalon felvétele</a></li>
+            <li><a href="/owneruserpage">Fiók</a></li>
+            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
         </ul>
     </nav>
     <main class="form-page">
-        <h1>Create your own salon with Salonic</h1>
-        <p class="subtitle">Here you can costumise your Salon's web page.</p>
+        <h1>Hozd létre a saját szalonod a FoglalóPluszban</h1>
+        <p class="subtitle">Itt testreszabhatod a szalon webes megjelenését.</p>
         <form id="salon-setup-form" class="auth-form setup-form" action="#" method="post" enctype="multipart/form-data">
-            <label for="salon-name" class="field-label">What is the name of your salon?</label>
-            <input id="salon-name" name="salon_name" type="text" placeholder="..." required />
+            <label for="salon-name" class="field-label">Mi a szalon neve?</label>
+            <input id="salon-name" name="salon_name" type="text" placeholder="…" required />
 
-            <label for="salon-logo" class="field-label">Please upload the logo of your company</label>
+            <label for="salon-logo" class="field-label">Töltsd fel a vállalkozásod logóját</label>
             <input id="salon-logo" name="salon_logo" type="file" accept="image/*" />
 
-            <label for="salon-description" class="field-label">Please describe your Salon and your services, and we will display it in your home page</label>
-            <textarea id="salon-description" name="salon_description" rows="5" placeholder="..." required></textarea>
+            <label for="salon-description" class="field-label">Írd le a szolgáltatásaidat — ez jelenik meg a kezdőlapon</label>
+            <textarea id="salon-description" name="salon_description" rows="5" placeholder="…" required></textarea>
 
-            <label for="salon-theme" class="field-label">Please select a color that suits the vibe of you salon &lt;3</label>
+            <label for="salon-theme" class="field-label">Válassz színt, ami illik a szalon hangulatához</label>
             <select id="salon-theme" name="salon_theme" required>
-                <option value="theme-pink">Pink</option>
-                <option value="theme-sky-blue">Sky blue</option>
-                <option value="theme-ruby">Ruby</option>
-                <option value="theme-forest-green">Forest green</option>
-                <option value="theme-amethyst">Amethyst</option>
+                <option value="theme-pink">Rózsaszín</option>
+                <option value="theme-sky-blue">Égkék</option>
+                <option value="theme-ruby">Rubin</option>
+                <option value="theme-forest-green">Erdőzöld</option>
+                <option value="theme-amethyst">Ametiszt</option>
             </select>
 
-            <label for="support-email" class="field-label">Please give your customer service e-mail address, that customers can contact for help</label>
+            <label for="support-email" class="field-label">Ügyfélszolgálati e-mail cím, ahol a vendégek elérnek</label>
             <input id="support-email" name="support_email" type="email" placeholder="support@gmail.com" required />
 
-            <button type="submit">Save Salon Details</button>
+            <button type="submit">Szalon adatainak mentése</button>
         </form>
     </main>
     <script src="/script.js"></script>
@@ -53,9 +53,12 @@
         (function () {
             var themeSelect = document.getElementById("salon-theme");
             if (!themeSelect) return;
-            themeSelect.addEventListener("change", function () {
-                document.body.className = themeSelect.value || "";
-            });
+            function syncMakerTheme() {
+                var t = String(themeSelect.value || "").trim();
+                document.body.className = ["portal-body", "owner-app-page", t].filter(Boolean).join(" ");
+            }
+            themeSelect.addEventListener("change", syncMakerTheme);
+            syncMakerTheme();
         })();
     </script>
 </body>

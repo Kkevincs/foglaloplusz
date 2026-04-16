@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic — Register artist</title>
+    <title>FoglalóPlusz — Szakember regisztráció</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <nav>
-        <a href="/ownerhomepage" class="logo"><img src="/img/Salonic_Logo.png" alt="Salonic" /></a>
-        <ul class="nav-links">
-            <li><a href="/ownerhomepage">My salons</a></li>
-            <li><a href="/maker">New salon setup</a></li>
-            <li><a href="/owneruserpage">Account</a></li>
-            <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Log out</a></li>
-        </ul>
-    </nav>
+<body class="portal-body owner-app-page">
+    <header class="portal-header">
+        <div class="portal-header-inner portal-header-inner--split">
+            <a href="/ownerhomepage" class="portal-brand"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
+            <ul class="portal-nav-links">
+                <li><a href="/ownerhomepage">Szalonjaim</a></li>
+                <li><a href="/maker">Új szalon felvétele</a></li>
+                <li><a href="/owneruserpage">Fiók</a></li>
+                <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
+            </ul>
+        </div>
+    </header>
     <main class="auth-page">
-        <h1>Register artist</h1>
-        <p class="subtitle">Template form for adding a new artist to this salon.</p>
-        <p class="auth-switch"><a href="/ownerhomepage">Back to salons</a></p>
+        <h1>Szakember felvétele</h1>
+        <p class="subtitle">Új szakember hozzáadása ehhez a szalonhoz.</p>
+        <p class="auth-switch"><a href="/ownerhomepage">Vissza a szalonokhoz</a></p>
         <form id="owner-artist-register-form" class="auth-form">
-            <input id="ArtistRegName" type="text" name="name" placeholder="Artist name" required>
-            <input id="ArtistRegEmail" type="email" name="email" placeholder="Artist email" required>
-            <input id="ArtistRegPassword" type="password" name="password" placeholder="password" required>
-            <input id="ArtistRegDescription" type="text" name="description" placeholder="Description (optional)">
-            <button type="submit">Create artist</button>
+            <input id="ArtistRegName" type="text" name="name" placeholder="Név" required>
+            <input id="ArtistRegEmail" type="email" name="email" placeholder="E-mail" required>
+            <input id="ArtistRegPassword" type="password" name="password" placeholder="Jelszó" required>
+            <input id="ArtistRegDescription" type="text" name="description" placeholder="Leírás (opcionális)">
+            <button type="submit">Szakember létrehozása</button>
         </form>
     </main>
     <script src="/script.js"></script>

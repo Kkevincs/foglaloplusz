@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salonic - Add service</title>
+    <title>FoglalóPlusz — Új szolgáltatás</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -11,26 +11,26 @@
 </head>
 <body>
     <nav>
-        <a id="logoLink" href="#" class="logo">Salonic</a>
+        <a id="logoLink" href="#" class="logo">FoglalóPlusz</a>
         <ul class="nav-links">
-            <li><a id="homeLink" href="#">Home</a></li>
-            <li><a id="servicesLink" href="#">Services</a></li>
-            <li><a id="userLink" href="#">User</a></li>
-            <li><a id="addServiceLink" href="#">Add Service</a></li>
-            <li><a id="workingHoursLink" href="#">Hours</a></li>
-            <li><a id="loginLink" href="#">Login</a></li>
+            <li><a id="homeLink" href="#">Kezdőlap</a></li>
+            <li><a id="servicesLink" href="#">Szolgáltatások</a></li>
+            <li><a id="userLink" href="#">Profil</a></li>
+            <li><a id="addServiceLink" href="#">Új szolgáltatás</a></li>
+            <li><a id="workingHoursLink" href="#">Nyitvatartás</a></li>
+            <li><a id="loginLink" href="#">Bejelentkezés</a></li>
         </ul>
     </nav>
     <main class="adservice-page">
-        <h1>Add service</h1>
-        <p class="subtitle">Create a new service for your salon.</p>
+        <h1>Új szolgáltatás</h1>
+        <p class="subtitle">Hozz létre új szolgáltatást a szalonodnak.</p>
 
         <form id="addservice-form" class="adservice-form">
-            <input id="name" type="text" name="name" placeholder="Service name" required>
-            <input id="durationInMinute" type="number" name="durationInMinute" placeholder="Duration (minutes)" min="1" required>
-            <input id="price" type="number" name="price" placeholder="Price" min="0" step="0.01" required>
-            <textarea id="description" name="description" placeholder="Description" rows="4"></textarea>
-            <button type="submit">Save service</button>
+            <input id="name" type="text" name="name" placeholder="Szolgáltatás neve" required>
+            <input id="durationInMinute" type="number" name="durationInMinute" placeholder="Időtartam (perc)" min="1" required>
+            <input id="price" type="number" name="price" placeholder="Ár (Ft)" min="0" step="0.01" required>
+            <textarea id="description" name="description" placeholder="Leírás" rows="4"></textarea>
+            <button type="submit">Szolgáltatás mentése</button>
         </form>
     </main>
     <script src="/api.js"></script>
