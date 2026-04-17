@@ -32,16 +32,28 @@ async function initSalonGuestPublicShell() {
         return;
     }
     if (!(await assertPublicSalonExistsOrRedirect(guestSalonId))) return;
-    await applySalonThemeForPublicPages();
     await applySalonPersonalLogo();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     document.querySelectorAll(".salonic-navbar .nav-links a, .salonic-navbar .nav-link").forEach((a) => {
         a.addEventListener("click", (e) => {
             if (a.getAttribute("href") === "#") e.preventDefault();
         });
     });
+    const path = window.location.pathname;
+    const sp = new URLSearchParams(window.location.search);
+    if (!(sp.get("salonId") || sp.get("salonid"))) return;
+    const applyThemeHere =
+        path === "/Salon" ||
+        path.startsWith("/Salon/") ||
+        path === "/salondashboard" ||
+        path === "/salondashboard/schedule" ||
+        path === "/ownerartistregister";
+    if (applyThemeHere) {
+        await applySalonThemeForPublicPages();
+        await applySalonPersonalLogo();
+    }
 });
 
 function parseJwtPayload(token) {
@@ -69,8 +81,38 @@ async function applySalonPersonalHomepage() {
     const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
     document.getElementById('salon-name').textContent = salon.name;
     document.getElementById('salon-description').textContent = salon.description;
-    document.getElementById('salon-support-email').href = `mailto:${salon.email}`;
-    document.getElementById('salon-support-email').textContent = salon.email;
+
+    const emailRaw = salon.email ?? salon.Email ?? '';
+    const ownerName = salon.ownerName ?? salon.OwnerName ?? '';
+    const locationStr = salon.location ?? salon.Location ?? '';
+    const footerMeta = document.getElementById('salon-footer-meta');
+    if (footerMeta) {
+        const parts = [];
+        if (ownerName && String(ownerName).trim()) {
+            parts.push(
+                `<span class="salon-landing-footer__item"><span class="salon-landing-footer__label">Tulajdonos</span> ${escapeHtml(String(ownerName).trim())}</span>`,
+            );
+        }
+        if (emailRaw && String(emailRaw).trim()) {
+            const em = String(emailRaw).trim();
+            parts.push(
+                `<span class="salon-landing-footer__item"><span class="salon-landing-footer__label">E-mail</span> <a href="mailto:${em.replace(/"/g, "")}">${escapeHtml(em)}</a></span>`,
+            );
+        }
+        if (locationStr && String(locationStr).trim()) {
+            parts.push(
+                `<span class="salon-landing-footer__item"><span class="salon-landing-footer__label">Helyszín</span> ${escapeHtml(String(locationStr).trim())}</span>`,
+            );
+        }
+        footerMeta.innerHTML = parts.join(
+            '<span class="salon-landing-footer__sep" aria-hidden="true"> · </span>',
+        );
+    }
+    const supportMail = document.getElementById('salon-support-email');
+    if (supportMail && emailRaw) {
+        supportMail.href = `mailto:${emailRaw}`;
+        supportMail.textContent = emailRaw;
+    }
 
     const sq = salonId ? `?salonId=${encodeURIComponent(salonId)}` : '';
     const guestLogin = document.getElementById('salon-guest-login-link');
@@ -82,7 +124,7 @@ async function applySalonPersonalHomepage() {
     const artists = document.getElementById('salon-link-artists');
     if (artists) artists.href = `/Salon/Artists${sq}`;
     const contact = document.getElementById('salon-link-contact');
-    if (contact) contact.href = `mailto:${salon.email}`;
+    if (contact && emailRaw) contact.href = `mailto:${emailRaw}`;
 
     const artistGuestSite = document.getElementById('artist-public-guest-site-link');
     if (artistGuestSite) artistGuestSite.href = `/Salon${sq}`;
@@ -108,14 +150,45 @@ async function applySalonPersonalHomepage() {
         }
     }
 }
+/** Same origin as api.js — uploaded salon logos are served by the API host. */
+const SALON_PUBLIC_API_ORIGIN = "https://localhost:7156";
+
+function resolvePublicSalonLogoUrl(salon) {
+    const raw = salon?.logo ?? salon?.Logo ?? "";
+    if (!raw || !String(raw).trim()) return "";
+    const p = String(raw).trim();
+    if (/^https?:\/\//i.test(p)) return p;
+    return `${SALON_PUBLIC_API_ORIGIN}${p.startsWith("/") ? p : `/${p}`}`;
+}
+
+function resolveSalonBrandLogoElement() {
+    return (
+        document.getElementById("logoLink") ||
+        document.querySelector("nav a.logo") ||
+        document.querySelector("header a.portal-brand") ||
+        document.querySelector("a.portal-brand")
+    );
+}
+
 async function applySalonPersonalLogo() {
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get("salonId") || params.get("salonid");
-    const salon = await GetSalonBySalonId(localStorage.getItem("token"), salonId);
-    const logoUrl = `http://localhost:5181${salon.logo}`;
-    const logoEl = document.getElementById("logoLink");
-    if (logoEl) {
-        logoEl.innerHTML = `<img src="${logoUrl}" alt="${escapeHtml(salon.name)}">`;
+    if (!salonId) return;
+    let salon;
+    try {
+        salon = await GetSalonBySalonId(localStorage.getItem("token"), salonId);
+    } catch (_) {
+        return;
+    }
+    if (!salon) return;
+    const logoEl = resolveSalonBrandLogoElement();
+    if (!logoEl) return;
+    const name = salon.name ?? salon.Name ?? "";
+    const logoUrl = resolvePublicSalonLogoUrl(salon);
+    if (logoUrl) {
+        logoEl.innerHTML = `<img src="${logoUrl}" alt="${escapeHtml(name)}">`;
+    } else if (name) {
+        logoEl.textContent = name;
     }
 }
 
@@ -171,8 +244,9 @@ async function applySalonThemeForPublicPages() {
     try {
         const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
         if (salon) {
-            applyTheme(salon.theme);
-            cache[salonId] = salon.theme;
+            const th = salon.theme ?? salon.Theme ?? "";
+            applyTheme(th);
+            cache[salonId] = th;
             localStorage.setItem("salonThemeById", JSON.stringify(cache));
             return;
         }
@@ -390,6 +464,17 @@ function formatDurationMinutes(totalMinutes) {
     return `${h} ${hourWord} ${r} min`;
 }
 
+/** Magyar idő — szolgáltatás sorokhoz (pl. „1 óra 20 perc”). */
+function formatDurationMinutesHu(totalMinutes) {
+    const m = Math.max(0, Math.floor(Number(totalMinutes) || 0));
+    if (m === 0) return '0 perc';
+    if (m < 60) return `${m} perc`;
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    if (r === 0) return `${h} óra`;
+    return `${h} óra ${r} perc`;
+}
+
 function formatPriceFt(amount) {
     const n = Math.round(Number(amount) || 0);
     return `${n.toLocaleString('hu-HU').replace(/\u00a0/g, ' ')} Ft`;
@@ -414,12 +499,13 @@ function syncServicesCartButton() {
             totalMin += Number(cb.dataset.durationMinute || 0);
             totalPrice += Number(cb.dataset.price || 0);
         });
+        const n = checked.length;
         countEl.textContent = has
-            ? (checked.length === 1 ? '1 service' : `${checked.length} services`)
-            : '0 services';
+            ? (n === 1 ? '1 szolgáltatás' : `${n} szolgáltatás`)
+            : '0 szolgáltatás';
         totalsEl.textContent = has
-            ? `${formatDurationMinutes(totalMin)} — ${formatPriceFt(totalPrice)}`
-            : '0 min — 0 Ft';
+            ? `${totalMin} perc - ${formatPriceFt(totalPrice)}`
+            : '0 perc — 0 Ft';
     }
 }
 
@@ -436,22 +522,15 @@ function syncArtistPickBar() {
     const list = document.getElementById('artists-list');
     const holder = document.getElementById('artist-cart-holder');
     const btn = document.getElementById('artistContinueBtn');
-    const countEl = document.getElementById('artist-cart-count');
-    const metaEl = document.getElementById('artist-cart-meta');
+    const nameEl = document.getElementById('artist-cart-count');
     if (!list || !holder || !btn) return;
     const checked = list.querySelector('input.booking-choice-input[type="radio"]:checked');
     const has = Boolean(checked);
     btn.hidden = !has;
     holder.hidden = !has;
     document.body.classList.toggle('artist-picker-visible', has);
-    if (countEl) {
-        countEl.textContent = has ? '1 artist' : '0 artists';
-    }
-    if (metaEl && has) {
-        const meta = checked.getAttribute('data-artist-name') || '';
-        metaEl.textContent = meta;
-    } else if (metaEl) {
-        metaEl.textContent = '';
+    if (nameEl) {
+        nameEl.textContent = has ? (checked.getAttribute('data-artist-name') || '') : '';
     }
 }
 
@@ -570,33 +649,73 @@ async function loadPortalSalons() {
 
 async function LoadServices() {
     const params = new URLSearchParams(window.location.search);
-    const salonId = params.get('salonId');
+    const salonId = params.get('salonId') || params.get('salonid');
+    const list = document.getElementById('services-list');
+    const emptyEl = document.getElementById('services-page-empty');
+    const errEl = document.getElementById('services-page-error');
+    if (!list) return;
+    if (emptyEl) {
+        emptyEl.hidden = true;
+        emptyEl.textContent = '';
+    }
+    if (errEl) {
+        errEl.hidden = true;
+        errEl.textContent = '';
+    }
     if (!salonId) {
-        console.warn('Add ?salonId= to the URL to load services.');
+        console.warn('Adj meg ?salonId= paramétert az URL-ben a szolgáltatások betöltéséhez.');
+        list.innerHTML = '';
+        if (emptyEl) {
+            emptyEl.hidden = false;
+            emptyEl.textContent =
+                'Hiányzik a szalon azonosítója. Nyisd meg ezt az oldalt a szalon kezdőlapjáról vagy a portálról.';
+        }
+        syncServicesCartButton();
         return;
     }
-    const list = document.getElementById('services-list');
-    if (!list) return;
-    const services = await GetServices(salonId);
+    list.innerHTML =
+        '<div class="service-pick-row service-pick-row--loading" role="status"><div class="service-pick-row__text"><span class="spinner-border spinner-border-sm text-primary me-2" aria-hidden="true"></span>Betöltés…</div></div>';
+    let services;
+    try {
+        services = await GetServices(salonId);
+    } catch (e) {
+        console.error(e);
+        list.innerHTML = '';
+        if (errEl) {
+            errEl.hidden = false;
+            errEl.textContent = 'Nem sikerült betölteni a szolgáltatásokat. Próbáld újra később.';
+        }
+        syncServicesCartButton();
+        return;
+    }
+    const arr = Array.isArray(services) ? services : [];
     list.innerHTML = '';
-    services.forEach((x) => {
+    if (arr.length === 0) {
+        if (emptyEl) {
+            emptyEl.hidden = false;
+            emptyEl.textContent = 'Ehhez a szalonhoz még nincs közzétett szolgáltatás.';
+        }
+        syncServicesCartButton();
+        return;
+    }
+    arr.forEach((x) => {
         const name = escapeHtml(x.name ?? x.Name);
         const id = String(x.id ?? x.Id);
         const durationMin = Number(x.durationInMinute ?? x.DurationInMinute ?? 0);
         const price = Number(x.price ?? x.Price ?? 0);
-        const durationLine = formatDurationMinutes(durationMin);
+        const durationLine = formatDurationMinutesHu(durationMin);
         const priceLine = formatPriceFt(price);
         list.innerHTML += `
-            <div class="service-pick-row">
+            <div class="service-pick-row" role="listitem">
                 <div class="service-pick-row__text">
                     <div class="service-pick-row__title">${name}</div>
                     <div class="service-pick-row__price">${priceLine}</div>
-                    <div class="service-pick-row__meta">Estimated duration: ${durationLine}</div>
+                    <div class="service-pick-row__meta">Várható időtartam: ${durationLine}</div>
                 </div>
                 <label class="service-pick-toggle">
                     <input type="checkbox" class="booking-choice-input service-pick-toggle-input" id="${id}"
                         data-duration-minute="${durationMin}" data-price="${price}"
-                        aria-label="Select ${name}">
+                        aria-label="${name} — kiválasztás">
                     <span class="service-pick-toggle__face" aria-hidden="true"></span>
                 </label>
             </div>
@@ -635,9 +754,9 @@ async function loadGuestUpcomingAppointments(token, mount) {
 
         if (upcoming.length === 0) {
             mount.innerHTML = `
-                <div class="guest-appt-empty">
-                    <p class="guest-appt-empty__title">No upcoming visits</p>
-                    <p class="guest-appt-empty__hint">When you book a service, your appointments will show up here.</p>
+                <div class="guest-appt-empty guest-appt-empty--card">
+                    <p class="guest-appt-empty__title">Nincs közelgő időpont</p>
+                    <p class="guest-appt-empty__hint">Ha foglalsz, az időpontok itt jelennek meg.</p>
                 </div>`;
             return;
         }
@@ -663,6 +782,7 @@ async function loadGuestUpcomingAppointments(token, mount) {
                 const start = new Date(a.startTime ?? a.StartTime);
                 const end = new Date(a.endTime ?? a.EndTime);
                 const notes = a.notes ?? a.Notes ?? '';
+                const salonName = a.salonName ?? a.SalonName ?? '';
                 const dow = start.toLocaleDateString(undefined, { weekday: 'short' });
                 const day = String(start.getDate());
                 const mon = start.toLocaleDateString(undefined, { month: 'short' });
@@ -681,6 +801,7 @@ async function loadGuestUpcomingAppointments(token, mount) {
                     mon,
                     fullDate,
                     timeRange,
+                    salonName,
                     artistName,
                     serviceNames,
                     notes,
@@ -700,7 +821,8 @@ async function loadGuestUpcomingAppointments(token, mount) {
                 <div class="guest-appt-card__body">
                     <div class="guest-appt-card__time">${escapeHtml(r.timeRange)}</div>
                     <div class="guest-appt-card__full-date">${escapeHtml(r.fullDate)}</div>
-                    <div class="guest-appt-card__artist"><span>with</span> ${escapeHtml(r.artistName || 'Artist')}</div>
+                    <div class="guest-appt-card__salon"><span>Szalon</span> ${escapeHtml(r.salonName || '—')}</div>
+                    <div class="guest-appt-card__artist"><span>Szakember</span> ${escapeHtml(r.artistName || '—')}</div>
                     ${
                         r.serviceNames
                             ? `<div class="guest-appt-card__services">${escapeHtml(r.serviceNames)}</div>`
@@ -712,7 +834,7 @@ async function loadGuestUpcomingAppointments(token, mount) {
                             : ''
                     }
                     <div class="guest-appt-card__footer">
-                        <button type="button" class="btn btn-outline-danger btn-sm guest-appt-cancel-btn" data-cancel-appointment="${escapeHtml(r.appointmentId)}">Cancel appointment</button>
+                        <button type="button" class="guest-appt-btn guest-appt-btn--cancel" data-cancel-appointment="${escapeHtml(r.appointmentId)}">Időpont lemondása</button>
                     </div>
                 </div>
             </article>`,
@@ -721,9 +843,9 @@ async function loadGuestUpcomingAppointments(token, mount) {
     } catch (err) {
         console.error(err);
         mount.innerHTML = `
-            <div class="guest-appt-empty border-danger border-opacity-25" role="alert">
-                <p class="guest-appt-empty__title text-danger mb-1">Could not load appointments</p>
-                <p class="guest-appt-empty__hint mb-0">Please try again later.</p>
+            <div class="guest-appt-empty guest-appt-empty--card guest-appt-empty--error" role="alert">
+                <p class="guest-appt-empty__title">Nem sikerült betölteni az időpontokat</p>
+                <p class="guest-appt-empty__hint">Próbáld újra később.</p>
             </div>`;
     }
 }
@@ -734,29 +856,18 @@ async function LoadUserData() {
 
     const name = escapeHtml(userData.name ?? '');
     const email = escapeHtml(userData.email ?? '');
-    const role = escapeHtml(userData.role ?? '');
     const initials = escapeHtml(userInitials(userData.name ?? ''));
 
     document.getElementById('user-profile').innerHTML = `
         <header class="guest-user-hero">
             <div class="guest-user-avatar" aria-hidden="true">${initials}</div>
             <div class="guest-user-hero__text">
-                <p class="guest-user-eyebrow">My account</p>
+                <p class="guest-user-eyebrow">Vendég fiók</p>
                 <h1 class="guest-user-title">${name}</h1>
                 <p class="guest-user-email">${email}</p>
-                <span class="guest-user-role-pill">${role}</span>
+                <span class="guest-user-role-pill">Vendég</span>
             </div>
         </header>
-        <div class="guest-user-meta-grid">
-            <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">Name</span>
-                <span class="guest-meta-tile__value" id="user-name">${name}</span>
-            </div>
-            <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">Email</span>
-                <span class="guest-meta-tile__value" id="user-email">${email}</span>
-            </div>
-        </div>
     `;
 
     const appointmentsMount = document.getElementById('user-appointments');
@@ -787,9 +898,9 @@ async function loadArtistUpcomingAppointments(token, mount) {
 
         if (upcoming.length === 0) {
             mount.innerHTML = `
-                <div class="guest-appt-empty">
-                    <p class="guest-appt-empty__title">No upcoming bookings</p>
-                    <p class="guest-appt-empty__hint">When guests book with you, they will appear here.</p>
+                <div class="guest-appt-empty guest-appt-empty--card">
+                    <p class="guest-appt-empty__title">Nincs közelgő időpont</p>
+                    <p class="guest-appt-empty__hint">Ha vendégek foglalnak, az időpontok itt jelennek meg.</p>
                 </div>`;
             return;
         }
@@ -868,9 +979,9 @@ async function loadArtistUpcomingAppointments(token, mount) {
     } catch (err) {
         console.error(err);
         mount.innerHTML = `
-            <div class="guest-appt-empty border-danger border-opacity-25" role="alert">
-                <p class="guest-appt-empty__title text-danger mb-1">Could not load appointments</p>
-                <p class="guest-appt-empty__hint mb-0">Please try again later.</p>
+            <div class="guest-appt-empty guest-appt-empty--card guest-appt-empty--error" role="alert">
+                <p class="guest-appt-empty__title">Nem sikerült betölteni az időpontokat</p>
+                <p class="guest-appt-empty__hint">Próbáld újra később.</p>
             </div>`;
     }
 }
@@ -887,19 +998,19 @@ async function LoadArtistData() {
         <header class="guest-user-hero">
             <div class="guest-user-avatar" aria-hidden="true">${initials}</div>
             <div class="guest-user-hero__text">
-                <p class="guest-user-eyebrow">Artist account</p>
+                <p class="guest-user-eyebrow">Szakember fiók</p>
                 <h1 class="guest-user-title">${name}</h1>
                 <p class="guest-user-email">${email}</p>
-                <span class="guest-user-role-pill">Artist</span>
+                <span class="guest-user-role-pill">Szakember</span>
             </div>
         </header>
         <div class="guest-user-meta-grid">
             <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">Name</span>
+                <span class="guest-meta-tile__label">Név</span>
                 <span class="guest-meta-tile__value" id="user-name">${name}</span>
             </div>
             <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">Email</span>
+                <span class="guest-meta-tile__label">E-mail</span>
                 <span class="guest-meta-tile__value" id="user-email">${email}</span>
             </div>
         </div>
@@ -949,13 +1060,29 @@ async function LoadArtists() {
     const urlParams = new URLSearchParams(window.location.search);
     const salonIdFromUrl = urlParams.get('salonId') || urlParams.get('salonid');
 
-    const allArtists = await GetArtists(localStorage.getItem('token'));
-    const artists = salonIdFromUrl
-        ? allArtists.filter((a) => String(a.salonId ?? a.SalonId) === String(salonIdFromUrl))
-        : allArtists;
+    let artists = [];
+    if (salonIdFromUrl) {
+        try {
+            const raw = await GetPublicArtistsForSalon(salonIdFromUrl);
+            artists = Array.isArray(raw) ? raw : [];
+        } catch (e) {
+            console.error(e);
+            artists = [];
+        }
+    } else {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const allArtists = await GetArtists(token);
+            artists = Array.isArray(allArtists) ? allArtists : [];
+        }
+    }
 
     const bookingStep = window.location.pathname === '/Salon/SelectArtist';
     list.innerHTML = '';
+    if (bookingStep) {
+        list.className = 'artists-list artists-pick-list services-pick-list';
+        list.setAttribute('role', 'list');
+    }
     artists.forEach((x) => {
         const name = escapeHtml(x.name ?? '');
         const desc = escapeHtml(x.description ?? '');
@@ -965,14 +1092,15 @@ async function LoadArtists() {
                 ? `<div class="service-pick-row__meta">${desc}</div>`
                 : '';
             list.innerHTML += `
-                <div class="service-pick-row artist-pick-row">
+                <div class="service-pick-row artist-pick-row" role="listitem">
                     <div class="service-pick-row__text">
                         <div class="service-pick-row__title">${name}</div>
                         ${metaLine}
                     </div>
                     <label class="service-pick-toggle">
                         <input type="radio" name="booking-artist" class="booking-choice-input service-pick-toggle-input" id="${id}"
-                            data-artist-name="${name}" aria-label="Select ${name}">
+                            data-artist-name="${name}"
+                            aria-label="${name} — kiválasztás">
                         <span class="service-pick-toggle__face" aria-hidden="true"></span>
                     </label>
                 </div>`;

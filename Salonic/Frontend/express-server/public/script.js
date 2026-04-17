@@ -95,6 +95,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('artists-list')) LoadArtists();
     if (document.getElementById('artist-profile')) LoadArtistData();
     if (document.getElementById('owner-profile')) LoadOwnerData();
+
+    const guestApptMount = document.getElementById('user-appointments');
+    if (guestApptMount) {
+        guestApptMount.addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-cancel-appointment]');
+            if (!btn) return;
+            e.preventDefault();
+            const id = btn.getAttribute('data-cancel-appointment');
+            if (!id) return;
+            if (!confirm('Biztosan lemondod ezt az időpontot?')) return;
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                btn.disabled = true;
+                await cancelGuestAppointment(token, id);
+                await loadGuestUpcomingAppointments(token, guestApptMount);
+            } catch (err) {
+                console.error(err);
+                alert(err?.message || 'Nem sikerült lemondani az időpontot.');
+                btn.disabled = false;
+            }
+        });
+    }
 });
 document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('click', e => {
@@ -302,6 +325,8 @@ document.getElementById('salon-setup-form')?.addEventListener('submit',async (e)
     const logoFile = logoInput?.files?.[0] ?? null;
     const description = form.querySelector("#salon-description").value;
     const theme = form.querySelector('#salon-theme').value;
+    const locationInput = form.querySelector("#salon-location");
+    const location = locationInput ? String(locationInput.value || "").trim() : "";
     const email = form.querySelector('#support-email').value;
 
     const newSalon = {
@@ -309,6 +334,7 @@ document.getElementById('salon-setup-form')?.addEventListener('submit',async (e)
         email,
         theme,
         description,
+        location: location || undefined,
         logoFile
     };
     await AddSalon(localStorage.getItem('token'), newSalon);
@@ -329,6 +355,15 @@ document.getElementById('guest-login-form')?.addEventListener('submit', async (e
     const { ok, token } = await LoginWithStatus(user);
     if (ok && token) {
         localStorage.setItem('token', token);
+        try {
+            if (typeof tryCompletePendingBookingAfterGuestLogin === 'function') {
+                const completed = await tryCompletePendingBookingAfterGuestLogin(token);
+                if (completed) return;
+            }
+        } catch (err) {
+            console.error(err);
+            alert(err?.message || 'Nem sikerült lefoglalni az időpontot. Próbáld meg újra a foglalás lépéseiből.');
+        }
         const params = new URLSearchParams(window.location.search);
         const salonId = params.get('salonId') || params.get('salonid');
         const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : '';
@@ -395,6 +430,15 @@ document.getElementById('guest-register-form')?.addEventListener('submit', async
     });
     if (ok && token) {
         localStorage.setItem('token', token);
+        try {
+            if (typeof tryCompletePendingBookingAfterGuestLogin === 'function') {
+                const completed = await tryCompletePendingBookingAfterGuestLogin(token);
+                if (completed) return;
+            }
+        } catch (err) {
+            console.error(err);
+            alert(err?.message || 'Nem sikerült lefoglalni az időpontot. Próbáld meg újra a foglalás lépéseiből.');
+        }
         const params = new URLSearchParams(window.location.search);
         const salonId = params.get('salonId') || params.get('salonid');
         const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : '';
@@ -506,63 +550,6 @@ async function loadSalons(){
     );
 }
 
-async function LoadServices() {
-    const params = new URLSearchParams(window.location.search);
-    const salonId = params.get('salonId');
-    if (!salonId) {
-        console.warn('Adj meg ?salonId= paramétert az URL-ben a szolgáltatások betöltéséhez.');
-        return;
-    }
-    const services = await GetServices(salonId);
-
-    services.forEach(x => 
-        document.getElementById("services-list").innerHTML += `
-            <div class="service-card">
-                <div class="name">
-                    ${x.name}
-                </div>
-                <div class="desc">
-                    ${x.description}
-                </div>
-                <div class="service-checkbox-cell" style="display: flex; justify-content: flex-end; align-items: center;">
-                    <input type="checkbox" id="${x.id}">
-                </div>
-
-            </div>
-        
-
-        `
-    )
-
-}
-
-async function LoadUserData() {
-    const userData = await GetLoggedInUser(localStorage.getItem("token"))
-
-    document.getElementById("user-profile").innerHTML = `
-        <div class="user-info">
-                <div class="info-row"><span class="info-label">Név</span><span class="info-value" id="user-name">${userData.name}</span></div>
-                <div class="info-row"><span class="info-label">E-mail</span><span class="info-value" id="user-email">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Szerepkör</span><span class="info-value" id="user-role">Vendég</span></div>
-            </div>
-
-    `
-}
-
-async function LoadArtistData() {
-    const userData = await getLoggedInArtist(localStorage.getItem("token"))
-
-    document.getElementById("artist-profile").innerHTML = `
-        <div class="user-info">
-                <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="user-name">${userData.name}</span></div>
-                <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="user-email">${userData.email}</span></div>
-                <div class="info-row"><span class="info-label">Role</span><span class="info-value" id="user-role">Guest</span></div>
-            </div>
-
-    `
-}
-
-
 async function LoadOwnerData() {
     const el = document.getElementById("owner-profile");
     if (!el) return;
@@ -575,21 +562,6 @@ async function LoadOwnerData() {
                 <div class="info-row"><span class="info-label">Szerepkör</span><span class="info-value">Tulajdonos</span></div>
             </div>
     `;
-}
-
-async function LoadArtists() {
-    const artists = await GetArtists(localStorage.getItem("token"))
-
-    artists.forEach(x => 
-        document.getElementById("artists-list").innerHTML += `
-             <div class="artist-card"><div class="name">${x.name}</div><div class="role">${x.description}</div>
-             <div class="artist-radio-cell" style="display: flex; justify-content: flex-end; align-items: center;">
-                    <input type="radio" name="artist" id="${x.id}">
-                </div>
-             </div>
-             
-        `
-    )
 }
 
 async function loadServicesForArtists(){

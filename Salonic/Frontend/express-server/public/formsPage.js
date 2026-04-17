@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const logoFile = logoInput?.files?.[0] ?? null;
         const description = form.querySelector("#salon-description").value;
         const theme = form.querySelector("#salon-theme").value;
+        const locationInput = form.querySelector("#salon-location");
+        const location = locationInput ? String(locationInput.value || "").trim() : "";
         const email = form.querySelector("#support-email").value;
 
         const newSalon = {
@@ -16,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             email,
             theme,
             description,
+            location: location || undefined,
             logoFile,
         };
         const createdSalon = await AddSalon(localStorage.getItem("token"), newSalon);

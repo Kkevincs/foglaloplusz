@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoglalóPlusz — Szakember regisztráció</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -11,29 +12,44 @@
 </head>
 <body class="portal-body owner-app-page">
     <header class="portal-header">
-        <div class="portal-header-inner portal-header-inner--split">
-            <a href="/ownerhomepage" class="portal-brand"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
-            <ul class="portal-nav-links">
-                <li><a href="/ownerhomepage">Szalonjaim</a></li>
-                <li><a href="/maker">Új szalon felvétele</a></li>
-                <li><a href="/owneruserpage">Fiók</a></li>
-                <li><a onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
-            </ul>
-        </div>
+        <nav class="navbar navbar-expand-lg navbar-light salonic-navbar w-100 py-2">
+            <div class="container-fluid" style="max-width:1100px;margin:0 auto;">
+                <a class="navbar-brand portal-brand p-0" href="/ownerhomepage"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" height="40" width="auto" /></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ownerPortalNav" aria-controls="ownerPortalNav" aria-expanded="false" aria-label="Menü">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="ownerPortalNav">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 portal-nav-links gap-lg-2">
+                        <li class="nav-item"><a class="nav-link" href="/ownerhomepage">Szalonjaim</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/maker">Új szalon felvétele</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/owneruserpage">Fiók</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
-    <main class="auth-page">
-        <h1>Szakember felvétele</h1>
-        <p class="subtitle">Új szakember hozzáadása ehhez a szalonhoz.</p>
-        <p class="auth-switch"><a href="/ownerhomepage">Vissza a szalonokhoz</a></p>
-        <form id="owner-artist-register-form" class="auth-form">
-            <input id="ArtistRegName" type="text" name="name" placeholder="Név" required>
-            <input id="ArtistRegEmail" type="email" name="email" placeholder="E-mail" required>
-            <input id="ArtistRegPassword" type="password" name="password" placeholder="Jelszó" required>
-            <input id="ArtistRegDescription" type="text" name="description" placeholder="Leírás (opcionális)">
-            <button type="submit">Szakember létrehozása</button>
-        </form>
+    <main class="container py-4 auth-page salonic-page-enter">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <h1 class="h3">Szakember felvétele</h1>
+                <p class="subtitle">Új szakember hozzáadása ehhez a szalonhoz.</p>
+                <p class="auth-switch"><a href="/ownerhomepage">Vissza a szalonokhoz</a></p>
+                <form id="owner-artist-register-form" class="auth-form">
+                    <input id="ArtistRegName" class="form-control" type="text" name="name" placeholder="Név" required>
+                    <input id="ArtistRegEmail" class="form-control" type="email" name="email" placeholder="E-mail" required>
+                    <input id="ArtistRegPassword" class="form-control" type="password" name="password" placeholder="Jelszó" required>
+                    <input id="ArtistRegDescription" class="form-control" type="text" name="description" placeholder="Leírás (opcionális)">
+                    <button type="submit" class="btn btn-primary">Szakember létrehozása</button>
+                </form>
+            </div>
+        </div>
     </main>
-    <script src="/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="/api.js"></script>
+    <script src="/common.js"></script>
+    <script src="/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <script src="/buttonFeedback.js"></script>
 </body>
 </html>

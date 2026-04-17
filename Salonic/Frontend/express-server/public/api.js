@@ -115,6 +115,21 @@ async function GetServices(salonId) {
     return data;
 }
 
+async function GetPublicArtistsForSalon(salonId) {
+    const response = await fetch(`https://localhost:7156/api/salon/${salonId}/public-artists`);
+    if (!response.ok) {
+        let detail = response.statusText;
+        try {
+            const t = await response.text();
+            if (t) detail = t;
+        } catch (_) {
+            /* ignore */
+        }
+        throw new Error(detail || `HTTP ${response.status}`);
+    }
+    return response.json();
+}
+
 async function getBookingNames(ids) {
     const response = await fetch(`https://localhost:7156/api/lookup/names`, {
         method: 'POST',
@@ -130,19 +145,38 @@ async function GetLoggedInUser(token) {
         headers: {
             "Authorization": `Bearer ${token}`
         }
-    })
+    });
 
-    const data = await response.json();
-    return data
+    const text = await response.text();
+    if (!response.ok) {
+        let msg = text || `HTTP ${response.status}`;
+        try {
+            const j = JSON.parse(text);
+            if (typeof j === "string") msg = j;
+            else msg = j?.detail || j?.title || j?.message || msg;
+        } catch (_) {
+            if (msg.length > 300) msg = msg.slice(0, 300) + "…";
+        }
+        throw new Error(typeof msg === "string" ? msg : `HTTP ${response.status}`);
+    }
+    if (!text) return null;
+    try {
+        return JSON.parse(text);
+    } catch (_) {
+        throw new Error("Érvénytelen vendég profil válasz.");
+    }
 }
 
-/** @param salon {{ name: string, email: string, theme: string, description: string, logoFile?: File | null }} */
+/** @param salon {{ name: string, email: string, theme: string, description: string, location?: string, logoFile?: File | null }} */
 async function AddSalon(token, salon) {
     const formData = new FormData();
     formData.append("name", salon.name);
     formData.append("email", salon.email);
     formData.append("theme", salon.theme ?? "");
     formData.append("description", salon.description ?? "");
+    if (salon.location != null && String(salon.location).trim() !== "") {
+        formData.append("location", String(salon.location).trim());
+    }
     if (salon.logoFile instanceof File) {
         formData.append("logo", salon.logoFile);
     }
@@ -376,6 +410,25 @@ async function GetAvailableDays(date) {
 
     const data = await response.json();
     return data;
+}
+
+/** Havi szabad napok (mely napokon van legalább egy szabad időpont). */
+async function GetMonthAvailability({ artistId, serviceIds, year, month }) {
+    const response = await fetch(`https://localhost:7156/api/availability/month`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+            artistId,
+            serviceIds,
+            year,
+            month,
+        }),
+    });
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `HTTP ${response.status}`);
+    }
+    return response.json();
 }
 
 /** Artist: salon resolved from JWT + artist row (no salonId in URL). */

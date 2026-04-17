@@ -17,6 +17,7 @@ namespace Foglaloplusz.DAL.Repositories
         public Task<List<Appointment>> ListByGuestIdAsync(int guestId) =>
             _context.Appointments
                 .Include(a => a.Services)
+                .Include(a => a.Salon)
                 .Where(x => x.GuestId == guestId)
                 .ToListAsync();
 

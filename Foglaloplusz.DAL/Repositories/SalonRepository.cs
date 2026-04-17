@@ -48,6 +48,7 @@ namespace Foglaloplusz.DAL.Repositories
         
         public Task<Salon?> GetBySalonIdAsync(int salonId) =>
             _context.Salons
+                .Include(s => s.Owner)
                 .FirstOrDefaultAsync(s => s.Id == salonId);
 
         public Task<Salon?> GetByOwnerAndIdAsync(int ownerId, int salonId) =>

@@ -202,6 +202,9 @@ namespace Foglaloplusz.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Location")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("LogoUrl")
                         .IsRequired()
                         .HasColumnType("longtext");

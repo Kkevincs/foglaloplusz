@@ -45,6 +45,18 @@ namespace Foglaloplusz.BLL.Services
             return _mapper.Map<List<ArtistWithIdDTO>>(artists);
         }
 
+        public async Task<List<ArtistWithIdDTO>> ListBySalonForPublicAsync(int salonId)
+        {
+            if (salonId <= 0)
+                return new List<ArtistWithIdDTO>();
+
+            if (!await _salonRepository.ExistsByIdAsync(salonId))
+                return new List<ArtistWithIdDTO>();
+
+            var artists = await _artistRepository.ListBySalonIdAsync(salonId);
+            return _mapper.Map<List<ArtistWithIdDTO>>(artists);
+        }
+
         public async Task<ArtistWithIdDTO?> GetByIdAsync(int id)
         {
             var artist = await _artistRepository.GetByIdAsync(id);

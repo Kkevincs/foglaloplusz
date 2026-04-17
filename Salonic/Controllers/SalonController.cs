@@ -73,6 +73,20 @@ namespace Foglaloplusz.presentation.Controllers
             return Ok(profile);
         }
 
+        /// <summary>Public artist list for the salon landing and booking flow (no login).</summary>
+        [AllowAnonymous]
+        [HttpGet("{salonId:int}/public-artists")]
+        [ProducesResponseType(typeof(List<ArtistWithIdDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<List<ArtistWithIdDTO>>> GetPublicArtistsForSalon(int salonId)
+        {
+            if (!await _salonService.ExistsAsync(salonId))
+                return NotFound();
+
+            var list = await _artistService.ListBySalonForPublicAsync(salonId);
+            return Ok(list);
+        }
+
         [Authorize(Roles = "owner")]
         [HttpGet("my")]
         [ProducesResponseType(typeof(List<SalonWithIdDTO>), StatusCodes.Status200OK)]
@@ -200,6 +214,7 @@ namespace Foglaloplusz.presentation.Controllers
                 Email = form.Email.Trim(),
                 Theme = form.Theme?.Trim() ?? string.Empty,
                 Description = form.Description?.Trim() ?? string.Empty,
+                Location = string.IsNullOrWhiteSpace(form.Location) ? null : form.Location.Trim(),
                 Logo = logoPath ?? string.Empty
             };
 

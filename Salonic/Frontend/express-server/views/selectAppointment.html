@@ -4,46 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoglalóPlusz — Időpont választása</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-    <nav>
-        <a href="/Salon" class="logo"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" /></a>
-        <ul class="nav-links">
-            <li><a id="homeLink" href="#">Kezdőlap</a></li>
-            <li><a id="servicesLink" href="#">Szolgáltatások</a></li>
-            <li><a id="artistsLink" href="#">Szakemberek</a></li>
-            <li><a id="bookLink" href="/Salon/Services">Foglalás</a></li>
-            <li><a id="userLink" href="#">Profil</a></li>
-            <li><a id="loginLink" href="#">Bejelentkezés</a></li>
-        </ul>
-    </nav>
-    <main class="appointment-page">
-        <h1>Dátum és időpont</h1>
-        <p class="subtitle">Válaszd ki, mikor szeretnél érkezni.</p>
-
-        <div class="appointment-layout">
-            <section class="calendar-card" aria-label="Dátum választása">
-                <label for="appointment-date" class="calendar-header">Dátum</label>
-                <input type="date" id="appointment-date" name="appointment-date" required>
-            </section>
-
-            <div class="times-panel">
-                <h2 class="section-title">Szabad időpontok</h2>
-                <ul id="time-slots" class="time-slots" aria-label="Szabad időpontok">
-                    
-                    
+<body class="services-booking-body appointment-booking-body">
+    <nav class="navbar navbar-expand-lg navbar-light border-bottom salonic-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand logo p-0" id="logoLink" href="/Salon"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" height="40" width="auto" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#guestNavCollapse" aria-controls="guestNavCollapse" aria-expanded="false" aria-label="Menü">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="guestNavCollapse">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-links align-items-lg-center gap-lg-1">
+                    <li class="nav-item"><a class="nav-link" id="homeLink" href="#">Kezdőlap</a></li>
+                    <li class="nav-item"><a class="nav-link" id="servicesLink" href="#">Szolgáltatások</a></li>
+                    <li class="nav-item"><a class="nav-link" id="artistsLink" href="#">Szakemberek</a></li>
+                    <li class="nav-item"><a class="nav-link" id="userLink" href="#">Profil</a></li>
+                    <li class="nav-item"><a class="nav-link" id="loginLink" href="#">Bejelentkezés</a></li>
                 </ul>
             </div>
-            <button onclick="SaveDate()">Időpont mentése</button>
+        </div>
+    </nav>
+    <main class="container py-4 py-lg-5 appointment-page appointment-page--modern salonic-page-enter">
+        <h1 class="h3">Dátum és időpont</h1>
+        <p class="subtitle">Válassz napot a naptárból (csak szabad idővel), majd egy órát.</p>
+
+        <div class="appointment-layout">
+            <section class="appointment-card appointment-card--date" aria-labelledby="appointment-date-label">
+                <span id="appointment-date-label" class="appointment-card__label">Dátum</span>
+                <input type="hidden" id="appointment-date" name="appointment-date" value="">
+                <div id="appointment-calendar-root" class="appointment-calendar">
+                    <p id="calendar-unavailable-msg" class="appointment-calendar__msg" hidden role="status"></p>
+                    <div class="appointment-calendar__nav">
+                        <button type="button" class="appointment-calendar__nav-btn" id="calendar-prev" aria-label="Előző hónap">‹</button>
+                        <h3 id="calendar-month-label" class="appointment-calendar__title"></h3>
+                        <button type="button" class="appointment-calendar__nav-btn" id="calendar-next" aria-label="Következő hónap">›</button>
+                    </div>
+                    <div class="appointment-calendar__weekdays" aria-hidden="true">
+                        <span>H</span><span>K</span><span>Sze</span><span>Cs</span><span>P</span><span>Szo</span><span>V</span>
+                    </div>
+                    <div class="appointment-calendar__grid" id="calendar-grid" role="grid" aria-label="Havi napok"></div>
+                </div>
+                <p id="appointment-date-hint" class="appointment-card__hint">Csak olyan napokra lehet kattintani, ahol van szabad időpont.</p>
+                <button type="button" id="appointment-earliest-btn" class="appointment-earliest-btn">Legkorábbi szabad időpont</button>
+            </section>
+
+            <section class="appointment-card appointment-card--slots" aria-labelledby="appointment-slots-heading">
+                <h2 id="appointment-slots-heading" class="appointment-card__heading">Szabad időpontok</h2>
+                <p id="time-slots-status" class="appointment-slots-status" aria-live="polite"></p>
+                <ul id="time-slots" class="time-slots time-slots--modern" aria-label="Szabad időpontok"></ul>
+            </section>
         </div>
     </main>
-    <script src="/navbar.js"></script>
+
+    <div id="appointment-bottom-bar" class="services-cart-bar appointment-bottom-bar">
+        <div class="services-cart-bar__inner">
+            <div class="services-cart-bar__summary appointment-bottom-bar__summary">
+                <div id="appointment-bar-date" class="appointment-bar__date"></div>
+                <div id="appointment-bar-time" class="appointment-bar__time appointment-bar__time--placeholder">Válassz időpontot a folytatáshoz.</div>
+            </div>
+            <button type="button" id="appointment-save-btn" class="services-cart-bar__cta" disabled onclick="SaveDate()">Időpont mentése</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="/api.js"></script>
-    <script src="/script.js"></script>
+    <script src="/common.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="/appointmentPage.js"></script>
     <script src="/appointment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <script src="/buttonFeedback.js"></script>
 </body>
 </html>

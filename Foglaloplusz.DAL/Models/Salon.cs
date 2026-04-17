@@ -15,6 +15,9 @@ namespace Foglaloplusz.DAL.Models
         public string Email { get; set; }
         public string Description { get; set; }
 
+        /// <summary>Fizikai cím / helyszín (szabad szöveg).</summary>
+        public string? Location { get; set; }
+
         public ICollection<Artist> Artists { get; set; } = new List<Artist>();
 
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();

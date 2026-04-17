@@ -18,7 +18,15 @@
         const loading = document.getElementById("portal-salon-loading");
         const empty = document.getElementById("portal-salon-empty");
         const errEl = document.getElementById("portal-salon-error");
-        if (!grid || typeof GetPublicSalonDirectory !== "function") return;
+        if (!grid) return;
+        if (typeof GetPublicSalonDirectory !== "function") {
+            if (loading) loading.hidden = true;
+            if (errEl) {
+                errEl.hidden = false;
+                errEl.textContent = "A szalonlista betöltése nem érhető el (hiányzó API). Frissítsd az oldalt.";
+            }
+            return;
+        }
 
         try {
             const salons = await GetPublicSalonDirectory();

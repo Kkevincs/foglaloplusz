@@ -12,6 +12,7 @@ namespace Foglaloplusz.BLL.DTOs.AppointmentDTOs
         public int GuestId { get; set; }
         public int ArtistId { get; set; }
         public int? SalonId { get; set; }
+        public string? SalonName { get; set; }
         public List<int> ServiceIds { get; set; } = new();
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }

@@ -23,7 +23,8 @@ namespace Foglaloplusz.BLL.Profiles
                 .ForMember(d => d.Services, o => o.Ignore());
 
             CreateMap<Appointment, AppointmentsWithIdDTO>()
-                .ForMember(d => d.ServiceIds, o => o.MapFrom(a => a.Services.Select(s => s.Id).ToList()));
+                .ForMember(d => d.ServiceIds, o => o.MapFrom(a => a.Services.Select(s => s.Id).ToList()))
+                .ForMember(d => d.SalonName, o => o.MapFrom(a => a.Salon != null ? a.Salon.Name : null));
         }
     }
 }

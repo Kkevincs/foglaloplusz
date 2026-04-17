@@ -47,7 +47,9 @@ namespace Foglaloplusz.BLL.Services
             if (salonId <= 0) return null;
             var entity = await _salonRepository.GetBySalonIdAsync(salonId);
             if (entity == null) return null;
-            return _mapper.Map<SalonWithIdDTO>(entity);
+            var dto = _mapper.Map<SalonWithIdDTO>(entity);
+            dto.OwnerName = entity.Owner?.Name;
+            return dto;
         }
 
         public async Task<List<SalonWithIdDTO>> ListPublicAsync()

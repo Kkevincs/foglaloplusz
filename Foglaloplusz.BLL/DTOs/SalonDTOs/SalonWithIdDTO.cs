@@ -14,5 +14,8 @@ namespace Foglaloplusz.BLL.DTOs.SalonDTOs
         public string Theme { get; set; } = string.Empty;
         public string Logo { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string? Location { get; set; }
+        /// <summary>Csak nyilvános profilnál töltve (tulajdonos megjelenített neve).</summary>
+        public string? OwnerName { get; set; }
     }
 }

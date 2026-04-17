@@ -14,6 +14,8 @@ namespace Foglaloplusz.presentation.Models
 
         public string Description { get; set; } = string.Empty;
 
+        public string? Location { get; set; }
+
         /// <summary>Optional logo image (JPEG, PNG, GIF, WebP).</summary>
         public IFormFile? Logo { get; set; }
     }

@@ -8,5 +8,6 @@ namespace Foglaloplusz.BLL.DTOs.SalonDTOs
         public string Description { get; set; } = string.Empty;
         public string Theme { get; set; } = string.Empty;
         public string Logo { get; set; } = string.Empty;
+        public string? Location { get; set; }
     }
 }

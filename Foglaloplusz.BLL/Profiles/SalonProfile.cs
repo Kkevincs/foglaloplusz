@@ -27,7 +27,8 @@ namespace Foglaloplusz.BLL.Profiles
                 .ForMember(dest => dest.Appointments, opt => opt.Ignore());
 
             CreateMap<Salon, SalonWithIdDTO>()
-                .ForMember(dest => dest.Logo, opt => opt.MapFrom(src => src.LogoUrl));
+                .ForMember(dest => dest.Logo, opt => opt.MapFrom(src => src.LogoUrl))
+                .ForMember(dest => dest.OwnerName, opt => opt.Ignore());
 
             CreateMap<Salon, SalonDirectoryCardDTO>()
                 .ForMember(dest => dest.Logo, opt => opt.MapFrom(src => src.LogoUrl));

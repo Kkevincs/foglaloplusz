@@ -2,6 +2,13 @@
     var BTN_SELECTOR =
         'button, input[type="submit"], input[type="button"], a.portal-btn, a.owner-btn, a.auth-cta, a.btn';
 
+    function prefersReducedMotion() {
+        return (
+            typeof window.matchMedia === "function" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        );
+    }
+
     function hexToRgb(hex) {
         var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec((hex || '').trim());
         if (!m) return null;
@@ -51,6 +58,7 @@
     }
 
     function showToast(message) {
+        if (prefersReducedMotion()) return;
         if (typeof anime !== 'function') return;
         var host = document.getElementById('salonic-toast-root');
         if (!host) {

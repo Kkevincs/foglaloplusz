@@ -30,12 +30,8 @@ function resolveRole() {
     return parseJwtPayloadLocal(token)?.role ?? null;
 }
 
-const guestNavLinksWhenLoggedIn = [
-    "homeLink",
-    "servicesLink",
-    "artistsLink",
-    "userLink",
-];
+/** Csak a „Profil” linket rejtsük el, ha nincs vendég bejelentkezés — a többi mindig látható. */
+const guestNavLinksWhenLoggedIn = ["userLink"];
 
 function setGuestNavItemVisible(anchorId, visible) {
     const el = document.getElementById(anchorId);
