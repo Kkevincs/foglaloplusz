@@ -22,7 +22,7 @@ public class WorkingHoursService : IWorkingHoursService
         if (dto == null)
             throw new AppValidationException("A kérés törzse kötelező.");
 
-        var workDate = dto.Date.Date;
+        var workDate = DateTime.SpecifyKind(dto.Date.Date, DateTimeKind.Utc);
 
         var existing = await _workingHoursRepository.GetByArtistAndDate(artistId, workDate);
         if (existing != null)
@@ -82,7 +82,9 @@ public class WorkingHoursService : IWorkingHoursService
             if (start >= end)
                 throw new AppValidationException($"A(z) {i}. nap: a kezdésnek a zárás előtt kell lennie.");
 
-            var calendarDate = dto.StartDate.AddDays(i).ToDateTime(TimeOnly.MinValue);
+            var calendarDate = DateTime.SpecifyKind(
+                dto.StartDate.AddDays(i).ToDateTime(TimeOnly.MinValue),
+                DateTimeKind.Utc);
             rows.Add(new WorkingHours
             {
                 ArtistId = artistId,
@@ -115,13 +117,15 @@ public class WorkingHoursService : IWorkingHoursService
             dto.EndDate.Date);
 
         var existingByDate = rows
-            .GroupBy(w => w.Date.Date)
+            .GroupBy(w => DateTime.SpecifyKind(w.Date.Date, DateTimeKind.Utc))
             .ToDictionary(
                 g => g.Key,
                 g => g.First());
 
         var result = new List<WorkingHoursDTO>();
-        for (var day = dto.StartDate.Date; day <= dto.EndDate.Date; day = day.AddDays(1))
+        var rangeStart = DateTime.SpecifyKind(dto.StartDate.Date, DateTimeKind.Utc);
+        var rangeEnd = DateTime.SpecifyKind(dto.EndDate.Date, DateTimeKind.Utc);
+        for (var day = rangeStart; day <= rangeEnd; day = day.AddDays(1))
         {
             if (existingByDate.TryGetValue(day, out var row))
             {

@@ -132,8 +132,9 @@ namespace Foglaloplusz.BLL.Services
 
             var existingAppointments = await _appointmentRepository.ListByArtistAndDateAsync(artistId, date);
             var availableSlots = new List<AvaliableSlotDTO>();
-            var current = date.Date + workingHours.StartTime;
-            var workEnd = date.Date + workingHours.EndTime;
+            var calendarDayUtc = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+            var current = calendarDayUtc + workingHours.StartTime;
+            var workEnd = calendarDayUtc + workingHours.EndTime;
 
             while (current + totalBlockedDuration <= workEnd)
             {

@@ -13,5 +13,8 @@ namespace Foglaloplusz.BLL.DTOs.UserDTOs
         public string Email { get; set; }
         public string Role { get; set; }
         public string Pwd { get; set; }
+
+        /// <summary>Szalon azonosító szakember bejelentkezéshez; meg kell egyeznie a szakember <c>SalonId</c> mezőjével.</summary>
+        public int? SalonId { get; set; }
     }
 }

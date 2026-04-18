@@ -15,7 +15,7 @@ namespace Foglaloplusz.DAL.Repositories
 
         public async Task<WorkingHours?> GetByArtistAndDate(int artistId, DateTime date)
         {
-            var dayStart = date.Date;
+            var dayStart = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
             var dayEnd = dayStart.AddDays(1);
 
             return await _context.WorkingHours
@@ -27,8 +27,8 @@ namespace Foglaloplusz.DAL.Repositories
 
         public async Task<List<WorkingHours>> GetByArtistAndDateRange(int artistId, DateTime startDate, DateTime endDate)
         {
-            var rangeStart = startDate.Date;
-            var rangeEndExclusive = endDate.Date.AddDays(1);
+            var rangeStart = DateTime.SpecifyKind(startDate.Date, DateTimeKind.Utc);
+            var rangeEndExclusive = DateTime.SpecifyKind(endDate.Date, DateTimeKind.Utc).AddDays(1);
 
             return await _context.WorkingHours
                 .Where(w =>
@@ -56,8 +56,8 @@ namespace Foglaloplusz.DAL.Repositories
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var startDt = rangeStart.ToDateTime(TimeOnly.MinValue);
-                var endExclusive = rangeEnd.ToDateTime(TimeOnly.MinValue).AddDays(1);
+                var startDt = DateTime.SpecifyKind(rangeStart.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+                var endExclusive = DateTime.SpecifyKind(rangeEnd.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc).AddDays(1);
 
                 await _context.WorkingHours
                     .Where(w => w.ArtistId == artistId && w.Date >= startDt && w.Date < endExclusive)

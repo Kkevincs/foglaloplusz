@@ -37,7 +37,7 @@ namespace Foglaloplusz.DAL.Repositories
 
         public Task<List<Appointment>> ListByArtistAndDateAsync(int artistId, DateTime date)
         {
-            var dayStart = date.Date;
+            var dayStart = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
             var dayEndExclusive = dayStart.AddDays(1);
             return _context.Appointments
                 .Include(a => a.Services)

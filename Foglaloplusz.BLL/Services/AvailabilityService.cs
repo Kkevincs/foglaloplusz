@@ -32,7 +32,7 @@ namespace Foglaloplusz.BLL.Services
 
             for (var day = 1; day <= daysInMonth; day++)
             {
-                var date = new DateTime(request.Year, request.Month, day);
+                var date = DateTime.SpecifyKind(new DateTime(request.Year, request.Month, day), DateTimeKind.Utc);
                 var slots = await _appointmentService.GetAvailableSlotsAsync(
                     request.ArtistId,
                     request.ServiceIds,

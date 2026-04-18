@@ -118,17 +118,22 @@ document.getElementById("artist-login-form")?.addEventListener("submit", async (
     const password = form.querySelector("#ArtistPassword").value;
     const role = "artist";
 
+    const params = new URLSearchParams(window.location.search);
+    const salonIdRaw = params.get("salonId") || params.get("salonid");
+    const salonIdNum = salonIdRaw ? Number.parseInt(String(salonIdRaw).trim(), 10) : NaN;
+
     const artist = {
         email: email,
         role: role,
         pwd: password,
     };
+    if (Number.isFinite(salonIdNum) && salonIdNum > 0) {
+        artist.salonId = salonIdNum;
+    }
     const token = await Login(artist);
     if (!token) return;
     localStorage.setItem("token", token);
-    const params = new URLSearchParams(window.location.search);
-    const salonId = params.get("salonId") || params.get("salonid");
-    const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
+    const salonQuery = salonIdRaw ? `?salonId=${encodeURIComponent(salonIdRaw)}` : "";
     window.location.assign(`/Salon/Artist/User${salonQuery}`);
 });
 

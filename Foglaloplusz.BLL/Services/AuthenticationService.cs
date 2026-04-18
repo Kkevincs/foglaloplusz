@@ -36,8 +36,12 @@ namespace Foglaloplusz.BLL.Services
                     email = guest.Email;
                     break;
                 case "artist":
+                    if (!user.SalonId.HasValue || user.SalonId.Value <= 0)
+                        throw new AppValidationException("A szalon azonosítója kötelező a szakember bejelentkezéshez.");
                     var artist = await _auth.FindArtistByCredentials(user.Email, user.Pwd);
                     if (artist == null) return null;
+                    if (artist.SalonId != user.SalonId.Value)
+                        throw new AppValidationException("A szakember nem ehhez a szalonhoz tartozik.");
                     id = artist.Id;
                     email = artist.Email;
                     break;
