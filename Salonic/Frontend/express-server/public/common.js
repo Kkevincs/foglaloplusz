@@ -236,7 +236,9 @@ async function applySalonPersonalHomepage() {
 }
 /** Same origin as api.js — uploaded salon logos are served by the API host. */
 function getSalonPublicApiOrigin() {
-    return (typeof window !== "undefined" && window.SALONIC_API_BASE) || "https://localhost:7165";
+    return typeof window !== "undefined" && window.SALONIC_API_BASE !== undefined && window.SALONIC_API_BASE !== null
+        ? String(window.SALONIC_API_BASE)
+        : "";
 }
 
 function resolvePublicSalonLogoUrl(salon) {
@@ -1272,6 +1274,91 @@ async function loadGuestUpcomingAppointments(token, mount) {
     }
 }
 
+/**
+ * @param {"guest"|"owner"|"artist"} role
+ */
+function getProfileEditFormHtml(role) {
+    const descBlock =
+        role === "artist"
+            ? `<label class="field-label" for="profile-description">Bemutatkozás</label>
+            <textarea id="profile-description" class="form-control mb-2" name="description" rows="3"></textarea>`
+            : "";
+    return `
+        <section class="profile-edit-section mt-4">
+            <h2 class="section-title h6 mb-3">Adataid szerkesztése</h2>
+            <form id="profile-edit-form" class="auth-form profile-edit-form">
+                <label class="field-label" for="profile-display-name">Név</label>
+                <input id="profile-display-name" class="form-control mb-2" type="text" required autocomplete="name" />
+                <label class="field-label" for="profile-email-input">E-mail</label>
+                <input id="profile-email-input" class="form-control mb-2" type="email" required autocomplete="email" />
+                ${descBlock}
+                <p class="subtitle small mb-2 mt-3 text-muted">Jelszó megváltoztatása (opcionális)</p>
+                <label class="field-label" for="profile-current-password">Jelenlegi jelszó</label>
+                <input id="profile-current-password" class="form-control mb-2" type="password" autocomplete="current-password" />
+                <label class="field-label" for="profile-new-password">Új jelszó</label>
+                <input id="profile-new-password" class="form-control mb-2" type="password" autocomplete="new-password" />
+                <button type="submit" class="btn btn-primary mt-2">Változások mentése</button>
+            </form>
+        </section>`;
+}
+
+function fillProfileEditForm(userData, role) {
+    const name = userData.name ?? userData.Name ?? "";
+    const email = userData.email ?? userData.Email ?? "";
+    const nameEl = document.getElementById("profile-display-name");
+    const emailEl = document.getElementById("profile-email-input");
+    if (nameEl) nameEl.value = name;
+    if (emailEl) emailEl.value = email;
+    if (role === "artist") {
+        const desc = userData.description ?? userData.Description ?? "";
+        const dEl = document.getElementById("profile-description");
+        if (dEl) dEl.value = desc;
+    }
+}
+
+/**
+ * @param {"guest"|"owner"|"artist"} role
+ * @param {() => Promise<void>} reloadFn
+ */
+function wireProfileEditFormSubmit(role, token, reloadFn) {
+    const form = document.getElementById("profile-edit-form");
+    if (!form) return;
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const newPwd = document.getElementById("profile-new-password")?.value?.trim() ?? "";
+        const curPwd = document.getElementById("profile-current-password")?.value ?? "";
+        if (newPwd && !curPwd) {
+            salonicShowModal("Új jelszó megadásához add meg a jelenlegi jelszót is.", {
+                title: "Hiányzó adat",
+                variant: "warning",
+            });
+            return;
+        }
+        const body = {
+            name: document.getElementById("profile-display-name")?.value?.trim() ?? "",
+            email: document.getElementById("profile-email-input")?.value?.trim() ?? "",
+        };
+        if (role === "artist") {
+            body.description = document.getElementById("profile-description")?.value ?? "";
+        }
+        if (newPwd) {
+            body.currentPassword = curPwd;
+            body.newPassword = newPwd;
+        }
+        try {
+            await updateMyUserProfile(role, token, body);
+            salonicShowModal("Adataid mentve.", { title: "Kész", variant: "success" });
+            const curEl = document.getElementById("profile-current-password");
+            const newEl = document.getElementById("profile-new-password");
+            if (curEl) curEl.value = "";
+            if (newEl) newEl.value = "";
+            await reloadFn();
+        } catch (err) {
+            console.error(err);
+        }
+    });
+}
+
 async function LoadUserData() {
     const token = localStorage.getItem('token');
     const userData = await GetLoggedInUser(token);
@@ -1290,7 +1377,11 @@ async function LoadUserData() {
                 <span class="guest-user-role-pill">Vendég</span>
             </div>
         </header>
+        ${getProfileEditFormHtml("guest")}
     `;
+
+    fillProfileEditForm(userData, "guest");
+    wireProfileEditFormSubmit("guest", token, LoadUserData);
 
     const appointmentsMount = document.getElementById('user-appointments');
     if (appointmentsMount) {
@@ -1426,7 +1517,11 @@ async function LoadArtistData() {
                 <span class="guest-user-role-pill">Szakember</span>
             </div>
         </header>
+        ${getProfileEditFormHtml("artist")}
     `;
+
+    fillProfileEditForm(userData, "artist");
+    wireProfileEditFormSubmit("artist", token, LoadArtistData);
 
     const appointmentsMount = document.getElementById('artist-appointments');
     if (appointmentsMount) {
@@ -1458,7 +1553,12 @@ async function LoadOwnerData() {
                 <span class="guest-user-role-pill">Tulajdonos</span>
             </div>
         </header>
+        ${getProfileEditFormHtml("owner")}
     `;
+
+    const token = localStorage.getItem("token");
+    fillProfileEditForm(userData, "owner");
+    wireProfileEditFormSubmit("owner", token, LoadOwnerData);
 }
 
 async function LoadArtists() {

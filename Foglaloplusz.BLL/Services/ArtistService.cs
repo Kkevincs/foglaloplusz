@@ -1,6 +1,7 @@
 using System.Linq;
 using AutoMapper;
 using Foglaloplusz.BLL.DTOs.ArtistDTOs;
+using Foglaloplusz.BLL.DTOs.UserDTOs;
 using Foglaloplusz.BLL.Exceptions;
 using Foglaloplusz.BLL.Services.Interfaces;
 using Foglaloplusz.DAL.Models;
@@ -94,6 +95,46 @@ namespace Foglaloplusz.BLL.Services
         {
             var artist = await GetByIdAsync(artistId);
             return artist ?? throw new AppNotFoundException("A szakember profilja nem található.");
+        }
+
+        public async Task<ArtistWithIdDTO> UpdateProfileAsync(int artistId, UserProfileUpdateDTO dto)
+        {
+            if (dto == null)
+                throw new AppValidationException("A kérés törzse kötelező.");
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                throw new AppValidationException("A név kötelező.");
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                throw new AppValidationException("Az e-mail kötelező.");
+
+            var entity = await _artistRepository.GetByIdAsync(artistId);
+            if (entity == null)
+                throw new AppNotFoundException("A szakember profilja nem található.");
+
+            var newEmail = dto.Email.Trim();
+            if (!string.Equals(newEmail, entity.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                if (await _authenticationService.EmailExistsAsync(newEmail))
+                    throw new AppValidationException("Ez az e-mail cím már regisztrálva van.");
+            }
+
+            ApplyArtistPasswordChange(entity, dto);
+
+            entity.Name = dto.Name.Trim();
+            entity.Email = newEmail;
+            entity.Description = dto.Description?.Trim() ?? string.Empty;
+            await _artistRepository.UpdateAsync(entity);
+            return _mapper.Map<ArtistWithIdDTO>(entity);
+        }
+
+        private static void ApplyArtistPasswordChange(Artist entity, UserProfileUpdateDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.NewPassword))
+                return;
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword) || dto.CurrentPassword != entity.Pwd)
+                throw new AppValidationException("A jelenlegi jelszó nem megfelelő.");
+            if (dto.NewPassword.Length < 6)
+                throw new AppValidationException("Az új jelszó legalább 6 karakter legyen.");
+            entity.Pwd = dto.NewPassword;
         }
     }
 }

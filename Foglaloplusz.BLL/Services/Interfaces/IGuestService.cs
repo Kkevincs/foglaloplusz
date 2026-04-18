@@ -1,4 +1,5 @@
 using Foglaloplusz.BLL.DTOs.GuestDTOs;
+using Foglaloplusz.BLL.DTOs.UserDTOs;
 
 namespace Foglaloplusz.BLL.Services.Interfaces
 {
@@ -10,5 +11,6 @@ namespace Foglaloplusz.BLL.Services.Interfaces
         Task<GuestWithoutIdDTO> RegisterAsync(GuestWithoutIdDTO? guest);
         /// <summary>Vendég „én” profil: hiány vagy szerepkör szerinti hiba.</summary>
         Task<GuestWithIdDTO> GetMeOrThrowAsync(int guestId, bool callerIsGuestRole);
+        Task<GuestWithIdDTO> UpdateProfileAsync(int guestId, UserProfileUpdateDTO dto);
     }
 }

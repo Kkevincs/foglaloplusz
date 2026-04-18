@@ -1,5 +1,11 @@
-/** Alap URL (felülírható: window.SALONIC_API_BASE a nézetben). */
-const SALONIC_API_BASE = (typeof window !== "undefined" && window.SALONIC_API_BASE) || "https://localhost:7165";
+/**
+ * Alap URL (felülírható: window.SALONIC_API_BASE).
+ * Üres = ugyanazon a hoston lévő /api (Express továbbítja a dotnet API felé — lásd server.js).
+ */
+const SALONIC_API_BASE =
+    typeof window !== "undefined" && window.SALONIC_API_BASE !== undefined && window.SALONIC_API_BASE !== null
+        ? String(window.SALONIC_API_BASE)
+        : "";
 
 function salonicApiUrl(path) {
     const p = path.startsWith("/") ? path : `/${path}`;
@@ -581,6 +587,20 @@ async function getArtistBySalonId(token, id) {
 async function GetLoggedInOwner(token) {
     return salonicFetchJson(salonicApiUrl("/api/owner/me"), {
         headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
+/** @param {"guest"|"owner"|"artist"} role */
+async function updateMyUserProfile(role, token, body) {
+    const path =
+        role === "guest" ? "/api/guest/me" : role === "owner" ? "/api/owner/me" : "/api/artist/me";
+    return salonicFetchJsonLenient(salonicApiUrl(path), {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
     });
 }
 

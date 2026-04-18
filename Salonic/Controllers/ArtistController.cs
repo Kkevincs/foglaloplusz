@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Foglaloplusz.BLL.DTOs.ArtistDTOs;
 using Foglaloplusz.BLL.DTOs.ServiceDTOs;
+using Foglaloplusz.BLL.DTOs.UserDTOs;
 using Foglaloplusz.BLL.Services.Interfaces;
 using Foglaloplusz.presentation.Infrastructure;
 using Swashbuckle.AspNetCore.Annotations;
@@ -33,6 +34,21 @@ public class ArtistController : ApiControllerBase
             return Unauthorized();
         var dto = await _artistService.GetMeOrThrowAsync(artistId);
         return Ok(dto);
+    }
+
+    [Authorize(Roles = "artist")]
+    [HttpPut("me")]
+    [SwaggerOperation(Summary = "Szakember profil módosítása", Description = "Név, e-mail, leírás, opcionális jelszócsere.")]
+    [ProducesResponseType(typeof(ArtistWithIdDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ArtistWithIdDTO>> UpdateMe([FromBody] UserProfileUpdateDTO? dto)
+    {
+        if (!TryGetUserIdFromSub(out var artistId))
+            return Unauthorized();
+        var updated = await _artistService.UpdateProfileAsync(artistId, dto!);
+        return Ok(updated);
     }
 
     [Authorize(Roles = "artist")]

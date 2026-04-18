@@ -1,4 +1,5 @@
 using Foglaloplusz.BLL.DTOs.ArtistDTOs;
+using Foglaloplusz.BLL.DTOs.UserDTOs;
 
 namespace Foglaloplusz.BLL.Services.Interfaces
 {
@@ -13,5 +14,6 @@ namespace Foglaloplusz.BLL.Services.Interfaces
         Task<ArtistWithIdDTO> GetMeOrThrowAsync(int artistId);
         Task<ArtistWithoutIdDTO> CreateAsync(ArtistWithoutIdDTO artist);
         Task<ArtistWithoutIdDTO> RegisterAsync(ArtistWithoutIdDTO? artist);
+        Task<ArtistWithIdDTO> UpdateProfileAsync(int artistId, UserProfileUpdateDTO dto);
     }
 }

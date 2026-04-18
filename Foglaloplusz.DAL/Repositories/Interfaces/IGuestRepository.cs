@@ -6,5 +6,6 @@ namespace Foglaloplusz.DAL.Repositories.Interfaces
     {
         Task<Guest?> GetByIdAsync(int id);
         Task AddAsync(Guest guest);
+        Task UpdateAsync(Guest guest);
     }
 }

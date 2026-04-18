@@ -32,5 +32,8 @@ namespace Foglaloplusz.DAL.Repositories
             _context.Artists.Add(artist);
             await _context.SaveChangesAsync();
         }
+
+        public Task UpdateAsync(Artist _) =>
+            _context.SaveChangesAsync();
     }
 }

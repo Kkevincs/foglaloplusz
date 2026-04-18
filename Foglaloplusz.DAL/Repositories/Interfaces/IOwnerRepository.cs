@@ -6,5 +6,6 @@ namespace Foglaloplusz.DAL.Repositories.Interfaces
     {
         Task<Owner?> GetByIdAsync(int id);
         Task AddAsync(Owner owner);
+        Task UpdateAsync(Owner owner);
     }
 }

@@ -1,5 +1,8 @@
 (function () {
-    const API_ORIGIN = (typeof window !== "undefined" && window.SALONIC_API_BASE) || "https://localhost:7165";
+    const API_ORIGIN =
+        typeof window !== "undefined" && window.SALONIC_API_BASE !== undefined && window.SALONIC_API_BASE !== null
+            ? String(window.SALONIC_API_BASE)
+            : "";
 
     function truncate(str, len) {
         const t = (str || "").trim().replace(/\s+/g, " ");

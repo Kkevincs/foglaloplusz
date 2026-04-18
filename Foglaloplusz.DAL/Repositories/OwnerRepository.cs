@@ -23,5 +23,8 @@ namespace Foglaloplusz.DAL.Repositories
             _context.Owners.Add(owner);
             await _context.SaveChangesAsync();
         }
+
+        public Task UpdateAsync(Owner _) =>
+            _context.SaveChangesAsync();
     }
 }

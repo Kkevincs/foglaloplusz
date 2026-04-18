@@ -8,5 +8,6 @@ namespace Foglaloplusz.DAL.Repositories.Interfaces
         Task<List<Artist>> ListBySalonIdAsync(int salonId);
         Task<Artist?> GetByIdAsync(int id);
         Task AddAsync(Artist artist);
+        Task UpdateAsync(Artist artist);
     }
 }

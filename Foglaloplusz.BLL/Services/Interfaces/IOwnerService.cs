@@ -1,4 +1,5 @@
 using Foglaloplusz.BLL.DTOs.OwnerDTOs;
+using Foglaloplusz.BLL.DTOs.UserDTOs;
 
 namespace Foglaloplusz.BLL.Services.Interfaces
 {
@@ -8,5 +9,6 @@ namespace Foglaloplusz.BLL.Services.Interfaces
         Task<OwnerWithIdDTO> GetMeOrThrowAsync(int ownerId);
         Task<OwnerWithoutIdDTO> CreateAsync(OwnerWithoutIdDTO owner);
         Task<OwnerWithoutIdDTO> RegisterAsync(OwnerWithoutIdDTO? owner);
+        Task<OwnerWithIdDTO> UpdateProfileAsync(int ownerId, UserProfileUpdateDTO dto);
     }
 }

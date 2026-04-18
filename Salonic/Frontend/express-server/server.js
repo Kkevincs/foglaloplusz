@@ -1,9 +1,58 @@
 const express = require("express");
+const http = require("http");
 const path = require("path");
 
 const app = express();
 // Ports 1–1023 need root on Linux; use 3000+ for local dev unless you set PORT.
 const PORT = Number(process.env.PORT) || 3000;
+
+/** Forward /api/* to the ASP.NET backend so the browser only talks to this server (port PORT). */
+const API_UPSTREAM =
+  process.env.SALONIC_API_PROXY_TARGET || "http://127.0.0.1:5181";
+
+function proxyApiToBackend(req, res) {
+  let upstream;
+  try {
+    upstream = new URL(API_UPSTREAM);
+  } catch {
+    res.status(500).type("text/plain").send("Invalid SALONIC_API_PROXY_TARGET");
+    return;
+  }
+  const port = upstream.port
+    ? Number(upstream.port)
+    : upstream.protocol === "https:"
+      ? 443
+      : 80;
+  const opts = {
+    hostname: upstream.hostname,
+    port,
+    path: req.originalUrl,
+    method: req.method,
+    headers: { ...req.headers },
+  };
+  opts.headers.host = `${upstream.hostname}:${port}`;
+
+  const pReq = http.request(opts, (pRes) => {
+    res.writeHead(pRes.statusCode, pRes.headers);
+    pRes.pipe(res);
+  });
+  pReq.on("error", (err) => {
+    console.error("[api proxy]", err.message, "→", API_UPSTREAM);
+    if (!res.headersSent) {
+      res
+        .status(502)
+        .type("text/plain")
+        .send(
+          "Bad Gateway: ASP.NET API not reachable at " +
+            API_UPSTREAM +
+            "\n\nStart it in another terminal:\n  dotnet run --project Foglaloplusz.presentation.csproj\n",
+        );
+    }
+  });
+  req.pipe(pReq);
+}
+
+app.use("/api", proxyApiToBackend);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -191,4 +240,8 @@ app.use((req, res) => {
 });
 
 // ─── Start ────────────────────────────────────────────────────────────────────
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`FoglalóPlusz UI  http://localhost:${PORT}`);
+  console.log(`API proxy         /api → ${API_UPSTREAM}`);
+  console.log(`Start the backend: dotnet run --project Foglaloplusz.presentation.csproj`);
+});
