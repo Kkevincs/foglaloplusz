@@ -57,7 +57,7 @@ namespace Foglaloplusz
                 cfg.AddProfile(new ServiceProfile());
                 cfg.AddProfile(new UserProfile());
             });
-            var connectionString = builder.Configuration.GetConnectionString("AppConnectionString");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(connectionString, npgsql =>
                     npgsql.MigrationsAssembly("Foglaloplusz.DAL")));

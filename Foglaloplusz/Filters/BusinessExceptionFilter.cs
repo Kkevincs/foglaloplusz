@@ -4,7 +4,7 @@ using Foglaloplusz.BLL.Exceptions;
 
 namespace Foglaloplusz.presentation.Filters;
 
-/// <summary>A BLL kivételeit egységes HTTP válaszokká alakítja (SOLID: egy felelősség).</summary>
+/// <summary>A BLL kivételeit egységes HTTP válaszokká alakítja</summary>
 public sealed class BusinessExceptionFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
