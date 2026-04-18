@@ -1,5 +1,6 @@
 const express = require("express");
 const http = require("http");
+const https = require("https");
 const path = require("path");
 
 const app = express();
@@ -32,7 +33,8 @@ function proxyApiToBackend(req, res) {
   };
   opts.headers.host = `${upstream.hostname}:${port}`;
 
-  const pReq = http.request(opts, (pRes) => {
+  const requester = upstream.protocol === "https:" ? https : http;
+  const pReq = requester.request(opts, (pRes) => {
     res.writeHead(pRes.statusCode, pRes.headers);
     pRes.pipe(res);
   });
