@@ -10,23 +10,30 @@ namespace Foglaloplusz.BLL.Profiles
         {
             CreateMap<ServiceWithoutIdDTO, Service>()
                 .ForMember(d => d.SalonId, o => o.Ignore())
-                .ForMember(d => d.CreatedByArtistId, o => o.Ignore())
+                .ForMember(d => d.OwnerId, o => o.Ignore())
+                .ForMember(d => d.ArtistId, o => o.Ignore())
                 .ForMember(d => d.Salon, o => o.Ignore())
-                .ForMember(d => d.CreatedByArtist, o => o.Ignore())
-                .ForMember(d => d.Artists, o => o.Ignore())
+                .ForMember(d => d.Owner, o => o.Ignore())
+                .ForMember(d => d.Artist, o => o.Ignore())
+                .ForMember(d => d.Offerings, o => o.Ignore())
                 .ForMember(d => d.Appointments, o => o.Ignore());
 
             CreateMap<Service, ServiceWithoutIdDTO>();
 
             CreateMap<ServiceWithIdDTO, Service>()
                 .ForMember(d => d.SalonId, o => o.Ignore())
-                .ForMember(d => d.CreatedByArtistId, o => o.Ignore())
+                .ForMember(d => d.OwnerId, o => o.Ignore())
+                .ForMember(d => d.ArtistId, o => o.Ignore())
                 .ForMember(d => d.Salon, o => o.Ignore())
-                .ForMember(d => d.CreatedByArtist, o => o.Ignore())
-                .ForMember(d => d.Artists, o => o.Ignore())
+                .ForMember(d => d.Owner, o => o.Ignore())
+                .ForMember(d => d.Artist, o => o.Ignore())
+                .ForMember(d => d.Offerings, o => o.Ignore())
                 .ForMember(d => d.Appointments, o => o.Ignore());
 
-            CreateMap<Service, ServiceWithIdDTO>();
+            CreateMap<Service, ServiceWithIdDTO>()
+                .ForMember(d => d.OwnerArtistId, o => o.MapFrom(s => s.ArtistId))
+                .ForMember(d => d.OfferingId, o => o.Ignore())
+                .ForMember(d => d.IsImported, o => o.Ignore());
         }
     }
 }

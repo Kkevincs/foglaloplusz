@@ -18,7 +18,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             await loadGuestUpcomingAppointments(token, mount);
         } catch (err) {
             console.error(err);
-            alert(err?.message || "Could not cancel the appointment.");
+            if (!err?.salonicApiShown) {
+                salonicShowModal(err?.message || "Could not cancel the appointment.", { title: "Hiba", variant: "danger" });
+            }
             btn.disabled = false;
         }
     });

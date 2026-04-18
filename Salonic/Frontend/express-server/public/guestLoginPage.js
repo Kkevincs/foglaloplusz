@@ -21,12 +21,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (completed) return;
             } catch (err) {
                 console.error(err);
-                alert(err?.message || "Could not save your appointment. You can book again from the salon.");
+                if (!err?.salonicApiShown) {
+                    salonicShowModal(err?.message || "Could not save your appointment. You can book again from the salon.", {
+                        title: "Foglalás",
+                        variant: "danger",
+                    });
+                }
             }
             const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
             window.location.assign(`/Salon/GuestInfo${salonQuery}`);
-        } else {
-            alert("Login failed. Check your email and password.");
         }
     });
 });

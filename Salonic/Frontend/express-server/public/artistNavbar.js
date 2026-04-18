@@ -35,8 +35,12 @@ function applyArtistNavbarState() {
         loginLink.href = `/Salon/Artist/Login${salonQuery}`;
         loginLink.onclick = function (e) {
             e.preventDefault();
-            localStorage.setItem("token", "");
-            window.location.assign(`/Salon/Artist/Login${salonQuery}`);
+            if (typeof window.confirmLogoutThen === "function") {
+                window.confirmLogoutThen(`/Salon/Artist/Login${salonQuery}`);
+            } else {
+                localStorage.setItem("token", "");
+                window.location.assign(`/Salon/Artist/Login${salonQuery}`);
+            }
         };
     } else if (loginLink) {
         loginLink.textContent = "Bejelentkezés";

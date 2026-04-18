@@ -66,8 +66,12 @@ function applyGuestNavbarState() {
             loginLink.href = `/Salon/Login${salonQuery}`;
             loginLink.onclick = function (e) {
                 e.preventDefault();
-                localStorage.setItem("token", "");
-                window.location.assign(`/Salon/Login${salonQuery}`);
+                if (typeof window.confirmLogoutThen === "function") {
+                    window.confirmLogoutThen(`/Salon/Login${salonQuery}`);
+                } else {
+                    localStorage.setItem("token", "");
+                    window.location.assign(`/Salon/Login${salonQuery}`);
+                }
             };
         } else {
             loginLink.textContent = "Bejelentkezés";
@@ -75,6 +79,10 @@ function applyGuestNavbarState() {
             loginLink.onclick = null;
         }
         setGuestNavItemVisible("loginLink", true);
+    }
+
+    if (typeof window.syncFooterGuestLoginNavVisibility === "function") {
+        window.syncFooterGuestLoginNavVisibility();
     }
 
     preserveSalonIdOnSalonLinks();

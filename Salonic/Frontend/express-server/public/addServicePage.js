@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
     await initSalonGuestPublicShell();
 
+    await loadOwnerCatalogPicker();
+
     document.getElementById("addservice-form")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const form = e.target;
@@ -17,7 +19,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
 
         const token = localStorage.getItem("token");
-        await AddArtistService(newService, token);
+        if (!token) {
+            salonicShowModal("Jelentkezz be szakemberként.", { title: "Bejelentkezés szükséges", variant: "warning" });
+            return;
+        }
+        try {
+            await AddArtistService(newService, token);
+            salonicShowModal("Szolgáltatás elmentve.", { title: "Mentve", variant: "success" });
+            form.reset();
+        } catch (err) {
+            console.error(err);
+            if (!err?.salonicApiShown) {
+                salonicShowModal(err?.message || "Nem sikerült menteni a szolgáltatást.", { title: "Hiba", variant: "danger" });
+            }
+        }
     });
 
     document.getElementById("artist-csv-template-btn")?.addEventListener("click", () => {
@@ -37,12 +52,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const btn = document.getElementById("artist-csv-import-btn");
         const file = fileInput?.files?.[0];
         if (!file) {
-            alert("Choose a CSV file first.");
+            salonicShowModal("Válassz előbb egy CSV fájlt.", { title: "Import", variant: "warning" });
             return;
         }
         const token = localStorage.getItem("token");
         if (!token) {
-            alert("Please log in as an artist.");
+            salonicShowModal("Jelentkezz be szakemberként.", { title: "Bejelentkezés szükséges", variant: "warning" });
             return;
         }
         let csvText;
@@ -50,12 +65,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             csvText = await file.text();
         } catch (err) {
             console.error(err);
-            alert("Could not read the file.");
+            salonicShowModal("A fájl nem olvasható.", { title: "Hiba", variant: "danger" });
             return;
         }
         if (!resultEl) return;
+        resultEl.classList.remove("alert-danger", "alert-success");
+        resultEl.classList.add("alert-light", "border");
         resultEl.hidden = false;
-        resultEl.innerHTML = '<p class="text-muted mb-0">Importing…</p>';
+        resultEl.innerHTML = '<p class="text-muted mb-0">Importálás…</p>';
         if (btn) btn.disabled = true;
         try {
             const data = await importArtistServicesFromCsv(csvText, token);
@@ -63,9 +80,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             const errors = data.errors ?? data.Errors ?? [];
             const okCount = created.length;
             const errCount = errors.length;
-            let html = `<p class="fw-semibold mb-2">Done: ${okCount} created${errCount ? `, ${errCount} row(s) failed` : ""}.</p>`;
+            let html = `<p class="fw-semibold mb-2">Kész: <strong>${okCount}</strong> szolgáltatás létrehozva${
+                errCount ? `, <strong class="text-danger">${errCount}</strong> sor hibás` : ""
+            }.</p>`;
             if (okCount > 0) {
-                html += '<ul class="list-unstyled mb-2">';
+                html += '<ul class="list-unstyled mb-2 small">';
                 created.slice(0, 20).forEach((s) => {
                     const n = escapeHtml(s.name ?? s.Name ?? "");
                     html += `<li class="text-success">${n}</li>`;
@@ -74,21 +93,99 @@ document.addEventListener("DOMContentLoaded", async () => {
                 html += "</ul>";
             }
             if (errCount > 0) {
-                html += '<p class="text-danger fw-semibold mb-1">Errors</p><ul class="mb-0">';
+                html += '<p class="text-danger fw-semibold mb-1">Hibák</p><ul class="mb-0 small">';
                 errors.forEach((e) => {
                     const line = e.line ?? e.Line;
                     const msg = escapeHtml(e.message ?? e.Message ?? "");
-                    html += `<li>Line ${line}: ${msg}</li>`;
+                    html += `<li><span class="text-nowrap">${line}. sor:</span> ${msg}</li>`;
                 });
                 html += "</ul>";
+            }
+            resultEl.classList.remove("alert-light");
+            if (errCount > 0 && okCount === 0) {
+                resultEl.classList.add("alert-danger");
+            } else if (okCount > 0 && errCount === 0) {
+                resultEl.classList.add("alert-success");
+            } else {
+                resultEl.classList.add("alert-warning");
             }
             resultEl.innerHTML = html;
             if (okCount > 0 && fileInput) fileInput.value = "";
         } catch (err) {
             console.error(err);
-            resultEl.innerHTML = `<p class="text-danger mb-0" role="alert">${escapeHtml(err?.message || "Import failed.")}</p>`;
+            if (!err?.salonicApiShown) {
+                resultEl.classList.remove("alert-light", "alert-success");
+                resultEl.classList.add("alert-danger");
+                resultEl.innerHTML = `<p class="text-danger mb-0" role="alert">${escapeHtml(err?.message || "Az importálás sikertelen.")}</p>`;
+            }
         } finally {
             if (btn) btn.disabled = false;
         }
     });
 });
+
+async function loadOwnerCatalogPicker() {
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    const section = document.getElementById("owner-catalog-section");
+    const listEl = document.getElementById("owner-catalog-catalog-list");
+    const emptyEl = document.getElementById("owner-catalog-empty");
+    if (!section || !listEl || !salonId) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+        const [myList, salonList] = await Promise.all([
+            getServicesByArtist(token),
+            GetSalonServicesCatalog(salonId, token),
+        ]);
+        const myIds = new Set((myList || []).map((x) => x.id ?? x.Id));
+        const catalog = (salonList || []).filter((s) => {
+            const oid = s.ownerId ?? s.OwnerId;
+            return oid != null && oid !== 0;
+        });
+        const pickable = catalog.filter((s) => !myIds.has(s.id ?? s.Id));
+
+        section.hidden = false;
+        listEl.innerHTML = "";
+        if (pickable.length === 0) {
+            emptyEl?.classList.remove("d-none");
+            return;
+        }
+        emptyEl?.classList.add("d-none");
+
+        pickable.forEach((s) => {
+            const id = s.id ?? s.Id;
+            const name = s.name ?? s.Name ?? "";
+            const price = s.price ?? s.Price ?? "";
+            const dur = s.durationInMinute ?? s.DurationInMinute ?? "";
+            const row = document.createElement("div");
+            row.className =
+                "owner-catalog-picker-row d-flex flex-wrap align-items-center justify-content-between gap-2 gap-md-3";
+            row.innerHTML = `<span><strong>${escapeHtml(String(name))}</strong> — ${escapeHtml(String(dur))} perc, ${escapeHtml(String(price))} Ft</span>`;
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "btn btn-sm adservice-outline-btn";
+            btn.textContent = "Felveszem";
+            btn.addEventListener("click", async () => {
+                btn.disabled = true;
+                try {
+                    await linkArtistServiceFromSalonCatalog(token, id);
+                    salonicShowModal("Szolgáltatás felvéve a listádra.", { title: "Kész", variant: "success" });
+                    await loadOwnerCatalogPicker();
+                } catch (err) {
+                    console.error(err);
+                    if (!err?.salonicApiShown) {
+                        salonicShowModal(err?.message || "Nem sikerült felvenni.", { title: "Hiba", variant: "danger" });
+                    }
+                    btn.disabled = false;
+                }
+            });
+            row.appendChild(btn);
+            listEl.appendChild(row);
+        });
+    } catch (e) {
+        console.warn("Owner catalog picker:", e);
+    }
+}

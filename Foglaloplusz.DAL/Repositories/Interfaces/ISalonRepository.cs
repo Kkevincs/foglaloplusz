@@ -8,12 +8,12 @@ namespace Foglaloplusz.DAL.Repositories.Interfaces
         Task<List<Salon>> ListAllOrderedByNameAsync();
 
         Task<List<Salon>> ListByOwnerIdAsync(int ownerId);
-        Task<List<Salon>> ListAllAsync();
         Task<bool> ExistsByIdAsync(int salonId);
-        //Task<string?> GetThemeBySalonIdAsync(int salonId);
         Task<Salon?> GetBySalonIdAsync(int salonId);
         Task<Salon?> GetByOwnerAndIdAsync(int ownerId, int salonId);
         Task AddAsync(Salon salon);
+        /// <summary>Tracked entitás módosításainak mentése.</summary>
+        Task SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<bool> DeleteCascadeByOwnerAsync(int ownerId, int salonId, CancellationToken cancellationToken = default);
     }
 }

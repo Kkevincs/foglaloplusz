@@ -26,26 +26,9 @@ namespace Foglaloplusz.DAL.Repositories
                 .OrderBy(s => s.Name)
                 .ToListAsync();
 
-        public Task<List<Salon>> ListAllAsync() =>
-            _context.Salons
-                .OrderBy(s => s.Name)
-                .ToListAsync();
-
         public Task<bool> ExistsByIdAsync(int salonId) =>
             _context.Salons.AnyAsync(s => s.Id == salonId);
 
-        //public async Task<string?> GetThemeBySalonIdAsync(int salonId)
-        //{
-        //    var row = await _context.Salons
-        //        .AsNoTracking()
-        //        .Where(s => s.Id == salonId)
-        //        .Select(s => new { s.Theme })
-        //        .FirstOrDefaultAsync();
-        //    if (row == null)
-        //        return null;
-        //    return row.Theme ?? string.Empty;
-        //}
-        
         public Task<Salon?> GetBySalonIdAsync(int salonId) =>
             _context.Salons
                 .Include(s => s.Owner)
@@ -61,6 +44,9 @@ namespace Foglaloplusz.DAL.Repositories
             _context.Salons.Add(salon);
             await _context.SaveChangesAsync();
         }
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
+            _context.SaveChangesAsync(cancellationToken);
 
         public async Task<bool> DeleteCascadeByOwnerAsync(int ownerId, int salonId, CancellationToken cancellationToken = default)
         {
@@ -100,13 +86,13 @@ namespace Foglaloplusz.DAL.Repositories
 
             var services = await _context.Services
                 .Where(s => s.SalonId == salonId)
-                .Include(s => s.Artists)
+                .Include(s => s.Offerings)
                 .Include(s => s.Appointments)
                 .ToListAsync(cancellationToken);
 
             foreach (var s in services)
             {
-                s.Artists.Clear();
+                s.Offerings.Clear();
                 s.Appointments.Clear();
             }
 

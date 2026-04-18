@@ -33,17 +33,19 @@ namespace Foglaloplusz.DAL.Repositories
                 .OrderBy(s => s.Name)
                 .ToListAsync();
 
-        public Task<List<Service>> ListByArtistIdAsync(int artistId) =>
+        public Task<List<Service>> ListBySalonIdWithOfferingsAsync(int salonId) =>
             _context.Services
-                .Where(s => s.CreatedByArtistId == artistId)
+                .AsNoTracking()
+                .Where(s => s.SalonId == salonId && s.Offerings.Any())
                 .OrderBy(s => s.Name)
                 .ToListAsync();
 
         public async Task AddAsync(Service service)
         {
+            ValidateExactlyOneOwnerOrArtist(service);
             service.Id = 0;
             service.Appointments ??= new List<Appointment>();
-            service.Artists ??= new List<Artist>();
+            service.Offerings ??= new List<Offering>();
             _context.Services.Add(service);
             await _context.SaveChangesAsync();
         }
@@ -70,6 +72,15 @@ namespace Foglaloplusz.DAL.Repositories
             _context.Services.Remove(entity);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        /// <summary>Ensures exactly one of <see cref="Service.OwnerId"/> or <see cref="Service.ArtistId"/> is set.</summary>
+        public static void ValidateExactlyOneOwnerOrArtist(Service service)
+        {
+            var hasOwner = service.OwnerId.HasValue;
+            var hasArtist = service.ArtistId.HasValue;
+            if (hasOwner == hasArtist)
+                throw new InvalidOperationException("A szolgáltatásnak pontosan egy tulajdonos- vagy szakember-azonosító kell (OwnerId vagy ArtistId).");
         }
     }
 }

@@ -23,7 +23,7 @@
                         <li class="nav-item"><a class="nav-link" href="/ownerhomepage">Szalonjaim</a></li>
                         <li class="nav-item"><a class="nav-link" href="/maker">Új szalon felvétele</a></li>
                         <li class="nav-item"><a class="nav-link" href="/owneruserpage">Fiók</a></li>
-                        <li class="nav-item"><a class="nav-link" onclick="localStorage.setItem('token', '')" href="/ownerlogin">Kijelentkezés</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-salonic-logout-href="/ownerlogin">Kijelentkezés</a></li>
                     </ul>
                 </div>
             </div>
@@ -42,6 +42,43 @@
 
         <section class="salon-dash-section" aria-labelledby="dash-services-heading">
             <h2 id="dash-services-heading" class="salon-dash-section-title">Szolgáltatások</h2>
+            <p class="subtitle mb-3">Új tételek a szalon katalógusába kerülnek; a szakemberek ezeket vehetik fel a saját listájukra.</p>
+
+            <div class="salon-dash-add-service card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="h6 mb-3">Új szolgáltatás</h3>
+                    <form id="owner-dash-addservice-form" class="adservice-form d-flex flex-column gap-2">
+                        <input id="owner-dash-svc-name" class="form-control" type="text" name="name" placeholder="Megnevezés" required autocomplete="off">
+                        <input id="owner-dash-svc-duration" class="form-control" type="number" name="durationInMinute" placeholder="Időtartam (perc)" min="1" required>
+                        <input id="owner-dash-svc-price" class="form-control" type="number" name="price" placeholder="Ár (Ft)" min="0" step="1" required>
+                        <textarea id="owner-dash-svc-description" class="form-control" name="description" placeholder="Leírás (opcionális)" rows="3"></textarea>
+                        <button type="submit" class="btn btn-primary owner-btn align-self-start">Szolgáltatás mentése</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="salon-dash-csv card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="h6 mb-2">Tömeges import CSV-ből</h3>
+                    <p class="subtitle small mb-3">
+                        Soronként: <code>servicename;duration;description;price</code> — pontosvesszővel. Az első sor lehet fejléc; üres leírás: <code>;;</code>.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="owner-dash-csv-template-btn">Minta CSV letöltése</button>
+                    </div>
+                    <div class="row g-2 align-items-end mb-2">
+                        <div class="col-12 col-md-8">
+                            <label for="owner-dash-csv-file" class="form-label mb-1">CSV fájl</label>
+                            <input type="file" class="form-control" id="owner-dash-csv-file" accept=".csv,text/csv,text/plain">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <button type="button" class="btn btn-primary owner-btn w-100" id="owner-dash-csv-import-btn">Importálás</button>
+                        </div>
+                    </div>
+                    <div id="owner-dash-csv-result" class="alert alert-light border small mb-0" role="status" hidden></div>
+                </div>
+            </div>
+
             <div class="salon-dash-table-wrap table-responsive">
                 <table class="salon-dash-table table table-sm align-middle">
                     <thead>

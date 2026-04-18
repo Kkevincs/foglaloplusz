@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+    <script src="/themeBoot.js"></script>
     <nav class="navbar navbar-expand-lg navbar-light border-bottom salonic-navbar">
         <div class="container-fluid">
             <a class="navbar-brand logo p-0" id="logoLink" href="#"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" height="40" width="auto" /></a>
@@ -31,41 +32,12 @@
     </nav>
     <main class="container py-4 py-lg-5 artist-hours-page salonic-page-enter">
         <h1 class="h3">Nyitvatartásom</h1>
-        <p class="subtitle">A jelenlegi beosztásod és frissítés alább.</p>
+        <p class="subtitle">A jelenlegi beosztásod az alábbi lista.</p>
         <p class="artist-hours-switch"><a id="artist-hours-to-set" href="#">Nyitvatartás megadása dátum szerint</a></p>
 
         <section class="artist-hours-section" aria-labelledby="current-hours-heading">
             <h2 id="current-hours-heading" class="section-title">Aktuális nyitvatartás</h2>
             <ul id="artist-hours-list" class="artist-hours-list"></ul>
-        </section>
-
-        <section class="artist-hours-section" aria-labelledby="modify-hours-heading">
-            <h2 id="modify-hours-heading" class="section-title">Módosítás</h2>
-            <form class="adservice-form">
-                <label for="hours-day">Nap</label>
-                <select id="hours-day" name="hours-day">
-                    <option>Hétfő</option>
-                    <option>Kedd</option>
-                    <option>Szerda</option>
-                    <option>Csütörtök</option>
-                    <option>Péntek</option>
-                    <option>Szombat</option>
-                    <option>Vasárnap</option>
-                </select>
-
-                <div class="working-hours-time-row">
-                    <div class="working-hours-time-field">
-                        <label for="hours-start">Kezdés</label>
-                        <input id="hours-start" type="time" name="hours-start">
-                    </div>
-                    <div class="working-hours-time-field">
-                        <label for="hours-end">Zárás</label>
-                        <input id="hours-end" type="time" name="hours-end">
-                    </div>
-                </div>
-
-                <button type="button" class="btn btn-primary">Változtatások mentése</button>
-            </form>
         </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

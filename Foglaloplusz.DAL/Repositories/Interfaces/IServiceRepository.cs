@@ -7,7 +7,8 @@ namespace Foglaloplusz.DAL.Repositories.Interfaces
         Task<Service?> GetByIdAsync(int id);
         Task<Service[]> GetByIdsAsync(int[] ids);
         Task<List<Service>> ListBySalonIdAsync(int salonId);
-        Task<List<Service>> ListByArtistIdAsync(int artistId);
+        /// <summary>Csak olyan szolgáltatások, amelyekhez van legalább egy Offering sor.</summary>
+        Task<List<Service>> ListBySalonIdWithOfferingsAsync(int salonId);
         Task AddAsync(Service service);
         Task UpdateAsync(Service incoming);
         Task<bool> DeleteAsync(int id);

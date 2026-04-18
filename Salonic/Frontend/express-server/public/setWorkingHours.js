@@ -121,19 +121,22 @@
 
         const token = localStorage.getItem("token");
         if (!token) {
-            alert("Először jelentkezz be.");
+            salonicShowModal("Először jelentkezz be.", { title: "Bejelentkezés szükséges", variant: "warning" });
             return;
         }
 
         try {
             if (singleRadio.checked) {
                 if (!workDate.value) {
-                    alert("Add meg a dátumot.");
+                    salonicShowModal("Add meg a dátumot.", { title: "Hiányzó adat", variant: "warning" });
                     return;
                 }
                 const isOpenDay = singleOpenCheckbox?.checked !== false;
                 if (isOpenDay && (!singleStartInput.value || !singleEndInput.value)) {
-                    alert("Add meg a kezdő és záró időt, vagy vedd ki a „Nyitva” pipát, ha zárva van a nap.");
+                    salonicShowModal(
+                        "Add meg a kezdő és záró időt, vagy vedd ki a „Nyitva” pipát, ha zárva van a nap.",
+                        { title: "Hiányzó adat", variant: "warning" },
+                    );
                     return;
                 }
 
@@ -144,13 +147,13 @@
                 });
             } else {
                 if (!whRangeStart.value || !whRangeFinish.value) {
-                    alert("Add meg a kezdő és záró dátumot.");
+                    salonicShowModal("Add meg a kezdő és záró dátumot.", { title: "Hiányzó adat", variant: "warning" });
                     return;
                 }
 
                 const rows = Array.from(weekList.querySelectorAll(".working-hours-day-row"));
                 if (!rows.length) {
-                    alert("Válassz érvényes dátumtartományt.");
+                    salonicShowModal("Válassz érvényes dátumtartományt.", { title: "Hiányzó adat", variant: "warning" });
                     return;
                 }
 
@@ -170,8 +173,13 @@
             const salonId = new URLSearchParams(window.location.search).get("salonId");
             const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
             window.location.assign(`/Salon/Artist/Hours${salonQuery}`);
-        } catch (_) {
-            alert("Nem sikerült menteni a nyitvatartást. Ellenőrizd a mezőket, és próbáld újra.");
+        } catch (err) {
+            if (!err?.salonicApiShown) {
+                salonicShowModal("Nem sikerült menteni a nyitvatartást. Ellenőrizd a mezőket, és próbáld újra.", {
+                    title: "Hiba",
+                    variant: "danger",
+                });
+            }
         }
     });
 

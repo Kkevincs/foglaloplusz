@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             pwd: password,
         };
         const token = await Login(artist);
+        if (!token) return;
         localStorage.setItem("token", token);
         const params = new URLSearchParams(window.location.search);
         const salonId = params.get("salonId") || params.get("salonid");

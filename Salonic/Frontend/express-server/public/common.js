@@ -3,7 +3,7 @@
  */
 
 function enforceOwnerRoleOrRedirect() {
-    const ownerOnlyPaths = ["/maker", "/owneruserpage", "/salondashboard", "/salondashboard/schedule", "/ownerartistregister"];
+    const ownerOnlyPaths = ["/maker", "/owneruserpage", "/ownersalonedit", "/salondashboard", "/salondashboard/schedule", "/ownerartistregister"];
     if (!ownerOnlyPaths.includes(window.location.pathname)) return true;
     const token = localStorage.getItem("token");
     let role = null;
@@ -32,10 +32,79 @@ async function initSalonGuestPublicShell() {
         return;
     }
     if (!(await assertPublicSalonExistsOrRedirect(guestSalonId))) return;
+    await applySalonThemeForPublicPages();
     await applySalonPersonalLogo();
 }
 
+let salonicLogoutModalEl = null;
+
+function ensureSalonicLogoutModal() {
+    if (salonicLogoutModalEl && document.body.contains(salonicLogoutModalEl)) {
+        return salonicLogoutModalEl;
+    }
+    const existing = document.getElementById("salonicLogoutConfirmModal");
+    if (existing) {
+        salonicLogoutModalEl = existing;
+        return salonicLogoutModalEl;
+    }
+    const tpl = document.createElement("template");
+    tpl.innerHTML = `
+<div class="modal fade" id="salonicLogoutConfirmModal" tabindex="-1" aria-labelledby="salonicLogoutConfirmTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="salonicLogoutConfirmTitle">Kijelentkezés</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+      </div>
+      <div class="modal-body">Biztosan ki szeretnél jelentkezni?</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-danger" id="salonicLogoutConfirmBtn">Kijelentkezés</button>
+      </div>
+    </div>
+  </div>
+</div>`.trim();
+    salonicLogoutModalEl = tpl.content.firstElementChild;
+    document.body.appendChild(salonicLogoutModalEl);
+
+    const confirmBtn = salonicLogoutModalEl.querySelector("#salonicLogoutConfirmBtn");
+    if (confirmBtn && !confirmBtn.dataset.salonicWired) {
+        confirmBtn.dataset.salonicWired = "1";
+        confirmBtn.addEventListener("click", () => {
+            const href = salonicLogoutModalEl.dataset.logoutRedirect || "/ownerlogin";
+            localStorage.setItem("token", "");
+            window.location.assign(href);
+        });
+    }
+    return salonicLogoutModalEl;
+}
+
+/**
+ * Megerősítő modál kijelentkezés előtt; megerősítéskor törli a tokent és átirányít.
+ * @param {string} redirectHref pl. /ownerlogin vagy /Salon/Login?salonId=…
+ */
+function confirmLogoutThen(redirectHref) {
+    const href = typeof redirectHref === "string" && redirectHref.trim() ? redirectHref.trim() : "/ownerlogin";
+    const modalEl = ensureSalonicLogoutModal();
+    modalEl.dataset.logoutRedirect = href;
+    if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    } else if (window.confirm("Biztosan ki szeretnél jelentkezni?")) {
+        localStorage.setItem("token", "");
+        window.location.assign(href);
+    }
+}
+
+window.confirmLogoutThen = confirmLogoutThen;
+
 document.addEventListener("DOMContentLoaded", async () => {
+    document.addEventListener("click", (e) => {
+        const logoutEl = e.target.closest("[data-salonic-logout-href]");
+        if (!logoutEl) return;
+        e.preventDefault();
+        const target = logoutEl.getAttribute("data-salonic-logout-href");
+        if (target) confirmLogoutThen(target);
+    });
     document.querySelectorAll(".salonic-navbar .nav-links a, .salonic-navbar .nav-link").forEach((a) => {
         a.addEventListener("click", (e) => {
             if (a.getAttribute("href") === "#") e.preventDefault();
@@ -49,10 +118,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         path.startsWith("/Salon/") ||
         path === "/salondashboard" ||
         path === "/salondashboard/schedule" ||
-        path === "/ownerartistregister";
+        path === "/ownerartistregister" ||
+        path === "/ownersalonedit";
     if (applyThemeHere) {
         await applySalonThemeForPublicPages();
         await applySalonPersonalLogo();
+    }
+    const isSalonGuestPath =
+        path === "/Salon" || path === "/Salon/" || path.startsWith("/Salon/");
+    if (isSalonGuestPath) {
+        ensureSalonSharedFooterInDom();
+        const isHomeSalon = path === "/Salon" || path === "/Salon/";
+        if (!isHomeSalon) {
+            try {
+                await fillSalonSharedFooterFromApi();
+            } catch (e) {
+                console.warn("Salon shared footer:", e);
+            }
+        }
     }
 });
 
@@ -75,38 +158,33 @@ function getRoleFromToken() {
 
 window.getRoleFromToken = getRoleFromToken;
 
+/** Rejti a „Bejelentkezés vendégként” lábléc linket, ha már van bejelentkezett szerepkör. */
+function syncFooterGuestLoginNavVisibility() {
+    const loginEl = document.getElementById("footer-nav-login");
+    if (!loginEl) return;
+    const li = loginEl.closest("li");
+    const hide = Boolean(getRoleFromToken());
+    if (li) li.hidden = hide;
+    else loginEl.hidden = hide;
+}
+
+window.syncFooterGuestLoginNavVisibility = syncFooterGuestLoginNavVisibility;
+
 async function applySalonPersonalHomepage() {
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get("salonId") || params.get("salonid");
+    const pathNorm = (window.location.pathname || "/").replace(/\/$/, "") || "/";
+    const isArtistSalonHome = pathNorm === "/Salon/Artist";
     const salon = await GetSalonBySalonId(localStorage.getItem('token'), salonId);
     document.getElementById('salon-name').textContent = salon.name;
     document.getElementById('salon-description').textContent = salon.description;
 
     const emailRaw = salon.email ?? salon.Email ?? '';
-    const ownerName = salon.ownerName ?? salon.OwnerName ?? '';
-    const locationStr = salon.location ?? salon.Location ?? '';
-    const footerMeta = document.getElementById('salon-footer-meta');
-    if (footerMeta) {
-        const parts = [];
-        if (ownerName && String(ownerName).trim()) {
-            parts.push(
-                `<span class="salon-landing-footer__item"><span class="salon-landing-footer__label">Tulajdonos</span> ${escapeHtml(String(ownerName).trim())}</span>`,
-            );
-        }
-        if (emailRaw && String(emailRaw).trim()) {
-            const em = String(emailRaw).trim();
-            parts.push(
-                `<span class="salon-landing-footer__item"><span class="salon-landing-footer__label">E-mail</span> <a href="mailto:${em.replace(/"/g, "")}">${escapeHtml(em)}</a></span>`,
-            );
-        }
-        if (locationStr && String(locationStr).trim()) {
-            parts.push(
-                `<span class="salon-landing-footer__item"><span class="salon-landing-footer__label">Helyszín</span> ${escapeHtml(String(locationStr).trim())}</span>`,
-            );
-        }
-        footerMeta.innerHTML = parts.join(
-            '<span class="salon-landing-footer__sep" aria-hidden="true"> · </span>',
-        );
+    const sq = salonId ? `?salonId=${encodeURIComponent(salonId)}` : '';
+    fillSalonSharedFooterFromSalon(salon, salonId);
+    if (isArtistSalonHome) {
+        const footerNavSvc = document.getElementById("footer-nav-services");
+        if (footerNavSvc) footerNavSvc.href = `/Salon/Artist/Services${sq}`;
     }
     const supportMail = document.getElementById('salon-support-email');
     if (supportMail && emailRaw) {
@@ -114,13 +192,19 @@ async function applySalonPersonalHomepage() {
         supportMail.textContent = emailRaw;
     }
 
-    const sq = salonId ? `?salonId=${encodeURIComponent(salonId)}` : '';
     const guestLogin = document.getElementById('salon-guest-login-link');
     if (guestLogin) guestLogin.href = `/Salon/Login${sq}`;
     const artistLogin = document.getElementById('salon-artist-login-link');
     if (artistLogin) artistLogin.href = `/Salon/Artist/Login${sq}`;
     const services = document.getElementById('salon-link-services');
-    if (services) services.href = `/Salon/Services${sq}`;
+    if (services) {
+        services.href = isArtistSalonHome ? `/Salon/Artist/Services${sq}` : `/Salon/Services${sq}`;
+        if (isArtistSalonHome) {
+            services.hidden = getRoleFromToken() !== 'artist';
+        } else {
+            services.hidden = false;
+        }
+    }
     const artists = document.getElementById('salon-link-artists');
     if (artists) artists.href = `/Salon/Artists${sq}`;
     const contact = document.getElementById('salon-link-contact');
@@ -151,14 +235,17 @@ async function applySalonPersonalHomepage() {
     }
 }
 /** Same origin as api.js — uploaded salon logos are served by the API host. */
-const SALON_PUBLIC_API_ORIGIN = "https://localhost:7156";
+function getSalonPublicApiOrigin() {
+    return (typeof window !== "undefined" && window.SALONIC_API_BASE) || "https://localhost:7165";
+}
 
 function resolvePublicSalonLogoUrl(salon) {
     const raw = salon?.logo ?? salon?.Logo ?? "";
     if (!raw || !String(raw).trim()) return "";
     const p = String(raw).trim();
     if (/^https?:\/\//i.test(p)) return p;
-    return `${SALON_PUBLIC_API_ORIGIN}${p.startsWith("/") ? p : `/${p}`}`;
+    const origin = getSalonPublicApiOrigin();
+    return `${origin}${p.startsWith("/") ? p : `/${p}`}`;
 }
 
 function resolveSalonBrandLogoElement() {
@@ -229,13 +316,24 @@ function setSalonThemeCache(obj) {
     localStorage.setItem("salonThemeById", JSON.stringify(obj));
 }
 
+/** DB-ből jövő téma: legyen `theme-xyz`, hogy a body.theme-xyz változók érvényesüljenek */
+function normalizeSalonThemeClass(raw) {
+    let t = String(raw ?? "").trim();
+    if (!t) return "";
+    if (!t.startsWith("theme-")) {
+        t = `theme-${t.replace(/^theme-?/i, "").replace(/\s+/g, "-")}`;
+    }
+    return t;
+}
+
 function applyTheme(theme) {
-    if (!theme) return;
-    document.body.className = document.body.className
-        .split(' ')
-        .filter(cls => !cls.startsWith('theme-'))
-        .join(' ');
-    document.body.classList.add(theme.trim());
+    const t = normalizeSalonThemeClass(theme);
+    if (!t) return;
+    const rest = document.body.className
+        .split(/\s+/)
+        .filter((cls) => cls && !cls.startsWith("theme-"));
+    /* theme-* legyen az első class: a CSS body[class^="theme-"] szabályok így mindig illeszkednek */
+    document.body.className = [t, ...rest].join(" ").trim();
 }
 async function applySalonThemeForPublicPages() {
     const params = new URLSearchParams(window.location.search);
@@ -265,14 +363,13 @@ async function assertPublicSalonExistsOrRedirect(salonIdRaw) {
         return false;
     }
     try {
-        const response = await fetch(`https://localhost:7156/api/salon/${id}/exists`);
-        if (!response.ok) {
+        const exists = await CheckSalonExists(id);
+        if (!exists) {
             window.location.replace('/404');
             return false;
         }
     } catch (e) {
         console.error(e);
-        window.location.replace('/404');
         return false;
     }
     return true;
@@ -357,11 +454,14 @@ async function formRegisterArtist(id){
             name: name,
             email: email,
             pwd: password,
-            salonId: id,
+            salonId: Number(id),
             description: description
         }
 
-        await RegisterArtist(artist);
+        const result = await RegisterArtist(artist);
+        if (result.ok) {
+            window.location.assign(`/salondashboard?salonId=${encodeURIComponent(String(id))}`);
+        }
     })
 }
 
@@ -454,6 +554,99 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
+const SALON_SHARED_FOOTER_HTML = `
+<footer class="salon-landing-footer salon-landing-footer--rich salon-landing-footer--fullbleed" id="salon-landing-footer" aria-label="Lábléc és elérhetőség">
+    <div class="container salon-landing-footer__inner">
+        <div class="salon-landing-footer__grid">
+            <div class="salon-landing-footer__col">
+                <h3 class="salon-landing-footer__heading">Kapcsolat</h3>
+                <ul class="salon-landing-footer__contacts" id="salon-footer-contacts"></ul>
+            </div>
+            <div class="salon-landing-footer__col">
+                <h3 class="salon-landing-footer__heading">Navigáció</h3>
+                <ul class="salon-landing-footer__nav">
+                    <li><a id="footer-nav-services" href="#">Szolgáltatások</a></li>
+                    <li><a id="footer-nav-artists" href="#">Szakemberek</a></li>
+                    <li><a id="footer-nav-login" href="#">Bejelentkezés vendégként</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="salon-landing-footer__meta salon-landing-footer__meta--legacy" id="salon-footer-meta" hidden></p>
+        <div class="salon-landing-footer__bottom">
+            <p class="salon-landing-footer__brand-line">
+                <span class="salon-landing-footer__logo-text">FoglalóPlusz</span>
+                <span class="salon-landing-footer__sep-dot" aria-hidden="true">·</span>
+                <span>Időpontfoglalás egyszerűen</span>
+            </p>
+        </div>
+    </div>
+</footer>`;
+
+function ensureSalonSharedFooterInDom() {
+    if (document.getElementById("salon-landing-footer")) return;
+    const path = window.location.pathname;
+    if (path !== "/Salon" && path !== "/Salon/" && !path.startsWith("/Salon/")) return;
+    const sp = new URLSearchParams(window.location.search);
+    if (!(sp.get("salonId") || sp.get("salonid"))) return;
+    const tpl = document.createElement("template");
+    tpl.innerHTML = SALON_SHARED_FOOTER_HTML.trim();
+    document.body.appendChild(tpl.content.firstElementChild);
+}
+
+function fillSalonSharedFooterFromSalon(salon, salonId) {
+    const emailRaw = salon?.email ?? salon?.Email ?? "";
+    const ownerName = salon?.ownerName ?? salon?.OwnerName ?? "";
+    const locationStr = salon?.location ?? salon?.Location ?? "";
+    const sq = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
+
+    const contactsEl = document.getElementById("salon-footer-contacts");
+    if (contactsEl) {
+        const rows = [];
+        if (ownerName && String(ownerName).trim()) {
+            rows.push(
+                `<li class="salon-landing-footer__contact-row"><span class="salon-landing-footer__label">Tulajdonos</span><span class="salon-landing-footer__value">${escapeHtml(String(ownerName).trim())}</span></li>`,
+            );
+        }
+        if (emailRaw && String(emailRaw).trim()) {
+            const em = String(emailRaw).trim();
+            rows.push(
+                `<li class="salon-landing-footer__contact-row"><span class="salon-landing-footer__label">E-mail</span><a class="salon-landing-footer__value salon-landing-footer__link" href="mailto:${em.replace(/"/g, "")}">${escapeHtml(em)}</a></li>`,
+            );
+        }
+        if (locationStr && String(locationStr).trim()) {
+            rows.push(
+                `<li class="salon-landing-footer__contact-row"><span class="salon-landing-footer__label">Helyszín</span><span class="salon-landing-footer__value">${escapeHtml(String(locationStr).trim())}</span></li>`,
+            );
+        }
+        contactsEl.innerHTML =
+            rows.length > 0
+                ? rows.join("")
+                : `<li class="salon-landing-footer__contact-row salon-landing-footer__contact-row--muted"><span class="salon-landing-footer__value">A szalon még nem adott meg elérhetőségi adatot.</span></li>`;
+    }
+
+    const footerNavSvc = document.getElementById("footer-nav-services");
+    const footerNavArt = document.getElementById("footer-nav-artists");
+    const footerNavLogin = document.getElementById("footer-nav-login");
+    if (footerNavSvc) footerNavSvc.href = `/Salon/Services${sq}`;
+    if (footerNavArt) footerNavArt.href = `/Salon/Artists${sq}`;
+    if (footerNavLogin) footerNavLogin.href = `/Salon/Login${sq}`;
+    syncFooterGuestLoginNavVisibility();
+
+    const footerMeta = document.getElementById("salon-footer-meta");
+    if (footerMeta) {
+        footerMeta.innerHTML = "";
+        footerMeta.hidden = true;
+    }
+}
+
+async function fillSalonSharedFooterFromApi() {
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    if (!salonId) return;
+    const salon = await GetSalonBySalonId(localStorage.getItem("token"), salonId);
+    fillSalonSharedFooterFromSalon(salon, salonId);
+}
+
 function formatDurationMinutes(totalMinutes) {
     const m = Math.max(0, Math.floor(Number(totalMinutes) || 0));
     if (m < 60) return `${m} min`;
@@ -478,6 +671,69 @@ function formatDurationMinutesHu(totalMinutes) {
 function formatPriceFt(amount) {
     const n = Math.round(Number(amount) || 0);
     return `${n.toLocaleString('hu-HU').replace(/\u00a0/g, ' ')} Ft`;
+}
+
+/** Vendég- és szakember kezdőlapon: szolgáltatás- és szakemberlista betöltése. */
+async function loadSalonLandingLists() {
+    const params = new URLSearchParams(window.location.search);
+    const salonId = params.get("salonId") || params.get("salonid");
+    if (!salonId) return;
+
+    const servicesList = document.getElementById("salon-services-list");
+    const artistsList = document.getElementById("salon-artists-list");
+    const svcEmpty = document.getElementById("salon-services-empty");
+    const artEmpty = document.getElementById("salon-artists-empty");
+    if (!servicesList || !artistsList) return;
+
+    try {
+        const services = await GetServices(salonId);
+        const arr = Array.isArray(services) ? services : [];
+        servicesList.innerHTML = "";
+        if (arr.length === 0) {
+            if (svcEmpty) svcEmpty.hidden = false;
+        } else {
+            if (svcEmpty) svcEmpty.hidden = true;
+            arr.forEach((s, i) => {
+                const name = escapeHtml(s.name ?? s.Name ?? "");
+                const price = Number(s.price ?? s.Price ?? 0);
+                const dur = Number(s.durationInMinute ?? s.DurationInMinute ?? 0);
+                const priceStr = formatPriceFt(price);
+                const durStr = formatDurationMinutesHu(dur);
+                servicesList.innerHTML += `<li class="salon-landing-li async-card-enter" style="--async-card-i:${i}"><span class="salon-landing-li__name">${name}</span><span class="salon-landing-li__meta">${durStr} · ${priceStr}</span></li>`;
+            });
+        }
+    } catch (e) {
+        console.error(e);
+        if (svcEmpty) {
+            svcEmpty.hidden = false;
+            svcEmpty.textContent = "Nem sikerült betölteni a szolgáltatásokat.";
+        }
+    }
+
+    try {
+        const artists = await GetPublicArtistsForSalon(salonId);
+        const arr = Array.isArray(artists) ? artists : [];
+        artistsList.innerHTML = "";
+        if (arr.length === 0) {
+            if (artEmpty) artEmpty.hidden = false;
+        } else {
+            if (artEmpty) artEmpty.hidden = true;
+            arr.forEach((a, i) => {
+                const name = escapeHtml(a.name ?? a.Name ?? "");
+                const desc = escapeHtml(a.description ?? a.Description ?? "");
+                const id = String(a.id ?? a.Id);
+                const bookHref = `/Salon/Services?salonId=${encodeURIComponent(salonId)}&artistId=${encodeURIComponent(id)}`;
+                const descHtml = desc ? `<span class="salon-landing-li__desc">${desc}</span>` : "";
+                artistsList.innerHTML += `<li class="salon-landing-li salon-landing-li--artist async-card-enter" style="--async-card-i:${i}"><div class="salon-landing-li__artist-text"><span class="salon-landing-li__name">${name}</span>${descHtml}</div><a class="salon-landing-li__book" href="${bookHref}">Szolgáltatások</a></li>`;
+            });
+        }
+    } catch (e) {
+        console.error(e);
+        if (artEmpty) {
+            artEmpty.hidden = false;
+            artEmpty.textContent = "Nem sikerült betölteni a szakembereket.";
+        }
+    }
 }
 
 function syncServicesCartButton() {
@@ -520,9 +776,15 @@ document.addEventListener('change', (e) => {
 
 function syncArtistPickBar() {
     const list = document.getElementById('artists-list');
-    const holder = document.getElementById('artist-cart-holder');
-    const btn = document.getElementById('artistContinueBtn');
-    const nameEl = document.getElementById('artist-cart-count');
+    const holder =
+        document.getElementById('artist-cart-holder') ||
+        document.getElementById('artist-browse-cart-holder');
+    const btn =
+        document.getElementById('artistContinueBtn') ||
+        document.getElementById('artist-browse-continue-btn');
+    const nameEl =
+        document.getElementById('artist-cart-count') ||
+        document.getElementById('artist-browse-cart-name');
     if (!list || !holder || !btn) return;
     const checked = list.querySelector('input.booking-choice-input[type="radio"]:checked');
     const has = Boolean(checked);
@@ -562,60 +824,211 @@ function SelectArtist(){
 }
 
 async function loadServicesBySalon(id) {
-    const services = await GetServices(id)
-    services.forEach(x => 
-        document.getElementById("services-table").innerHTML += `
+    const tbody = document.getElementById("services-table");
+    if (!tbody) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    tbody.innerHTML = "";
+    let services;
+    try {
+        services = await GetSalonServicesCatalog(id, token);
+    } catch {
+        return;
+    }
+    services.forEach((x) => {
+        tbody.innerHTML += `
                         <tr>
                             <td>${x.name}</td>
-                            <td>${x.durationInMinute} min</td>
+                            <td>${x.durationInMinute} perc</td>
                             <td>${x.price} Ft</td>
                         </tr>
-        `
-    )
+        `;
+    });
+}
+
+/**
+ * Tulaj irányítópult: egyedi + CSV katalógus-szolgáltatás.
+ * @param {string} salonId
+ */
+function initOwnerSalonDashboardServices(salonId) {
+    const form = document.getElementById("owner-dash-addservice-form");
+    if (!form) return;
+
+    const sid = String(salonId).trim();
+    if (!sid) return;
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+        if (!token) {
+            salonicShowModal("Jelentkezz be tulajdonosként.", { title: "Bejelentkezés szükséges", variant: "warning" });
+            return;
+        }
+        const newService = {
+            name: document.getElementById("owner-dash-svc-name")?.value?.trim() ?? "",
+            description: document.getElementById("owner-dash-svc-description")?.value ?? "",
+            price: Number(document.getElementById("owner-dash-svc-price")?.value),
+            durationInMinute: Number(document.getElementById("owner-dash-svc-duration")?.value),
+        };
+        try {
+            await createOwnerSalonService(sid, newService, token);
+            salonicShowModal("Szolgáltatás elmentve.", { title: "Mentve", variant: "success" });
+            form.reset();
+            await loadServicesBySalon(sid);
+        } catch (err) {
+            console.error(err);
+            if (!err?.salonicApiShown) {
+                salonicShowModal(err?.message || "Nem sikerült menteni a szolgáltatást.", { title: "Hiba", variant: "danger" });
+            }
+        }
+    });
+
+    document.getElementById("owner-dash-csv-template-btn")?.addEventListener("click", () => {
+        const sample =
+            "servicename;duration;description;price\nClassic cut;45;Wash and cut;3500\nColor;90;;12000\n";
+        const blob = new Blob([sample], { type: "text/csv;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "salon-catalog-template.csv";
+        a.click();
+        URL.revokeObjectURL(a.href);
+    });
+
+    document.getElementById("owner-dash-csv-import-btn")?.addEventListener("click", async () => {
+        const fileInput = document.getElementById("owner-dash-csv-file");
+        const resultEl = document.getElementById("owner-dash-csv-result");
+        const btn = document.getElementById("owner-dash-csv-import-btn");
+        const file = fileInput?.files?.[0];
+        if (!file) {
+            salonicShowModal("Válassz előbb egy CSV fájlt.", { title: "Import", variant: "warning" });
+            return;
+        }
+        const token = localStorage.getItem("token");
+        if (!token) {
+            salonicShowModal("Jelentkezz be tulajdonosként.", { title: "Bejelentkezés szükséges", variant: "warning" });
+            return;
+        }
+        let csvText;
+        try {
+            csvText = await file.text();
+        } catch (err) {
+            console.error(err);
+            salonicShowModal("A fájl nem olvasható.", { title: "Hiba", variant: "danger" });
+            return;
+        }
+        if (!resultEl) return;
+        resultEl.classList.remove("alert-danger", "alert-success", "alert-warning");
+        resultEl.classList.add("alert-light", "border");
+        resultEl.hidden = false;
+        resultEl.innerHTML = '<p class="text-muted mb-0">Importálás…</p>';
+        if (btn) btn.disabled = true;
+        try {
+            const data = await importOwnerSalonServicesFromCsv(sid, csvText, token);
+            const created = data.created ?? data.Created ?? [];
+            const errors = data.errors ?? data.Errors ?? [];
+            const okCount = created.length;
+            const errCount = errors.length;
+            let html = `<p class="fw-semibold mb-2">Kész: <strong>${okCount}</strong> szolgáltatás létrehozva${
+                errCount ? `, <strong class="text-danger">${errCount}</strong> sor hibás` : ""
+            }.</p>`;
+            if (okCount > 0) {
+                html += '<ul class="list-unstyled mb-2 small">';
+                created.slice(0, 20).forEach((s) => {
+                    const n = escapeHtml(s.name ?? s.Name ?? "");
+                    html += `<li class="text-success">${n}</li>`;
+                });
+                if (created.length > 20) html += '<li class="text-muted">…</li>';
+                html += "</ul>";
+            }
+            if (errCount > 0) {
+                html += '<p class="text-danger fw-semibold mb-1">Hibák</p><ul class="mb-0 small">';
+                errors.forEach((e) => {
+                    const line = e.line ?? e.Line;
+                    const msg = escapeHtml(e.message ?? e.Message ?? "");
+                    html += `<li><span class="text-nowrap">${line}. sor:</span> ${msg}</li>`;
+                });
+                html += "</ul>";
+            }
+            resultEl.classList.remove("alert-light");
+            if (errCount > 0 && okCount === 0) {
+                resultEl.classList.add("alert-danger");
+            } else if (okCount > 0 && errCount === 0) {
+                resultEl.classList.add("alert-success");
+            } else {
+                resultEl.classList.add("alert-warning");
+            }
+            resultEl.innerHTML = html;
+            if (okCount > 0) {
+                await loadServicesBySalon(sid);
+                if (fileInput) fileInput.value = "";
+            }
+        } catch (err) {
+            console.error(err);
+            if (!err?.salonicApiShown) {
+                resultEl.classList.remove("alert-light", "alert-success");
+                resultEl.classList.add("alert-danger");
+                resultEl.innerHTML = `<p class="text-danger mb-0" role="alert">${escapeHtml(err?.message || "Az importálás sikertelen.")}</p>`;
+            }
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    });
 }
 
 
 
 
 async function loadArtistsBySalonId(id) {
-    const artists = await getArtistBySalonId(localStorage.getItem('token'), id)
+    let artists;
+    try {
+        artists = await getArtistBySalonId(localStorage.getItem("token"), id);
+    } catch {
+        return;
+    }
     const salonIdEnc = encodeURIComponent(id);
-    artists.forEach(x => {
-        const nameEnc = encodeURIComponent(x.name || 'Artist');
-        document.getElementById('salon-dash-artists').innerHTML += `
-            <li class="salon-dash-artist-card">
+    artists.forEach((x, i) => {
+        const nameEnc = encodeURIComponent(x.name || "Artist");
+        document.getElementById("salon-dash-artists").innerHTML += `
+            <li class="salon-dash-artist-card async-card-enter" style="--async-card-i:${i}">
                     <div>
                         <h3 class="salon-dash-card-name">${x.name}</h3>
                         <p class="salon-dash-card-meta">${x.description}</p>
                     </div>
-                    <a href="/salondashboard/schedule?salonId=${salonIdEnc}&artistId=${x.id}&artistName=${nameEnc}" class="btn btn-primary btn-sm">View schedule</a>
+                    <a href="/salondashboard/schedule?salonId=${salonIdEnc}&artistId=${x.id}&artistName=${nameEnc}" class="owner-btn">Naptár megtekintése</a>
                 </li>
         `;
     });
 }
 
-async function loadSalons(){
+async function loadSalons() {
     const list = document.getElementById("owner-salons-list");
     if (!list) return;
 
-    const token = localStorage.getItem('token');
-    const salons = await GetMySalons(token);
-    list.innerHTML = '';
-    salons.forEach(x =>
-        list.innerHTML += `
-            <li class="owner-salon-card">
+    const token = localStorage.getItem("token");
+    let salons;
+    try {
+        salons = await GetMySalons(token);
+    } catch {
+        return;
+    }
+    list.innerHTML = "";
+    salons.forEach(
+        (x, i) =>
+            (list.innerHTML += `
+            <li class="owner-salon-card async-card-enter" style="--async-card-i:${i}">
                     <div class="owner-salon-main">
                         <h3 class="owner-salon-name">${x.name}</h3>
                         <p class="owner-salon-meta">${x.email}</p>
                         <p class="owner-salon-desc">${x.description}</p>
                     </div>
                     <div class="owner-salon-actions">
-                        <a href="/salondashboard?salonId=${x.id}" class="btn btn-primary btn-sm">Open dashboard</a>
-                        <a href="/ownerartistregister?salonId=${x.id}" class="btn btn-outline-secondary btn-sm">Edit</a>
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-salon" data-salon-id="${x.id}">Remove salon</button>
+                        <a href="/salondashboard?salonId=${x.id}" class="owner-btn">Irányítópult megnyitása</a>
+                        <a href="/ownersalonedit?salonId=${x.id}" class="owner-btn owner-btn-ghost">Szalon szerkesztése</a>
+                        <a href="/ownerartistregister?salonId=${x.id}" class="owner-btn owner-btn-ghost">Új dolgozó felvétele</a>
+                        <button type="button" class="owner-btn owner-btn-danger" data-action="remove-salon" data-salon-id="${x.id}">Szalon eltávolítása</button>
                     </div>
                 </li>
-        `
+        `),
     );
 }
 
@@ -634,11 +1047,11 @@ async function loadPortalSalons() {
         }
 
         list.innerHTML = '';
-        salons.forEach((salon) => {
+        salons.forEach((salon, i) => {
             const salonId = salon.id ?? salon.Id;
             const name = escapeHtml(salon.name ?? salon.Name ?? `Salon ${salonId}`);
             list.innerHTML += `
-                <a class="btn btn-primary w-100" href="/Salon?salonId=${encodeURIComponent(salonId)}">${name}</a>
+                <a class="btn btn-primary w-100 async-card-enter" style="--async-card-i:${i}" href="/Salon?salonId=${encodeURIComponent(salonId)}">${name}</a>
             `;
         });
     } catch (err) {
@@ -647,7 +1060,8 @@ async function loadPortalSalons() {
     }
 }
 
-async function LoadServices() {
+/** @param {number|undefined|null} filterArtistId If set, only services this artist offers (Offerings). */
+async function LoadServices(filterArtistId) {
     const params = new URLSearchParams(window.location.search);
     const salonId = params.get('salonId') || params.get('salonid');
     const list = document.getElementById('services-list');
@@ -677,7 +1091,12 @@ async function LoadServices() {
         '<div class="service-pick-row service-pick-row--loading" role="status"><div class="service-pick-row__text"><span class="spinner-border spinner-border-sm text-primary me-2" aria-hidden="true"></span>Betöltés…</div></div>';
     let services;
     try {
-        services = await GetServices(salonId);
+        const fa = filterArtistId != null ? Number(filterArtistId) : NaN;
+        if (Number.isFinite(fa) && fa > 0) {
+            services = await GetServicesForArtistInSalon(salonId, fa);
+        } else {
+            services = await GetServices(salonId);
+        }
     } catch (e) {
         console.error(e);
         list.innerHTML = '';
@@ -693,12 +1112,15 @@ async function LoadServices() {
     if (arr.length === 0) {
         if (emptyEl) {
             emptyEl.hidden = false;
-            emptyEl.textContent = 'Ehhez a szalonhoz még nincs közzétett szolgáltatás.';
+            emptyEl.textContent =
+                Number.isFinite(fa) && fa > 0
+                    ? 'Ehhez a szakemberhez még nincs közzétett szolgáltatás.'
+                    : 'Ehhez a szalonhoz még nincs közzétett szolgáltatás.';
         }
         syncServicesCartButton();
         return;
     }
-    arr.forEach((x) => {
+    arr.forEach((x, i) => {
         const name = escapeHtml(x.name ?? x.Name);
         const id = String(x.id ?? x.Id);
         const durationMin = Number(x.durationInMinute ?? x.DurationInMinute ?? 0);
@@ -706,7 +1128,7 @@ async function LoadServices() {
         const durationLine = formatDurationMinutesHu(durationMin);
         const priceLine = formatPriceFt(price);
         list.innerHTML += `
-            <div class="service-pick-row" role="listitem">
+            <div class="service-pick-row async-card-enter" style="--async-card-i:${i}" role="listitem">
                 <div class="service-pick-row__text">
                     <div class="service-pick-row__title">${name}</div>
                     <div class="service-pick-row__price">${priceLine}</div>
@@ -951,8 +1373,8 @@ async function loadArtistUpcomingAppointments(token, mount) {
 
         mount.innerHTML = rows
             .map(
-                (r) => `
-            <article class="guest-appt-card">
+                (r, i) => `
+            <article class="guest-appt-card async-card-enter" style="--async-card-i:${i}">
                 <div class="guest-appt-card__date" aria-hidden="true">
                     <span class="guest-appt-card__dow">${escapeHtml(r.dow)}</span>
                     <span class="guest-appt-card__day">${escapeHtml(r.day)}</span>
@@ -1004,16 +1426,6 @@ async function LoadArtistData() {
                 <span class="guest-user-role-pill">Szakember</span>
             </div>
         </header>
-        <div class="guest-user-meta-grid">
-            <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">Név</span>
-                <span class="guest-meta-tile__value" id="user-name">${name}</span>
-            </div>
-            <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">E-mail</span>
-                <span class="guest-meta-tile__value" id="user-email">${email}</span>
-            </div>
-        </div>
     `;
 
     const appointmentsMount = document.getElementById('artist-appointments');
@@ -1026,7 +1438,12 @@ async function LoadArtistData() {
 async function LoadOwnerData() {
     const el = document.getElementById("owner-profile");
     if (!el) return;
-    const userData = await GetLoggedInOwner(localStorage.getItem("token"));
+    let userData;
+    try {
+        userData = await GetLoggedInOwner(localStorage.getItem("token"));
+    } catch {
+        return;
+    }
     const name = escapeHtml(userData.name ?? "");
     const email = escapeHtml(userData.email ?? "");
     const initials = escapeHtml(userInitials(userData.name ?? ""));
@@ -1035,22 +1452,12 @@ async function LoadOwnerData() {
         <header class="guest-user-hero">
             <div class="guest-user-avatar" aria-hidden="true">${initials}</div>
             <div class="guest-user-hero__text">
-                <p class="guest-user-eyebrow">Salon owner</p>
+                <p class="guest-user-eyebrow">Tulajdonos fiók</p>
                 <h1 class="guest-user-title">${name}</h1>
                 <p class="guest-user-email">${email}</p>
-                <span class="guest-user-role-pill">Owner</span>
+                <span class="guest-user-role-pill">Tulajdonos</span>
             </div>
         </header>
-        <div class="guest-user-meta-grid">
-            <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">Name</span>
-                <span class="guest-meta-tile__value">${name}</span>
-            </div>
-            <div class="guest-meta-tile">
-                <span class="guest-meta-tile__label">Email</span>
-                <span class="guest-meta-tile__value">${email}</span>
-            </div>
-        </div>
     `;
 }
 
@@ -1059,11 +1466,21 @@ async function LoadArtists() {
     if (!list) return;
     const urlParams = new URLSearchParams(window.location.search);
     const salonIdFromUrl = urlParams.get('salonId') || urlParams.get('salonid');
+    const serviceidsRaw = urlParams.get('serviceids') || urlParams.get('serviceIds') || '';
+    const serviceIdsForBooking = String(serviceidsRaw)
+        .split(',')
+        .map((x) => Number(String(x).trim()))
+        .filter((n) => Number.isFinite(n) && n > 0);
+    const bookingStep = window.location.pathname === '/Salon/SelectArtist';
+    const filterArtistsByServices = bookingStep && serviceIdsForBooking.length > 0;
 
     let artists = [];
     if (salonIdFromUrl) {
         try {
-            const raw = await GetPublicArtistsForSalon(salonIdFromUrl);
+            const raw = await GetPublicArtistsForSalon(
+                salonIdFromUrl,
+                filterArtistsByServices ? serviceIdsForBooking : undefined,
+            );
             artists = Array.isArray(raw) ? raw : [];
         } catch (e) {
             console.error(e);
@@ -1077,22 +1494,24 @@ async function LoadArtists() {
         }
     }
 
-    const bookingStep = window.location.pathname === '/Salon/SelectArtist';
+    const bookingBrowseSalon =
+        window.location.pathname === '/Salon/Artists' && Boolean(salonIdFromUrl);
+    const useArtistPickRows = bookingStep || bookingBrowseSalon;
     list.innerHTML = '';
-    if (bookingStep) {
+    if (useArtistPickRows) {
         list.className = 'artists-list artists-pick-list services-pick-list';
         list.setAttribute('role', 'list');
     }
-    artists.forEach((x) => {
+    artists.forEach((x, i) => {
         const name = escapeHtml(x.name ?? '');
         const desc = escapeHtml(x.description ?? '');
         const id = String(x.id);
-        if (bookingStep) {
+        if (useArtistPickRows) {
             const metaLine = desc
                 ? `<div class="service-pick-row__meta">${desc}</div>`
                 : '';
             list.innerHTML += `
-                <div class="service-pick-row artist-pick-row" role="listitem">
+                <div class="service-pick-row artist-pick-row async-card-enter" style="--async-card-i:${i}" role="listitem">
                     <div class="service-pick-row__text">
                         <div class="service-pick-row__title">${name}</div>
                         ${metaLine}
@@ -1109,10 +1528,10 @@ async function LoadArtists() {
                 ? `/Salon/Services?salonId=${encodeURIComponent(salonIdFromUrl)}&artistId=${encodeURIComponent(id)}`
                 : '';
             const bookCta = bookHref
-                ? `<a class="btn btn-primary btn-sm artist-card-book flex-shrink-0" href="${bookHref}">Book services</a>`
+                ? `<a class="btn btn-primary btn-sm artist-card-book flex-shrink-0" href="${bookHref}">Foglalás</a>`
                 : '';
             list.innerHTML += `
-             <div class="artist-card artist-card--browse">
+             <div class="artist-card artist-card--browse async-card-enter" style="--async-card-i:${i}">
                 <div class="artist-card-main">
                     <div class="name">${name}</div>
                     <div class="role">${desc}</div>
@@ -1121,27 +1540,184 @@ async function LoadArtists() {
              </div>`;
         }
     });
+    const artistsEmptyEl = document.getElementById("artists-page-empty");
+    if (artistsEmptyEl) {
+        artistsEmptyEl.hidden = artists.length > 0;
+        if (artists.length === 0) {
+            if (filterArtistsByServices) {
+                if (serviceIdsForBooking.length > 1) {
+                    try {
+                        const svcList = await GetServices(salonIdFromUrl);
+                        const arr = Array.isArray(svcList) ? svcList : [];
+                        const byId = new Map(
+                            arr.map((s) => [Number(s.id ?? s.Id), String(s.name ?? s.Name ?? "").trim()]),
+                        );
+                        const nameLines = serviceIdsForBooking.map((id) => {
+                            const nm = byId.get(id);
+                            return nm ? nm : `Szolgáltatás (#${id})`;
+                        });
+                        const listHtml = nameLines.map((n) => `<li>${escapeHtml(n)}</li>`).join("");
+                        artistsEmptyEl.innerHTML = `
+<p class="mb-2 fw-semibold">Egy szakember nem tudja egyszerre mindezeket elvégezni.</p>
+<p class="mb-2 small">A választott szolgáltatásokhoz valószínűleg különböző szakemberekre van szükség:</p>
+<ul class="mb-2 ps-3 small">${listHtml}</ul>
+<p class="mb-0 small">Foglalj inkább több külön időpontot (szolgáltatásonként).</p>`;
+                    } catch (e) {
+                        console.warn(e);
+                        artistsEmptyEl.textContent =
+                            "Nincs olyan szakember, aki minden kiválasztott szolgáltatást felvéve kínálja. Foglalj több külön időpontot.";
+                    }
+                } else {
+                    artistsEmptyEl.textContent =
+                        "Nincs elérhető szakember ehhez a szolgáltatáshoz. Módosítsd a választást.";
+                }
+            } else {
+                artistsEmptyEl.textContent = salonIdFromUrl
+                    ? "Ehhez a szalonhoz még nincs közzétett szakember a foglaláshoz."
+                    : "Nem érhető el szakember.";
+            }
+        }
+    }
     if (bookingStep) {
         syncArtistPickBar();
+    }
+    if (bookingBrowseSalon) {
+        syncArtistPickBar();
+        const cont = document.getElementById('artist-browse-continue-btn');
+        if (cont && !cont.dataset.wiredBrowse) {
+            cont.dataset.wiredBrowse = '1';
+            cont.addEventListener('click', () => {
+                const selected = document.querySelector(
+                    '#artists-list input.booking-choice-input[type="radio"]:checked',
+                );
+                if (!selected || !salonIdFromUrl) return;
+                window.location.href = `/Salon/Services?salonId=${encodeURIComponent(salonIdFromUrl)}&artistId=${encodeURIComponent(selected.id)}`;
+            });
+        }
     }
 }
 
 async function loadServicesForArtists() {
     const list = document.getElementById("artist-services-list");
     if (!list) return;
-    const services = await getServicesByArtist(localStorage.getItem("token"));
+    const token = localStorage.getItem("token");
+    let services;
+    try {
+        services = await getServicesByArtist(token);
+    } catch (e) {
+        console.error(e);
+        list.innerHTML =
+            '<p class="text-danger mb-0" role="alert">Nem sikerült betölteni a szolgáltatásokat.</p>';
+        return;
+    }
     list.innerHTML = "";
-    if (!Array.isArray(services)) return;
-    services.forEach((x) => {
-        const desc = x.description
-            ? `<span class="artist-service-desc">${x.description}</span>`
+    if (!Array.isArray(services) || services.length === 0) {
+        list.innerHTML =
+            '<p class="subtitle mb-0">Még nincs szolgáltatás felvezetve.</p>';
+        return;
+    }
+    services.forEach((x, i) => {
+        const svcId = Number(x.id ?? x.Id ?? 0);
+        const isImported = Boolean(x.isImported ?? x.IsImported);
+        const offeringId = Number(x.offeringId ?? x.OfferingId ?? 0);
+        const nameRaw = String(x.name ?? x.Name ?? "").trim();
+        const name = escapeHtml(nameRaw);
+        const descRaw = x.description ?? x.Description ?? "";
+        const descTrim = String(descRaw ?? "").trim();
+        const descBlock = descTrim
+            ? `<div class="artist-service-desc-wrap"><span class="artist-service-desc">${escapeHtml(descTrim)}</span></div>`
+            : '<p class="artist-service-no-desc text-muted small mb-0">Nincs leírás.</p>';
+        const mins = Math.max(0, Math.round(Number(x.durationInMinute ?? x.DurationInMinute ?? 0)));
+        const price = Number(x.price ?? x.Price ?? 0);
+        const priceLine = formatPriceFt(price);
+        const nameInputVal = escapeHtml(nameRaw);
+        const descInputVal = escapeHtml(descTrim);
+        const importBadge = isImported
+            ? '<span class="badge bg-secondary ms-2">Tulaj katalógus</span>'
             : "";
+        const importActions =
+            isImported && offeringId > 0
+                ? `<div class="mt-2"><button type="button" class="btn btn-outline-danger btn-sm artist-remove-import-btn" data-offering-id="${offeringId}">Leválasztás a listámról</button></div>`
+                : "";
+        const editTabNav = isImported
+            ? ""
+            : `
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="artist-svc-tab-edit-${svcId}" data-bs-toggle="tab" data-bs-target="#artist-svc-pane-edit-${svcId}" type="button" role="tab" aria-controls="artist-svc-pane-edit-${svcId}" aria-selected="false">Szerkesztés</button>
+                    </li>`;
+        const editTabPane = isImported
+            ? ""
+            : `
+                    <div class="tab-pane fade" id="artist-svc-pane-edit-${svcId}" role="tabpanel" aria-labelledby="artist-svc-tab-edit-${svcId}" tabindex="0">
+                        <form class="artist-service-edit-form" data-service-id="${svcId}">
+                            <div class="mb-3">
+                                <label class="form-label" for="artist-svc-name-${svcId}">Megnevezés</label>
+                                <input class="form-control" id="artist-svc-name-${svcId}" name="name" type="text" required maxlength="200" value="${nameInputVal}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="artist-svc-desc-${svcId}">Leírás</label>
+                                <textarea class="form-control" id="artist-svc-desc-${svcId}" name="description" rows="3" maxlength="2000">${descInputVal}</textarea>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="artist-svc-dur-${svcId}">Időtartam (perc)</label>
+                                    <input class="form-control" id="artist-svc-dur-${svcId}" name="durationInMinute" type="number" min="1" max="1440" step="1" required value="${mins}">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="artist-svc-price-${svcId}">Ár (Ft)</label>
+                                    <input class="form-control" id="artist-svc-price-${svcId}" name="price" type="number" min="0" max="10000000" step="1" required value="${Math.round(price)}">
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <button type="button" class="btn btn-primary btn-sm adservice-accent-btn artist-service-save-btn">Változtatások elmentése</button>
+                                <span class="artist-service-edit-msg small" role="status" aria-live="polite"></span>
+                            </div>
+                        </form>
+                    </div>`;
         list.innerHTML += `
-            <li>
-                <span><strong>${x.name}</strong>${desc}</span>
-                <strong>${x.durationInMinute} min ${x.price} Ft</strong>
-            </li>
+            <div class="service-card artist-service-card async-card-enter" style="--async-card-i:${i}" role="listitem" data-service-id="${svcId}">
+                <ul class="nav nav-tabs artist-service-nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="artist-svc-tab-view-${svcId}" data-bs-toggle="tab" data-bs-target="#artist-svc-pane-view-${svcId}" type="button" role="tab" aria-controls="artist-svc-pane-view-${svcId}" aria-selected="true">Részletek</button>
+                    </li>${editTabNav}
+                </ul>
+                <div class="tab-content artist-service-tab-content">
+                    <div class="tab-pane fade show active" id="artist-svc-pane-view-${svcId}" role="tabpanel" aria-labelledby="artist-svc-tab-view-${svcId}" tabindex="0">
+                        <div class="name">${name}${importBadge}</div>
+                        ${descBlock}
+                        <div class="artist-service-meta" role="group" aria-label="Időtartam és ár">
+                            <span class="artist-service-meta-item">
+                                <span class="artist-service-meta-label">Időtartam</span>
+                                <strong class="artist-service-meta-value">${mins} perc</strong>
+                            </span>
+                            <span class="artist-service-meta-item">
+                                <span class="artist-service-meta-label">Ár</span>
+                                <strong class="artist-service-meta-value">${priceLine}</strong>
+                            </span>
+                        </div>
+                        ${importActions}
+                    </div>${editTabPane}
+                </div>
+            </div>
         `;
+    });
+    list.querySelectorAll(".artist-remove-import-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const oid = btn.getAttribute("data-offering-id");
+            if (!oid || !token) return;
+            if (!confirm("Leválasztod ezt a szolgáltatást a saját listádról?")) return;
+            btn.disabled = true;
+            try {
+                await unlinkArtistOffering(token, oid);
+                await loadServicesForArtists();
+            } catch (err) {
+                console.error(err);
+                if (!err?.salonicApiShown) {
+                    salonicShowModal(err?.message || "Nem sikerült leválasztani.", { title: "Hiba", variant: "danger" });
+                }
+                btn.disabled = false;
+            }
+        });
     });
 }
 
@@ -1312,8 +1888,9 @@ async function loadOwnerArtistSchedulePage() {
         wireOwnerScheduleWeekNav(salonId, artistId, artistName, monday);
     } catch (err) {
         console.error(err);
+        if (err?.salonicApiShown) return;
         if (mount) {
-            const msg = err && err.message ? err.message : 'Could not load schedule.';
+            const msg = err?.message || "Could not load schedule.";
             mount.innerHTML = `<p class="subtitle" role="alert">${msg}</p>`;
         }
     }

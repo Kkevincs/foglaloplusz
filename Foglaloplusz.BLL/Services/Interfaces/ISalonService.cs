@@ -13,6 +13,7 @@ namespace Foglaloplusz.BLL.Services.Interfaces
 
         Task<List<SalonWithIdDTO>> ListForOwnerAsync(int ownerId);
         Task<SalonWithIdDTO> CreateForOwnerAsync(int ownerId, SalonWithoutIdDTO salon);
+        Task<SalonWithIdDTO> UpdateForOwnerAsync(int ownerId, int salonId, SalonWithoutIdDTO dto, string? newLogoRelativePath, CancellationToken cancellationToken = default);
         Task DeleteForOwnerAsync(int ownerId, int salonId, CancellationToken cancellationToken = default);
         Task<SalonWithIdDTO?> GetPublicProfileAsync(int salonId);
     }

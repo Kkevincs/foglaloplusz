@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="salon-home-page">
+    <script src="/themeBoot.js"></script>
     <nav class="navbar navbar-expand-lg navbar-light border-bottom salonic-navbar">
         <div class="container-fluid">
             <a class="navbar-brand logo p-0" id="logoLink" href="#"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" height="40" width="auto" /></a>
@@ -43,9 +44,9 @@
                     Itt: <strong id="appointment-created-salon-name"></strong>
                 </p>
                 <p class="salon-home-lead subtitle mb-4">Az időpontod elmentettük. Találkozunk a szalonban.</p>
-                <div class="d-flex flex-wrap justify-content-center gap-2">
-                    <a id="appointment-created-home" class="btn btn-primary px-4" href="#">Szalon kezdőlap</a>
-                    <a id="appointment-created-guest" class="btn btn-outline-secondary px-4" href="#">Fiókom</a>
+                <div class="d-flex flex-wrap justify-content-center gap-2 appointment-created-actions">
+                    <a id="appointment-created-home" class="btn btn-primary adservice-accent-btn px-4 rounded-3" href="#">Szalon kezdőlap</a>
+                    <a id="appointment-created-guest" class="btn btn-primary adservice-accent-btn px-4 rounded-3" href="#">Fiókom</a>
                 </div>
             </div>
         </section>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoglalóPlusz — Szalon szerkesztése</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="theme-pink">
+    <nav class="navbar navbar-expand-lg navbar-light border-bottom salonic-navbar">
+        <div class="container-fluid" style="max-width:1100px;margin:0 auto;">
+            <a class="navbar-brand logo p-0" href="/ownerhomepage"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" height="40" width="auto" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#editNav" aria-controls="editNav" aria-expanded="false" aria-label="Menü">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="editNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav-links align-items-lg-center gap-lg-1">
+                    <li class="nav-item"><a class="nav-link" href="/ownerhomepage">Szalonjaim</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/maker">Új szalon felvétele</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/owneruserpage">Fiók</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-salonic-logout-href="/ownerlogin">Kijelentkezés</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container py-4 form-page salonic-page-enter">
+        <p class="mb-2"><a href="/ownerhomepage" class="link-secondary text-decoration-none">← Vissza a szalonjaimhoz</a></p>
+        <h1 class="h3">Szalon adatainak szerkesztése</h1>
+        <p class="subtitle">Módosíthatod a nevet, a megjelenést (téma, logó), a leírást és az elérhetőséget.</p>
+        <div id="salon-edit-alert" class="alert alert-danger d-none" role="alert"></div>
+        <form id="salon-edit-form" class="auth-form setup-form" action="#" method="post" enctype="multipart/form-data">
+            <label for="edit-salon-name" class="field-label form-label">Szalon neve</label>
+            <input id="edit-salon-name" class="form-control" name="salon_name" type="text" placeholder="…" required>
+            <div id="edit-current-logo-wrap" class="mb-2 d-none">
+                <span class="field-label form-label d-block">Jelenlegi logó</span>
+                <img id="edit-current-logo-img" class="img-thumbnail" alt="" style="max-height:96px;">
+            </div>
+            <label for="edit-salon-logo" class="field-label form-label">Új logó feltöltése (opcionális)</label>
+            <input id="edit-salon-logo" class="form-control" name="salon_logo" type="file" accept="image/*">
+            <label for="edit-salon-description" class="field-label form-label">Leírás — a vendég kezdőlapon</label>
+            <textarea id="edit-salon-description" class="form-control" name="salon_description" rows="5" placeholder="…" required></textarea>
+            <label for="edit-salon-theme" class="field-label form-label">Színtéma</label>
+            <select id="edit-salon-theme" class="form-select" name="salon_theme" required>
+                <option value="theme-pink">Rózsaszín</option>
+                <option value="theme-sky-blue">Égkék</option>
+                <option value="theme-ruby">Rubin</option>
+                <option value="theme-forest-green">Erdőzöld</option>
+                <option value="theme-amethyst">Ametiszt</option>
+            </select>
+            <label for="edit-salon-location" class="field-label form-label">Helyszín (cím vagy város)</label>
+            <input id="edit-salon-location" class="form-control" name="salon_location" type="text" placeholder="pl. Budapest, Váci utca 12." autocomplete="street-address">
+
+            <label for="edit-support-email" class="field-label form-label">Ügyfélszolgálati e-mail</label>
+            <input id="edit-support-email" class="form-control" name="support_email" type="email" placeholder="support@gmail.com" required>
+            <button type="submit" id="salon-edit-submit" class="btn btn-primary">Mentés</button>
+        </form>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="/api.js"></script>
+    <script src="/common.js"></script>
+    <script src="/script.js"></script>
+    <script>
+        (function () {
+            var themeSelect = document.getElementById("edit-salon-theme");
+            if (!themeSelect) return;
+            function syncEditTheme() {
+                var t = String(themeSelect.value || "").trim();
+                document.body.className = ["portal-body", "owner-app-page", t].filter(Boolean).join(" ");
+            }
+            themeSelect.addEventListener("change", syncEditTheme);
+            syncEditTheme();
+        })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <script src="/buttonFeedback.js"></script>
+    <script src="/salonEditPage.js"></script>
+</body>
+</html>

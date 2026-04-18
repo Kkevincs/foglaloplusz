@@ -21,13 +21,34 @@ document.addEventListener("DOMContentLoaded", () => {
             location: location || undefined,
             logoFile,
         };
-        const createdSalon = await AddSalon(localStorage.getItem("token"), newSalon);
+        let createdSalon;
+        try {
+            createdSalon = await AddSalon(localStorage.getItem("token"), newSalon);
+        } catch (err) {
+            if (!err?.salonicApiShown) console.error(err);
+            return;
+        }
 
         const salonId = createdSalon?.id ?? createdSalon?.Id;
         if (salonId) {
             const cache = getSalonThemeCache();
             cache[String(salonId)] = theme;
             setSalonThemeCache(cache);
+        }
+        salonicShowModal("A szalon mentése sikeres.", { title: "Mentve", variant: "success" });
+        const modalEl = document.getElementById("salonic-unified-modal");
+        const goOwner = () => {
+            window.location.assign("/ownerhomepage");
+        };
+        if (modalEl) {
+            if (typeof window.bootstrap !== "undefined" && window.bootstrap.Modal) {
+                modalEl.addEventListener("hidden.bs.modal", goOwner, { once: true });
+            } else {
+                modalEl.querySelector(".salonic-u-ok")?.addEventListener("click", goOwner, { once: true });
+                modalEl.querySelector(".salonic-u-close")?.addEventListener("click", goOwner, { once: true });
+            }
+        } else {
+            goOwner();
         }
     });
 });

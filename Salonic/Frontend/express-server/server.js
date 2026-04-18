@@ -2,7 +2,8 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
-const PORT = 67;
+// Ports 1–1023 need root on Linux; use 3000+ for local dev unless you set PORT.
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -146,6 +147,9 @@ app.get("/", (req, res) => {
 app.get("/maker", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "forms.html"));
 });
+app.get("/ownersalonedit", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "ownerSalonEdit.html"));
+});
 
 // salon owner register
 app.get("/ownerregister", (req, res) => {
@@ -187,6 +191,4 @@ app.use((req, res) => {
 });
 
 // ─── Start ────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+app.listen(PORT);

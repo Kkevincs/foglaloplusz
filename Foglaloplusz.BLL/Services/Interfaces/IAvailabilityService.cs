@@ -1,14 +1,8 @@
-﻿using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
 
-namespace Foglaloplusz.BLL.Services.Interfaces
+namespace Foglaloplusz.BLL.Services.Interfaces;
+
+public interface IAvailabilityService
 {
-    public interface IAvailabilityService
-    {
-        Task<List<DayAvailabilityDto>> GetMonthAvailability(MonthAvailabilityRequestDto request);
-    }
+    Task<List<DayAvailabilityDto>> GetMonthAvailability(MonthAvailabilityRequestDto? request);
 }

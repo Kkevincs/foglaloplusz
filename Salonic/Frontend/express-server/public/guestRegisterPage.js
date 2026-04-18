@@ -12,7 +12,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             email: email,
             pwd: password,
         };
-        await Register(user);
+        try {
+            await Register(user);
+        } catch (err) {
+            if (err && err.salonicApiShown) return;
+            throw err;
+        }
         const { ok, token } = await LoginWithStatus({
             email: email,
             role: "guest",
@@ -27,12 +32,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (completed) return;
             } catch (err) {
                 console.error(err);
-                alert(err?.message || "Could not save your appointment. You can book again from the salon.");
+                if (!err?.salonicApiShown) {
+                    salonicShowModal(err?.message || "Could not save your appointment. You can book again from the salon.", {
+                        title: "Foglalás",
+                        variant: "danger",
+                    });
+                }
             }
             const salonQuery = salonId ? `?salonId=${encodeURIComponent(salonId)}` : "";
             window.location.assign(`/Salon/GuestInfo${salonQuery}`);
-        } else {
-            alert("Account may have been created, but automatic login failed. Try signing in.");
         }
     });
 });

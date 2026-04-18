@@ -1,5 +1,7 @@
+using System.Linq;
 using AutoMapper;
 using Foglaloplusz.BLL.DTOs.ArtistDTOs;
+using Foglaloplusz.BLL.Exceptions;
 using Foglaloplusz.BLL.Services.Interfaces;
 using Foglaloplusz.DAL.Models;
 using Foglaloplusz.DAL.Repositories.Interfaces;
@@ -11,12 +13,30 @@ namespace Foglaloplusz.BLL.Services
         private readonly IMapper _mapper;
         private readonly IArtistRepository _artistRepository;
         private readonly ISalonRepository _salonRepository;
+        private readonly IOfferingRepository _offeringRepository;
+        private readonly IAuthenticationService _authenticationService;
 
-        public ArtistService(IArtistRepository repo, ISalonRepository salonRepository, IMapper mapper)
+        public ArtistService(
+            IArtistRepository repo,
+            ISalonRepository salonRepository,
+            IOfferingRepository offeringRepository,
+            IAuthenticationService authenticationService,
+            IMapper mapper)
         {
             _mapper = mapper;
             _artistRepository = repo;
             _salonRepository = salonRepository;
+            _offeringRepository = offeringRepository;
+            _authenticationService = authenticationService;
+        }
+
+        public async Task<ArtistWithoutIdDTO> RegisterAsync(ArtistWithoutIdDTO? artist)
+        {
+            if (artist == null)
+                throw new AppValidationException("A kérés törzse kötelező.");
+            if (await _authenticationService.EmailExistsAsync(artist.Email))
+                throw new AppValidationException("Ez az e-mail cím már regisztrálva van.");
+            return await CreateAsync(artist);
         }
 
         public async Task<ArtistWithoutIdDTO> CreateAsync(ArtistWithoutIdDTO artist)
@@ -32,20 +52,20 @@ namespace Foglaloplusz.BLL.Services
             return _mapper.Map<List<ArtistWithIdDTO>>(artists);
         }
 
-        public async Task<List<ArtistWithIdDTO>?> ListBySalonForOwnerAsync(int ownerId, int salonId)
+        public async Task<List<ArtistWithIdDTO>> ListBySalonForOwnerAsync(int ownerId, int salonId)
         {
             if (ownerId <= 0 || salonId <= 0)
-                return null;
+                throw new AppValidationException("Érvénytelen tulajdonos vagy szalon azonosító.");
 
             var salon = await _salonRepository.GetByOwnerAndIdAsync(ownerId, salonId);
             if (salon == null)
-                return null;
+                throw new AppForbiddenException("Ehhez a szalonhoz nincs jogosultságod, vagy nem létezik.");
 
             var artists = await _artistRepository.ListBySalonIdAsync(salonId);
             return _mapper.Map<List<ArtistWithIdDTO>>(artists);
         }
 
-        public async Task<List<ArtistWithIdDTO>> ListBySalonForPublicAsync(int salonId)
+        public async Task<List<ArtistWithIdDTO>> ListBySalonForPublicAsync(int salonId, int[]? mustOfferServiceIds = null)
         {
             if (salonId <= 0)
                 return new List<ArtistWithIdDTO>();
@@ -54,6 +74,13 @@ namespace Foglaloplusz.BLL.Services
                 return new List<ArtistWithIdDTO>();
 
             var artists = await _artistRepository.ListBySalonIdAsync(salonId);
+            if (mustOfferServiceIds != null && mustOfferServiceIds.Length > 0)
+            {
+                var eligible = await _offeringRepository.ListArtistIdsOfferingAllServicesInSalonAsync(salonId, mustOfferServiceIds);
+                var ok = eligible.ToHashSet();
+                artists = artists.Where(a => ok.Contains(a.Id)).ToList();
+            }
+
             return _mapper.Map<List<ArtistWithIdDTO>>(artists);
         }
 
@@ -61,6 +88,12 @@ namespace Foglaloplusz.BLL.Services
         {
             var artist = await _artistRepository.GetByIdAsync(id);
             return artist == null ? null : _mapper.Map<ArtistWithIdDTO>(artist);
+        }
+
+        public async Task<ArtistWithIdDTO> GetMeOrThrowAsync(int artistId)
+        {
+            var artist = await GetByIdAsync(artistId);
+            return artist ?? throw new AppNotFoundException("A szakember profilja nem található.");
         }
     }
 }

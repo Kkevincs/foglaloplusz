@@ -1,4 +1,5 @@
 using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
+using Foglaloplusz.BLL.Exceptions;
 using Foglaloplusz.BLL.Services.Interfaces;
 
 namespace Foglaloplusz.BLL.Services
@@ -12,13 +13,15 @@ namespace Foglaloplusz.BLL.Services
             _appointmentService = appointmentService;
         }
 
-        public async Task<List<DayAvailabilityDto>> GetMonthAvailability(MonthAvailabilityRequestDto request)
+        public async Task<List<DayAvailabilityDto>> GetMonthAvailability(MonthAvailabilityRequestDto? request)
         {
+            if (request == null)
+                throw new AppValidationException("A kérés törzse kötelező.");
             if (request.Month < 1 || request.Month > 12)
-                throw new ArgumentException("Invalid month");
+                throw new AppValidationException("A hónap 1 és 12 között lehet.");
 
             if (request.ServiceIds == null || request.ServiceIds.Length == 0)
-                throw new ArgumentException("At least one service is required");
+                throw new AppValidationException("Legalább egy szolgáltatást meg kell adni.");
 
             var daysInMonth = DateTime.DaysInMonth(request.Year, request.Month);
             var result = new List<DayAvailabilityDto>();

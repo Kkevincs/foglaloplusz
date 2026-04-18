@@ -9,7 +9,7 @@ using Foglaloplusz.DAL.Data;
 using Foglaloplusz.DAL.Repositories;
 using Foglaloplusz.DAL.Repositories.Interfaces;
 using Foglaloplusz.FileStorage;
-using System.Security.Claims;
+using Foglaloplusz.presentation.Filters;
 
 namespace Foglaloplusz
 {
@@ -19,6 +19,7 @@ namespace Foglaloplusz
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+            builder.Services.AddScoped<IOfferingRepository, OfferingRepository>();
             builder.Services.AddScoped<IServiceService, ServiceService>();
 
             builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
@@ -46,8 +47,6 @@ namespace Foglaloplusz
             builder.Services.AddScoped<IWorkingHoursService, WorkingHoursService>();
             builder.Services.AddScoped<IArtistScheduleService, ArtistScheduleService>();
             builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
-            //IServiceRepo
-            //mapper
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile(new AppointmentProfile());
@@ -60,12 +59,14 @@ namespace Foglaloplusz
             });
             var connectionString = builder.Configuration.GetConnectionString("AppConnectionString");
             builder.Services.AddDbContext<AppDbContext>(options =>
-               options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-               mysqloptions => mysqloptions.MigrationsAssembly("Foglaloplusz.DAL")
-            ));
+                options.UseNpgsql(connectionString, npgsql =>
+                    npgsql.MigrationsAssembly("Foglaloplusz.DAL")));
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<BusinessExceptionFilter>();
+            });
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -79,10 +80,20 @@ namespace Foglaloplusz
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "FoglalóPlusz API",
+                    Version = "v1",
+                    Description =
+                        "Szalonok, szolgáltatások, időpontok és felhasználók kezelése. " +
+                        "Védett végpontokhoz adj meg érvényes JWT tokent (Authorization: Bearer …). " +
+                        "A hibák JSON üzenettel vagy státuszkóddal térnek vissza."
+                });
+                c.EnableAnnotations();
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
-                    Description = "Enter your JWT token",
+                    Description = "JWT token (Bearer séma).",
                     Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer"

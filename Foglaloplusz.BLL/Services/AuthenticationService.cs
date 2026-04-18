@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Foglaloplusz.BLL.DTOs.UserDTOs;
+using Foglaloplusz.BLL.Exceptions;
 using Foglaloplusz.BLL.Services.Interfaces;
 using Foglaloplusz.DAL.Repositories.Interfaces;
 
@@ -19,15 +20,10 @@ namespace Foglaloplusz.BLL.Services
             _configuration = configuration;
         }
 
-        public async Task<string?> SignInAsync(UserDTO user)
+        public async Task<string?> SignInAsync(UserDTO? user)
         {
-            if (user == null ||
-                string.IsNullOrWhiteSpace(user.Email) ||
-                user.Pwd == null ||
-                string.IsNullOrWhiteSpace(user.Role))
-                return null;
-
-            var role = user.Role.Trim().ToLowerInvariant();
+            EnsureValidLoginRequest(user);
+            var role = user!.Role.Trim().ToLowerInvariant();
             int id;
             string email;
 
@@ -60,6 +56,19 @@ namespace Foglaloplusz.BLL.Services
 
         public Task<bool> EmailExistsAsync(string email) =>
             _auth.EmailExists(email ?? string.Empty);
+
+        public void EnsureValidLoginRequest(UserDTO? authInfo)
+        {
+            if (authInfo == null)
+                throw new AppValidationException("A kérés törzse kötelező.");
+            if (string.IsNullOrWhiteSpace(authInfo.Email) ||
+                authInfo.Pwd == null ||
+                string.IsNullOrWhiteSpace(authInfo.Role))
+                throw new AppValidationException("Az e-mail, a jelszó és a szerepkör kötelező.");
+            var role = authInfo.Role.Trim().ToLowerInvariant();
+            if (role is not ("guest" or "artist" or "owner"))
+                throw new AppValidationException("A szerepkör csak guest, artist vagy owner lehet.");
+        }
 
         private string CreateJwt(int id, string email, string role)
         {

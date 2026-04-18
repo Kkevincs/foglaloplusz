@@ -1,47 +1,34 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Foglaloplusz.BLL.DTOs.UserDTOs;
 using Foglaloplusz.BLL.Services.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 
-namespace Foglaloplusz.presentation.Controllers
+namespace Foglaloplusz.presentation.Controllers;
+
+[Route("api/authentication")]
+[AllowAnonymous]
+[ApiController]
+public class AuthController : ControllerBase
 {
-    [Route("api/authentication")]
-    [AllowAnonymous]
-    [ApiController]
-    public class AuthController : ControllerBase
+    private readonly IAuthenticationService _auth;
+
+    public AuthController(IAuthenticationService auth)
     {
-        private readonly IAuthenticationService _auth;
+        _auth = auth;
+    }
 
-        public AuthController(IAuthenticationService auth)
-        {
-            _auth = auth;
-        }
-
-        [HttpPost("authenticate")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<string>> Authenticate([FromBody] UserDTO? authInfo)
-        {
-            if (authInfo == null)
-                return BadRequest("Request body is required.");
-
-            if (string.IsNullOrWhiteSpace(authInfo.Email) ||
-                authInfo.Pwd == null ||
-                string.IsNullOrWhiteSpace(authInfo.Role))
-                return BadRequest("Email, password, and role are required.");
-
-            var role = authInfo.Role.Trim().ToLowerInvariant();
-            if (role is not ("guest" or "artist" or "owner"))
-                return BadRequest("Role must be guest, artist, or owner.");
-
-            var token = await _auth.SignInAsync(authInfo);
-            if (token == null)
-                return Unauthorized();
-
-            return Ok(token);
-        }
+    /// <summary>Bejelentkezés JWT tokenért (érvénytelen adatoknál 400, hibás jelszónál 401).</summary>
+    [HttpPost("authenticate")]
+    [SwaggerOperation(Summary = "Bejelentkezés", Description = "Visszaad egy JWT tokent, ha az e-mail, jelszó és szerepkör helyes.")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<string>> Authenticate([FromBody] UserDTO? authInfo)
+    {
+        var token = await _auth.SignInAsync(authInfo);
+        if (token == null)
+            return Unauthorized();
+        return Ok(token);
     }
 }

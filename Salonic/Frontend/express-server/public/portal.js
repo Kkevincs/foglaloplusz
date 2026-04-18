@@ -1,5 +1,5 @@
 (function () {
-    const API_ORIGIN = "https://localhost:7156";
+    const API_ORIGIN = (typeof window !== "undefined" && window.SALONIC_API_BASE) || "https://localhost:7165";
 
     function truncate(str, len) {
         const t = (str || "").trim().replace(/\s+/g, " ");
@@ -40,7 +40,7 @@
             if (empty) empty.hidden = true;
             grid.innerHTML = "";
 
-            salons.forEach((s) => {
+            salons.forEach((s, i) => {
                 const id = Number(s.id ?? s.Id);
                 if (!Number.isFinite(id) || id < 1) return;
 
@@ -51,7 +51,9 @@
 
                 const card = document.createElement("article");
                 const th = themeClass(theme);
-                card.className = "portal-salon-card" + (th ? " " + th : "");
+                card.className =
+                    "portal-salon-card async-card-enter" + (th ? " " + th : "");
+                card.style.setProperty("--async-card-i", String(i));
                 card.setAttribute("data-salon-id", String(id));
 
                 const media = document.createElement("div");
@@ -113,6 +115,7 @@
         } catch (e) {
             console.error(e);
             if (loading) loading.hidden = true;
+            if (e && e.salonicApiShown) return;
             if (errEl) {
                 errEl.hidden = false;
                 errEl.textContent =

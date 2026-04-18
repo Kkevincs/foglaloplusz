@@ -6,5 +6,9 @@ namespace Foglaloplusz.BLL.Services.Interfaces
     {
         Task<GuestWithIdDTO?> GetByIdAsync(int id);
         Task<GuestWithoutIdDTO> CreateAsync(GuestWithoutIdDTO guest);
+        /// <summary>Regisztráció: egyedi e-mail ellenőrzés a BLL-ben.</summary>
+        Task<GuestWithoutIdDTO> RegisterAsync(GuestWithoutIdDTO? guest);
+        /// <summary>Vendég „én” profil: hiány vagy szerepkör szerinti hiba.</summary>
+        Task<GuestWithIdDTO> GetMeOrThrowAsync(int guestId, bool callerIsGuestRole);
     }
 }

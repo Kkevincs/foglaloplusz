@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="services-booking-body">
+    <script src="/themeBoot.js"></script>
     <nav class="navbar navbar-expand-lg navbar-light border-bottom salonic-navbar">
         <div class="container-fluid">
             <a class="navbar-brand logo p-0" id="logoLink" href="/Salon"><img src="/img/Foglaloplusz_Logo.svg" alt="FoglalóPlusz" height="40" width="auto" /></a>
@@ -32,6 +33,7 @@
         <h1 class="h3">Szakember választása</h1>
         <p class="subtitle">Jelöld ki, kinél szeretnél időpontot foglalni.</p>
         <div id="artists-list" class="artists-list" role="list"></div>
+        <div id="artists-page-empty" class="salon-landing-empty mt-3 mb-0 text-start" hidden role="status"></div>
     </main>
 
     <div id="artist-cart-holder" class="services-cart-bar" hidden>
@@ -39,7 +41,7 @@
             <div class="services-cart-bar__summary">
                 <div id="artist-cart-count" class="services-cart-bar__count services-cart-bar__artist-name"></div>
             </div>
-            <button type="button" class="services-cart-bar__cta" id="artistContinueBtn" onclick="SelectArtist()">Tovább</button>
+            <button type="button" class="services-cart-bar__cta btn btn-primary adservice-accent-btn" id="artistContinueBtn" onclick="SelectArtist()">Tovább</button>
         </div>
     </div>
 

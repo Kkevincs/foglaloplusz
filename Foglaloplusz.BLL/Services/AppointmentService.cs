@@ -1,5 +1,6 @@
 using AutoMapper;
 using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
+using Foglaloplusz.BLL.Exceptions;
 using Foglaloplusz.BLL.Services.Interfaces;
 using Foglaloplusz.DAL.Models;
 using Foglaloplusz.DAL.Repositories.Interfaces;
@@ -13,6 +14,7 @@ namespace Foglaloplusz.BLL.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IWorkingHoursRepository _workingHoursRepository;
         private readonly IServiceRepository _serviceRepository;
+        private readonly IOfferingRepository _offeringRepository;
         private readonly ISalonRepository _salonRepository;
         private readonly IMapper _mapper;
 
@@ -20,21 +22,35 @@ namespace Foglaloplusz.BLL.Services
             IAppointmentRepository appointmentRepository,
             IWorkingHoursRepository workingHoursRepository,
             IServiceRepository serviceRepository,
+            IOfferingRepository offeringRepository,
             ISalonRepository salonRepository,
             IMapper mapper)
         {
             _appointmentRepository = appointmentRepository;
             _workingHoursRepository = workingHoursRepository;
             _serviceRepository = serviceRepository;
+            _offeringRepository = offeringRepository;
             _salonRepository = salonRepository;
             _mapper = mapper;
         }
 
-        public async Task<AppointmentsWithoutIdDTO> CreateAsync(AppointmentsWithoutIdDTO dto)
+        public async Task<List<AvaliableSlotDTO>> GetAvailableSlotsFromRequestAsync(GetAvailableSlotsDTO? request)
         {
+            if (request == null)
+                throw new AppValidationException("A kérés törzse kötelező.");
+            return await GetAvailableSlotsAsync(
+                request.ArtistId,
+                request.ServiceIds?.ToArray() ?? Array.Empty<int>(),
+                request.Date);
+        }
+
+        public async Task<AppointmentsWithoutIdDTO> CreateAsync(AppointmentsWithoutIdDTO? dto)
+        {
+            if (dto == null)
+                throw new AppValidationException("A kérés törzse kötelező.");
             var serviceIds = dto.ServiceIds.Where(id => id > 0).ToList();
             if (serviceIds.Count == 0)
-                throw new ArgumentException("Select at least one service.");
+                throw new AppValidationException("Legalább egy szolgáltatást válassz.");
 
             var uniqueIds = serviceIds.Distinct().ToArray();
             var services = await _serviceRepository.GetByIdsAsync(uniqueIds);
@@ -42,19 +58,22 @@ namespace Foglaloplusz.BLL.Services
             {
                 var foundIds = services.Select(s => s.Id).ToHashSet();
                 var missing = uniqueIds.Where(id => !foundIds.Contains(id)).ToList();
-                throw new ArgumentException(
-                    $"Unknown service id(s): {string.Join(", ", missing)}.");
+                throw new AppValidationException(
+                    $"Ismeretlen szolgáltatás-azonosító: {string.Join(", ", missing)}.");
             }
 
             var byId = services.ToDictionary(s => s.Id);
             var orderedServices = serviceIds.Select(id => byId[id]).ToList();
+
+            if (!await _offeringRepository.ArtistOffersAllServicesAsync(dto.ArtistId, uniqueIds))
+                throw new AppValidationException("A szakember nem kínálja a megadott szolgáltatások mindegyikét.");
 
             var serviceDuration = TimeSpan.FromMinutes(orderedServices.Sum(s => s.DurationInMinute));
             var endTime = dto.StartTime + serviceDuration + BlockBufferAfterServices;
 
             var workingHours = await _workingHoursRepository.GetByArtistAndDate(dto.ArtistId, dto.StartTime);
             if (workingHours == null)
-                throw new ArgumentException("No working hours are set for the selected day.");
+                throw new AppValidationException("A kiválasztott napra nincs beállítva munkaidő.");
 
             var workStart = dto.StartTime.Date + workingHours.StartTime;
             var workEnd = dto.StartTime.Date + workingHours.EndTime;
@@ -62,10 +81,10 @@ namespace Foglaloplusz.BLL.Services
             var isOverlapping = await _appointmentRepository.HasOverlapAsync(dto.ArtistId, dto.StartTime, endTime);
 
             if (dto.StartTime < workStart || endTime > workEnd)
-                throw new ArgumentException("Appointment is outside of artist working hours.");
+                throw new AppValidationException("Az időpont a munkaidőn kívül esik.");
 
             if (isOverlapping)
-                throw new ArgumentException("Appointment overlaps with an existing booking.");
+                throw new AppValidationException("Az időpont ütközik egy meglévő foglalással.");
 
             var appointment = new Appointment
             {
@@ -94,12 +113,15 @@ namespace Foglaloplusz.BLL.Services
             {
                 var foundIds = services.Select(s => s.Id).ToHashSet();
                 var missing = uniqueIds.Where(id => !foundIds.Contains(id)).ToList();
-                throw new ArgumentException(
-                    $"Unknown service id(s): {string.Join(", ", missing)}.");
+                throw new AppValidationException(
+                    $"Ismeretlen szolgáltatás-azonosító: {string.Join(", ", missing)}.");
             }
 
             var byId = services.ToDictionary(s => s.Id);
             var orderedServices = orderedIds.Select(id => byId[id]).ToList();
+
+            if (!await _offeringRepository.ArtistOffersAllServicesAsync(artistId, uniqueIds))
+                throw new AppValidationException("A szakember nem kínálja a megadott szolgáltatások mindegyikét.");
 
             var serviceDuration = TimeSpan.FromMinutes(orderedServices.Sum(s => s.DurationInMinute));
             var totalBlockedDuration = serviceDuration + BlockBufferAfterServices;
@@ -144,7 +166,7 @@ namespace Foglaloplusz.BLL.Services
         public async Task<List<AppointmentsWithIdDTO>> ListForArtistAsync(int artistId)
         {
             if (artistId <= 0)
-                throw new ArgumentException("Artist id must be positive.", nameof(artistId));
+                throw new AppValidationException("A szakember azonosítója érvénytelen.");
             var apps = await _appointmentRepository.ListByArtistIdAsync(artistId);
             return _mapper.Map<List<AppointmentsWithIdDTO>>(apps);
         }
@@ -153,7 +175,7 @@ namespace Foglaloplusz.BLL.Services
         {
             var salon = await _salonRepository.GetByOwnerAndIdAsync(ownerId, salonId);
             if (salon == null)
-                throw new InvalidOperationException("Salon was not found.");
+                throw new AppForbiddenException("Ehhez a szalonhoz nincs jogosultságod, vagy nem létezik.");
 
             var appointments = await _appointmentRepository.ListBySalonIdAsync(salonId);
             return _mapper.Map<List<AppointmentsWithIdDTO>>(appointments);

@@ -1,10 +1,6 @@
-﻿using Foglaloplusz.DAL.Models.Interfaces;
-using System;
+using Foglaloplusz.DAL.Models.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foglaloplusz.DAL.Models
 {
@@ -12,16 +8,17 @@ namespace Foglaloplusz.DAL.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Pwd { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Pwd { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
-        public ICollection<Service> Services { get; set; } = new List<Service>();
+        public ICollection<Offering> Offerings { get; set; } = new List<Offering>();
+
         public int SalonId { get; set; }
-        public Salon Salon { get; set; }
+        public Salon Salon { get; set; } = null!;
 
         public string Role { get; set; } = "Artist";
     }

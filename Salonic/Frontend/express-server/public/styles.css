@@ -1,4 +1,3 @@
-/* Alap színek (FoglalóPlusz) — nem írják felül a body.theme-* szalon témák */
 :root {
     --brand-bg-gradient:
         radial-gradient(ellipse 100% 70% at 95% -8%, rgba(236, 72, 153, 0.38), transparent 55%),
@@ -24,20 +23,45 @@
     --brand-shadow: 0 12px 40px rgba(91, 33, 182, 0.14), 0 4px 14px rgba(236, 72, 153, 0.1);
     --brand-shadow-sm: 0 6px 22px rgba(124, 58, 237, 0.14), 0 2px 8px rgba(0, 0, 0, 0.05);
     --brand-input-focus: #8b5cf6;
-    /* Nav / header logos — max bounds (salon uploads can be huge) */
+
     --salonic-nav-logo-max-height: 40px;
     --salonic-nav-logo-max-width: 200px;
+
+    --services-accent: var(--brand-btn-primary-solid, #9333ea);
+    --services-accent-hover: color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 82%, #1e1b4b);
+    --services-row-border: #e8e8ec;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+    height: 100%;
+}
 body {
     font-family: 'DM Sans', sans-serif;
     background: var(--brand-bg-gradient);
     background-attachment: fixed;
     color: var(--brand-text);
     min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
 }
-/* Legacy top nav (non-Bootstrap). Bootstrap shells use .salonic-navbar.navbar */
+
+body > header,
+nav.salonic-navbar {
+    flex-shrink: 0;
+}
+main {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+}
+footer.salon-landing-footer,
+#salon-landing-footer {
+    flex-shrink: 0;
+    width: 100%;
+}
+
 nav:not(.navbar) {
     display: flex;
     align-items: center;
@@ -52,12 +76,25 @@ nav:not(.navbar) {
 .nav-links { display: flex; gap: 1.5rem; list-style: none; }
 .nav-links a { color: var(--brand-link); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
 .nav-links a:hover { color: var(--brand-link-hover); }
-/* :where() keeps specificity at 0 so .portal-page, .user-page, etc. can override width */
-:where(main:not(.container):not(.container-fluid)) {
+
+:where(main:not(.container):not(.container-fluid):not(.salon-landing-page-shell)) {
     max-width: 640px;
     margin: 4rem auto;
     padding: 0 1.5rem;
     text-align: center;
+}
+
+
+main.salon-landing-page-shell {
+    max-width: none;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+    text-align: initial;
+    box-sizing: border-box;
 }
 h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--brand-heading); }
 p { color: var(--brand-text-muted); line-height: 1.6; }
@@ -75,6 +112,101 @@ p { color: var(--brand-text-muted); line-height: 1.6; }
 }
 .services-list .service-card .name, .artists-list .artist-card .name { font-weight: 700; color: var(--brand-heading); }
 .services-list .service-card .desc, .artists-list .artist-card .role { font-size: 0.9rem; color: var(--brand-text-muted); margin-top: 0.25rem; }
+
+
+.services-list.artist-services-list {
+    gap: 1.35rem;
+}
+.artist-service-card .name {
+    font-size: 1.05rem;
+    line-height: 1.3;
+}
+.artist-service-desc-wrap {
+    margin-top: 0.4rem;
+}
+.artist-service-desc {
+    font-size: 0.9rem;
+    color: var(--brand-text-muted);
+    line-height: 1.45;
+}
+.artist-service-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem 1.75rem;
+    margin-top: 0.9rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--brand-border-soft);
+}
+.artist-service-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+.artist-service-meta-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--brand-text-muted);
+}
+.artist-service-meta-value {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--brand-heading);
+}
+body[class^="theme-"] .artist-service-meta,
+body[class*=" theme-"] .artist-service-meta {
+    border-top-color: color-mix(in srgb, var(--primary) 24%, var(--border));
+}
+body[class^="theme-"] .artist-service-meta-label,
+body[class*=" theme-"] .artist-service-meta-label {
+    color: var(--muted);
+}
+body[class^="theme-"] .artist-service-meta-value,
+body[class*=" theme-"] .artist-service-meta-value {
+    color: var(--text);
+}
+
+.artist-service-nav-tabs {
+    margin: -0.15rem 0 0.75rem;
+    border-bottom: 1px solid var(--brand-border-soft);
+    gap: 0.25rem;
+}
+.artist-service-nav-tabs .nav-link {
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    color: var(--brand-text-muted);
+    border: none;
+    border-radius: var(--brand-radius-sm) var(--brand-radius-sm) 0 0;
+    margin-bottom: -1px;
+}
+.artist-service-nav-tabs .nav-link:hover {
+    color: var(--brand-heading);
+}
+.artist-service-nav-tabs .nav-link.active {
+    color: var(--brand-heading);
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border-soft);
+    border-bottom-color: transparent;
+}
+.artist-service-tab-content {
+    padding-top: 0.15rem;
+}
+.artist-service-tab-content .tab-pane:focus-visible {
+    outline: 2px solid var(--brand-input-focus, #a855f7);
+    outline-offset: 2px;
+}
+body[class*="theme-"] .artist-service-nav-tabs {
+    border-bottom-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+}
+body[class*="theme-"] .artist-service-nav-tabs .nav-link.active {
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+    border-bottom-color: transparent;
+}
 
 .auth-page { max-width: 320px; }
 .auth-form { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
@@ -117,19 +249,12 @@ p { color: var(--brand-text-muted); line-height: 1.6; }
     transform: translateY(-1px);
     filter: brightness(1.03);
 }
-.role-toggle { display: flex; gap: 0; border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); overflow: hidden; }
-.role-toggle label { flex: 1; padding: 0.5rem 0.75rem; text-align: center; font-size: 0.9rem; cursor: pointer; background: var(--brand-surface); color: var(--brand-text-muted); }
-.role-toggle label:has(input:checked) {
-    background: var(--brand-btn-primary);
-    color: #fff;
-}
-.role-toggle input { position: absolute; opacity: 0; }
 .auth-switch { font-size: 0.9rem; color: var(--brand-text-muted); }
 .auth-switch a { color: var(--brand-link); font-weight: 600; }
 .auth-switch a:hover { color: var(--brand-link-hover); }
 .auth-switch-spaced { margin-top: 1.25rem; }
 
-/* Owner login / register (matches portal + maker flow) */
+
 .owner-auth-page {
     min-height: 100vh;
     display: flex;
@@ -241,14 +366,14 @@ a.auth-cta:hover {
     filter: brightness(1.03);
 }
 
-/* Portál — kezdő oldal (élénk, színes; háttér = :root --brand-bg-gradient) */
+
 body.portal-body {
     margin: 0;
     min-height: 100vh;
     background: var(--brand-bg-gradient);
     background-attachment: fixed;
 }
-/* Tulajdonos alkalmazás: portál háttér + közös main tartó (szalonkészítő, irányítópult, …) */
+
 body.portal-body.owner-app-page {
     margin: 0;
     min-height: 100vh;
@@ -262,14 +387,14 @@ body.portal-body.owner-app-page > main {
     text-align: left;
     box-sizing: border-box;
 }
-body.portal-body.owner-app-page > main.owner-home-page {
-    max-width: 720px;
-}
 body.portal-body.owner-app-page > main.form-page {
     max-width: 720px;
 }
 body.portal-body.owner-app-page > main.auth-page {
     max-width: 420px;
+}
+body.portal-body.owner-app-page > main.auth-page.owner-artist-register-page {
+    max-width: 720px;
 }
 body.portal-body.owner-app-page > main.salon-dashboard-page {
     max-width: 900px;
@@ -278,11 +403,16 @@ body.portal-body.owner-app-page > main.salon-schedule-page {
     max-width: 1100px;
 }
 body.portal-body.owner-app-page > main.owner-home-page {
+    max-width: 720px;
     margin-top: 0;
     margin-bottom: 0;
-    padding: 0;
+    text-align: left;
+
+    padding: 0 clamp(1rem, 5vw, 1.5rem) 4rem;
+    padding-left: max(clamp(1rem, 5vw, 1.5rem), env(safe-area-inset-left, 0px));
+    padding-right: max(clamp(1rem, 5vw, 1.5rem), env(safe-area-inset-right, 0px));
 }
-/* Szalonkészítő: téma preview a mezőkön, de a lap háttér marad a FoglalóPlusz gradiens */
+
 body.portal-body.owner-app-page[class*="theme-"] {
     background: var(--brand-bg-gradient);
     background-attachment: fixed;
@@ -312,24 +442,12 @@ body.portal-body.owner-app-page main h1 {
         background: none;
     }
 }
-/* Csak keret: ne legyen külön „fehér doboz” a nav felett/ mögött */
+
 .portal-header {
     background: transparent;
     border-bottom: none;
     padding: 0;
     box-shadow: none;
-}
-.portal-header-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.portal-header-inner--split {
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
 }
 .portal-nav-links {
     display: flex;
@@ -543,7 +661,7 @@ a.portal-salon-btn-secondary:hover {
     font-size: 0.95rem;
     font-weight: 500;
 }
-/* [hidden] must win if any utility ever adds display:!important on this node */
+
 .portal-salon-loading[hidden],
 #portal-salon-loading[hidden] {
     display: none !important;
@@ -675,7 +793,7 @@ a.portal-btn-ghost:hover {
         var(--brand-shadow-sm),
         0 0 0 1px rgba(167, 139, 250, 0.12) inset;
 }
-/* Vendég / szakember profil — közös hero + meta (ugyanaz a szerkezet) */
+
 .user-profile .guest-user-hero {
     display: flex;
     flex-direction: row;
@@ -727,44 +845,151 @@ a.portal-btn-ghost:hover {
     color: var(--brand-heading);
     border: 1px solid var(--brand-border-soft);
 }
-.user-profile .guest-user-meta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-}
-@media (max-width: 520px) {
-    .user-profile .guest-user-meta-grid {
-        grid-template-columns: 1fr;
-    }
-}
-.user-profile .guest-meta-tile {
-    background: var(--brand-surface-soft, #fafafa);
-    border: 1px solid var(--brand-border-soft);
-    border-radius: var(--brand-radius-sm);
-    padding: 0.75rem 0.85rem;
-}
-.user-profile .guest-meta-tile__label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--brand-text-muted);
-    margin-bottom: 0.2rem;
-}
-.user-profile .guest-meta-tile__value {
-    font-size: 0.95rem;
-    color: var(--brand-text);
-    font-weight: 600;
-}
 main.user-page {
     max-width: 640px;
     margin: 0 auto;
     padding: 2rem 1.25rem 3rem;
 }
 
-/* Szalon kezdőlap — adatok + szolgáltatások + szakemberek listázva */
-main.salon-landing.user-page {
-    max-width: 720px;
+
+main .salon-landing.user-page {
+    max-width: 900px;
 }
+main.salon-landing-page-shell.salon-landing-main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+main.salon-landing-page-shell > .container.salon-landing {
+    flex: 1 0 auto;
+}
+main.salon-landing-page-shell > .salon-landing-footer--fullbleed {
+    margin-top: auto;
+    flex-shrink: 0;
+}
+.salon-landing-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--brand-text-muted);
+    margin: 0 0 0.35rem;
+}
+.salon-landing-band {
+    margin: 1.75rem 0 2rem;
+    padding: 1.35rem 1.25rem;
+    border-radius: var(--brand-radius);
+    border: 1px solid var(--brand-border-soft);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 255, 0.88) 100%);
+    box-shadow: var(--brand-shadow-sm);
+}
+.salon-landing-band__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+}
+@media (min-width: 768px) {
+    .salon-landing-band__grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem 1.25rem;
+    }
+}
+.salon-landing-band__item {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+.salon-landing-band__icon {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.35) 0%, rgba(236, 72, 153, 0.22) 100%);
+    color: var(--brand-heading);
+    font-size: 0.95rem;
+    line-height: 1;
+}
+.salon-landing-band__title {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--brand-heading);
+    margin-bottom: 0.25rem;
+}
+.salon-landing-band__text {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--brand-text-muted);
+    line-height: 1.45;
+}
+.salon-landing-intro {
+    font-size: 0.92rem;
+    color: var(--brand-text-muted);
+    margin: -0.35rem 0 0.85rem;
+    line-height: 1.5;
+}
+.salon-landing-steps-wrap {
+    margin: 2rem 0 1.5rem;
+    padding: 1.35rem 1.25rem;
+    border-radius: var(--brand-radius);
+    border: 1px dashed var(--brand-border);
+    background: rgba(255, 255, 255, 0.55);
+}
+.salon-landing-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+@media (min-width: 768px) {
+    .salon-landing-steps {
+        flex-direction: row;
+        gap: 1rem;
+    }
+    .salon-landing-steps li {
+        flex: 1;
+    }
+}
+.salon-landing-steps li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.85rem 1rem;
+    background: var(--brand-surface);
+    border: 1px solid var(--brand-border-soft);
+    border-radius: 12px;
+    box-shadow: var(--brand-shadow-sm);
+}
+.salon-landing-steps__num {
+    flex-shrink: 0;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    background: var(--brand-btn-primary);
+    color: #fff;
+}
+.salon-landing-steps li strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--brand-heading);
+    margin-bottom: 0.2rem;
+}
+.salon-landing-steps__hint {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--brand-text-muted);
+    line-height: 1.4;
+}
+
 .salon-landing-hero#salon-info h1#salon-name {
     font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
@@ -776,18 +1001,6 @@ main.salon-landing.user-page {
     color: var(--brand-text);
     line-height: 1.55;
     margin: 0 0 0.75rem;
-}
-.salon-landing-contact {
-    margin: 0;
-    font-size: 0.95rem;
-}
-.salon-landing-contact a {
-    color: var(--brand-link);
-    font-weight: 600;
-    text-decoration: none;
-}
-.salon-landing-contact a:hover {
-    text-decoration: underline;
 }
 .salon-landing-section {
     margin-bottom: 2rem;
@@ -891,7 +1104,7 @@ main.salon-landing.user-page {
     color: var(--brand-heading) !important;
 }
 
-.salon-landing-footer {
+.salon-landing-footer:not(.salon-landing-footer--fullbleed) {
     margin-top: 2rem;
     padding-top: 1.25rem;
     border-top: 1px solid var(--brand-border-soft);
@@ -903,9 +1116,6 @@ main.salon-landing.user-page {
     line-height: 1.55;
     text-align: center;
 }
-.salon-landing-footer__item {
-    display: inline;
-}
 .salon-landing-footer__label {
     font-size: 0.72rem;
     font-weight: 700;
@@ -914,19 +1124,294 @@ main.salon-landing.user-page {
     color: var(--brand-text-muted);
     margin-right: 0.35rem;
 }
-.salon-landing-footer__item a {
-    color: var(--brand-link);
-    font-weight: 600;
-    text-decoration: none;
+
+
+.salon-landing-footer--rich:not(.salon-landing-footer--fullbleed) {
+    margin-top: 3rem;
+    padding: 1.75rem 1.35rem 2rem;
+    border-radius: 16px;
+    border: 1px solid var(--brand-border-soft);
+    border-top: 3px solid color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 55%, var(--brand-border));
+    background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.97) 0%,
+        color-mix(in srgb, var(--brand-surface-soft, #faf5ff) 65%, #ffffff) 100%
+    );
+    box-shadow:
+        0 4px 24px rgba(124, 58, 237, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
-.salon-landing-footer__item a:hover {
+
+
+.salon-landing-footer--rich.salon-landing-footer--fullbleed {
+    width: 100%;
+    max-width: none;
+    margin-top: 3rem;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    border-top: 3px solid color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 55%, var(--brand-border));
+    background: linear-gradient(
+        175deg,
+        rgba(255, 255, 255, 0.98) 0%,
+        color-mix(in srgb, var(--brand-surface-soft, #faf5ff) 72%, #ffffff) 100%
+    );
+    box-shadow: 0 -12px 40px rgba(124, 58, 237, 0.1);
+}
+.salon-landing-footer__inner {
+    padding-top: 2rem;
+    padding-bottom: 2.25rem;
+}
+.salon-landing-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    text-align: left;
+}
+@media (min-width: 576px) {
+    .salon-landing-footer__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+}
+.salon-landing-footer__heading {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--brand-text-muted);
+    margin: 0 0 0.75rem;
+}
+.salon-landing-footer__contacts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.salon-landing-footer__contact-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--brand-border-soft);
+}
+.salon-landing-footer__contact-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.salon-landing-footer__contact-row--muted .salon-landing-footer__value {
+    font-size: 0.9rem;
+    color: var(--brand-text-muted);
+    font-style: italic;
+}
+.salon-landing-footer__contact-row .salon-landing-footer__label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--brand-text-muted);
+}
+.salon-landing-footer__contact-row .salon-landing-footer__value {
+    font-size: 0.95rem;
+    color: var(--brand-text);
+    font-weight: 600;
+}
+.salon-landing-footer__link {
+    text-decoration: none;
+    color: var(--brand-link);
+}
+.salon-landing-footer__link:hover {
     text-decoration: underline;
 }
-.salon-landing-footer__sep {
+.salon-landing-footer__nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.salon-landing-footer__nav a {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--brand-link);
+    text-decoration: none;
+}
+.salon-landing-footer__nav a:hover {
+    text-decoration: underline;
+    color: var(--brand-link-hover);
+}
+.salon-landing-footer__bottom {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--brand-border-soft);
+    text-align: center;
+}
+.salon-landing-footer__brand-line {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--brand-text-muted);
+}
+.salon-landing-footer__logo-text {
+    font-weight: 700;
+    color: var(--brand-heading);
+}
+.salon-landing-footer__sep-dot {
+    margin: 0 0.35rem;
     opacity: 0.55;
 }
 
-/* Közelgő időpontok — kártyák (vendég + szakember profil) */
+body[class^="theme-"] .salon-landing-band,
+body[class*=" theme-"] .salon-landing-band {
+    border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+    background: linear-gradient(
+        145deg,
+        var(--surface) 0%,
+        color-mix(in srgb, var(--surface-soft) 55%, var(--surface)) 100%
+    );
+}
+body[class^="theme-"] .salon-landing-band__icon,
+body[class*=" theme-"] .salon-landing-band__icon {
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+    color: var(--text);
+}
+body[class^="theme-"] .salon-landing-steps-wrap,
+body[class*=" theme-"] .salon-landing-steps-wrap {
+    border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+    background: color-mix(in srgb, var(--surface-soft) 35%, transparent);
+}
+body[class^="theme-"] .salon-landing-steps__num,
+body[class*=" theme-"] .salon-landing-steps__num {
+    background: linear-gradient(145deg, var(--primary) 0%, var(--primary-hover) 100%);
+}
+
+
+body[class^="theme-"] .salon-landing-cta,
+body[class*=" theme-"] .salon-landing-cta {
+    background: linear-gradient(145deg, var(--primary) 0%, var(--primary-hover) 100%);
+    border: 1px solid color-mix(in srgb, var(--primary) 55%, rgba(0, 0, 0, 0.12));
+    color: #fff !important;
+    box-shadow:
+        0 4px 20px var(--theme-glow),
+        inset 0 1px 0 color-mix(in srgb, #fff 30%, transparent);
+    transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+body[class^="theme-"] .salon-landing-cta:hover,
+body[class*=" theme-"] .salon-landing-cta:hover {
+    filter: brightness(1.06);
+    box-shadow:
+        0 8px 28px var(--theme-glow),
+        inset 0 1px 0 color-mix(in srgb, #fff 40%, transparent);
+    transform: translateY(-1px);
+    color: #fff !important;
+}
+body[class^="theme-"] .salon-landing-cta--secondary,
+body[class*=" theme-"] .salon-landing-cta--secondary {
+    background: var(--surface);
+    color: var(--text) !important;
+    border: 2px solid color-mix(in srgb, var(--primary) 42%, var(--border));
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+body[class^="theme-"] .salon-landing-cta--secondary:hover,
+body[class*=" theme-"] .salon-landing-cta--secondary:hover {
+    background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+    border-color: var(--primary);
+    color: var(--primary) !important;
+    filter: none;
+    transform: translateY(-1px);
+}
+body[class^="theme-"] .salon-landing-li__book,
+body[class*=" theme-"] .salon-landing-li__book {
+    background: linear-gradient(145deg, var(--primary) 0%, var(--primary-hover) 100%);
+    border: 1px solid color-mix(in srgb, var(--primary) 50%, rgba(0, 0, 0, 0.1));
+    box-shadow: 0 3px 16px var(--theme-glow);
+}
+body[class^="theme-"] .salon-landing-li__book:hover,
+body[class*=" theme-"] .salon-landing-li__book:hover {
+    filter: brightness(1.06);
+    color: #fff !important;
+}
+
+
+body[class^="theme-"] .salon-landing-footer--rich:not(.salon-landing-footer--fullbleed),
+body[class*=" theme-"] .salon-landing-footer--rich:not(.salon-landing-footer--fullbleed) {
+    border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+    border-top: 3px solid var(--primary);
+    background: linear-gradient(
+        168deg,
+        color-mix(in srgb, var(--surface-soft) 70%, var(--surface)) 0%,
+        var(--surface) 55%,
+        color-mix(in srgb, var(--accent-soft) 25%, var(--surface)) 100%
+    );
+    box-shadow:
+        0 10px 36px color-mix(in srgb, var(--primary) 14%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent);
+}
+
+
+body[class^="theme-"] .salon-landing-footer--rich.salon-landing-footer--fullbleed,
+body[class*=" theme-"] .salon-landing-footer--rich.salon-landing-footer--fullbleed {
+    border: none;
+    border-top: 3px solid var(--primary);
+    background: linear-gradient(
+        175deg,
+        color-mix(in srgb, var(--surface-soft) 75%, var(--surface)) 0%,
+        var(--surface) 50%,
+        color-mix(in srgb, var(--accent-soft) 22%, var(--surface)) 100%
+    );
+    box-shadow:
+        0 -10px 44px color-mix(in srgb, var(--primary) 12%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
+}
+body[class^="theme-"] .salon-landing-footer__heading,
+body[class*=" theme-"] .salon-landing-footer__heading {
+    color: var(--muted);
+}
+body[class^="theme-"] .salon-landing-footer__contact-row,
+body[class*=" theme-"] .salon-landing-footer__contact-row {
+    border-bottom-color: color-mix(in srgb, var(--primary) 18%, var(--border));
+}
+body[class^="theme-"] .salon-landing-footer__contact-row .salon-landing-footer__value,
+body[class*=" theme-"] .salon-landing-footer__contact-row .salon-landing-footer__value {
+    color: var(--text);
+}
+body[class^="theme-"] .salon-landing-footer__link,
+body[class*=" theme-"] .salon-landing-footer__link {
+    color: var(--primary);
+    font-weight: 700;
+}
+body[class^="theme-"] .salon-landing-footer__link:hover,
+body[class*=" theme-"] .salon-landing-footer__link:hover {
+    color: var(--primary-hover);
+}
+body[class^="theme-"] .salon-landing-footer__nav a,
+body[class*=" theme-"] .salon-landing-footer__nav a {
+    color: var(--primary);
+}
+body[class^="theme-"] .salon-landing-footer__nav a:hover,
+body[class*=" theme-"] .salon-landing-footer__nav a:hover {
+    color: var(--primary-hover);
+}
+body[class^="theme-"] .salon-landing-footer__bottom,
+body[class*=" theme-"] .salon-landing-footer__bottom {
+    border-top-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+}
+body[class^="theme-"] .salon-landing-footer__brand-line,
+body[class*=" theme-"] .salon-landing-footer__brand-line {
+    color: var(--muted);
+}
+body[class^="theme-"] .salon-landing-footer__logo-text,
+body[class*=" theme-"] .salon-landing-footer__logo-text {
+    color: var(--text);
+}
+
+
 #user-appointments.services-list,
 #artist-appointments.services-list {
     display: flex;
@@ -1035,7 +1520,7 @@ main.salon-landing.user-page {
     padding-top: 0.75rem;
     border-top: 1px solid var(--brand-border-soft);
 }
-/* Natív <button> alapértelmezés felülírása (Bootstrap nélkül is) */
+
 button.guest-appt-btn {
     -webkit-appearance: none;
     appearance: none;
@@ -1142,34 +1627,16 @@ button.guest-appt-btn.guest-appt-btn--cancel:focus-visible {
     }
 }
 
-.user-info .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--brand-border-soft); }
-.user-info .info-row:last-child { border-bottom: none; }
-.user-info .info-label { font-weight: 600; color: var(--brand-heading); }
-.user-info .info-value { color: var(--brand-text-muted); }
 .user-page .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--brand-heading); }
-/* Tulajdonos profil: ugyanaz a keskeny, középre zárt elrendezés, mint a vendég/szakember user oldalon */
+
 body.portal-body.owner-app-page > main.user-page {
     max-width: 640px;
 }
-.owner-profile-placeholder {
-    margin-bottom: 0;
-}
-.profile-empty-hint {
-    margin: 0;
-    font-size: 0.95rem;
-    color: var(--brand-text-muted);
-    line-height: 1.6;
-}
-.profile-empty-hint a {
-    color: var(--brand-link);
-    font-weight: 600;
-    text-decoration: none;
-}
-.profile-empty-hint a:hover {
-    color: var(--brand-link-hover);
-    text-decoration: underline;
-}
 .adservice-page { text-align: left; max-width: 640px; }
+
+.container.container--adservice-wide.adservice-page {
+    max-width: 1100px;
+}
 .adservice-page .subtitle { margin-bottom: 1.5rem; }
 .adservice-form { display: flex; flex-direction: column; gap: 0.75rem; }
 .adservice-form input,
@@ -1283,12 +1750,6 @@ body.portal-body.owner-app-page > main.user-page {
     color: var(--brand-text-muted);
     line-height: 1.2;
 }
-.wh-calendar-date.wh-calendar-date--today,
-.wh-calendar-date.wh-calendar-date--tomorrow,
-.wh-calendar-date.wh-calendar-date--range-start {
-    color: var(--brand-link);
-    font-weight: 600;
-}
 .working-hours-open-label {
     display: inline-flex;
     align-items: center;
@@ -1316,18 +1777,6 @@ body.portal-body.owner-app-page > main.user-page {
     opacity: 0.45;
     cursor: not-allowed;
 }
-/* End time before/at start — same muted look as disabled (field stays editable). */
-input[type="time"].wh-time-invalid {
-    opacity: 0.55;
-    cursor: not-allowed;
-    border-color: var(--brand-border-soft);
-    background: rgba(250, 245, 255, 0.92);
-    color: var(--brand-text-muted);
-}
-input[type="time"].wh-time-invalid:focus {
-    outline: none;
-    border-color: var(--brand-border);
-}
 @media (max-width: 520px) {
     .working-hours-week-head { display: none; }
     .working-hours-day-row {
@@ -1351,20 +1800,168 @@ input[type="time"].wh-time-invalid:focus {
 }
 .adservice-form button:hover { background: var(--brand-btn-primary-hover); }
 
+
+.adservice-page .adservice-accent-btn,
+.artist-hours-page .adservice-accent-btn,
+.services-page .adservice-accent-btn,
+.services-booking-body .services-cart-bar__cta.adservice-accent-btn,
+body.salon-home-page .adservice-accent-btn {
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: rgba(0, 0, 0, 0.12);
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-hover-border-color: rgba(0, 0, 0, 0.18);
+    --bs-btn-active-bg: transparent;
+    --bs-btn-active-border-color: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(
+        145deg,
+        var(--brand-btn-primary-solid, #9333ea) 0%,
+        color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 72%, #1e1b4b) 100%
+    ) !important;
+    background-image: linear-gradient(
+        145deg,
+        var(--brand-btn-primary-solid, #9333ea) 0%,
+        color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 72%, #1e1b4b) 100%
+    ) !important;
+    color: #fff !important;
+    border: 1px solid color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 55%, #000) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+    box-shadow:
+        0 4px 20px rgba(124, 58, 237, 0.45),
+        0 2px 8px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.adservice-page .adservice-accent-btn:hover,
+.artist-hours-page .adservice-accent-btn:hover,
+.services-page .adservice-accent-btn:hover,
+.services-booking-body .services-cart-bar__cta.adservice-accent-btn:hover,
+body.salon-home-page .adservice-accent-btn:hover {
+    filter: brightness(1.06);
+    box-shadow:
+        0 8px 28px rgba(124, 58, 237, 0.5),
+        0 2px 10px rgba(0, 0, 0, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+    color: #fff !important;
+}
+.adservice-page .adservice-accent-btn:active,
+.artist-hours-page .adservice-accent-btn:active,
+.services-page .adservice-accent-btn:active,
+.services-booking-body .services-cart-bar__cta.adservice-accent-btn:active,
+body.salon-home-page .adservice-accent-btn:active {
+    transform: translateY(0);
+    filter: brightness(0.98);
+}
+.adservice-page .adservice-accent-btn:disabled,
+.artist-hours-page .adservice-accent-btn:disabled,
+.services-page .adservice-accent-btn:disabled,
+.services-booking-body .services-cart-bar__cta.adservice-accent-btn:disabled,
+body.salon-home-page .adservice-accent-btn:disabled {
+    opacity: 0.65;
+    transform: none;
+    cursor: not-allowed;
+    filter: grayscale(0.15);
+}
+
+body[class^="theme-"] .adservice-page .adservice-accent-btn,
+body[class^="theme-"] .artist-hours-page .adservice-accent-btn,
+body[class^="theme-"] .services-page .adservice-accent-btn,
+body[class^="theme-"] .services-booking-body .services-cart-bar__cta.adservice-accent-btn,
+body[class^="theme-"].salon-home-page .adservice-accent-btn,
+body[class*=" theme-"] .adservice-page .adservice-accent-btn,
+body[class*=" theme-"] .artist-hours-page .adservice-accent-btn,
+body[class*=" theme-"] .services-page .adservice-accent-btn,
+body[class*=" theme-"] .services-booking-body .services-cart-bar__cta.adservice-accent-btn,
+body[class*=" theme-"].salon-home-page .adservice-accent-btn {
+    background: linear-gradient(145deg, var(--primary) 0%, var(--primary-hover) 100%) !important;
+    background-image: linear-gradient(145deg, var(--primary) 0%, var(--primary-hover) 100%) !important;
+    border-color: color-mix(in srgb, var(--primary) 40%, #000) !important;
+    box-shadow:
+        0 4px 22px var(--theme-glow),
+        0 2px 8px color-mix(in srgb, var(--primary) 25%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 35%, transparent);
+}
+body[class^="theme-"] .adservice-page .adservice-accent-btn:hover,
+body[class^="theme-"] .artist-hours-page .adservice-accent-btn:hover,
+body[class^="theme-"] .services-page .adservice-accent-btn:hover,
+body[class^="theme-"] .services-booking-body .services-cart-bar__cta.adservice-accent-btn:hover,
+body[class^="theme-"].salon-home-page .adservice-accent-btn:hover,
+body[class*=" theme-"] .adservice-page .adservice-accent-btn:hover,
+body[class*=" theme-"] .artist-hours-page .adservice-accent-btn:hover,
+body[class*=" theme-"] .services-page .adservice-accent-btn:hover,
+body[class*=" theme-"] .services-booking-body .services-cart-bar__cta.adservice-accent-btn:hover,
+body[class*=" theme-"].salon-home-page .adservice-accent-btn:hover {
+    box-shadow:
+        0 8px 32px var(--theme-glow),
+        0 2px 10px color-mix(in srgb, var(--primary) 30%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 45%, transparent);
+}
+
+.adservice-page .adservice-outline-btn {
+    border: 2px solid var(--brand-btn-primary-solid, #9333ea) !important;
+    color: var(--brand-btn-primary-solid, #7c3aed) !important;
+    background: var(--brand-surface, #fff) !important;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.15);
+}
+.adservice-page .adservice-outline-btn:hover {
+    background: color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 12%, #fff) !important;
+    color: color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 90%, #000) !important;
+}
+body[class^="theme-"] .adservice-page .adservice-outline-btn,
+body[class*=" theme-"] .adservice-page .adservice-outline-btn {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    background: var(--surface) !important;
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+body[class^="theme-"] .adservice-page .adservice-outline-btn:hover,
+body[class*=" theme-"] .adservice-page .adservice-outline-btn:hover {
+    background: color-mix(in srgb, var(--primary) 14%, var(--surface)) !important;
+    color: var(--primary-hover) !important;
+}
+
+
+.adservice-page .owner-catalog-picker-row {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--brand-radius-sm, 0.5rem);
+    border: 2px solid color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 48%, #d8b4fe);
+    background: color-mix(in srgb, var(--brand-surface, #fff) 92%, var(--brand-btn-primary-solid, #9333ea));
+    box-shadow: 0 2px 14px rgba(124, 58, 237, 0.1);
+}
+.adservice-page .owner-catalog-picker-row > span {
+    flex: 1 1 12rem;
+    min-width: 0;
+    color: var(--brand-text, #1f2937);
+}
+body[class^="theme-"] .adservice-page .owner-catalog-picker-row,
+body[class*=" theme-"] .adservice-page .owner-catalog-picker-row {
+    border-color: color-mix(in srgb, var(--primary) 58%, var(--border));
+    background: color-mix(in srgb, var(--surface) 86%, var(--surface-soft));
+    box-shadow:
+        0 2px 16px color-mix(in srgb, var(--primary) 14%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
+}
+body[class^="theme-"] .adservice-page .owner-catalog-picker-row > span,
+body[class*=" theme-"] .adservice-page .owner-catalog-picker-row > span {
+    color: var(--text);
+}
+body[class^="theme-"] .adservice-page .owner-catalog-picker-row strong,
+body[class*=" theme-"] .adservice-page .owner-catalog-picker-row strong {
+    font-weight: 700;
+    color: var(--text);
+}
+
 main.appointment-page { max-width: 900px; }
 .appointment-page { text-align: left; }
 .appointment-page .subtitle { margin-bottom: 1.5rem; }
 .appointment-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
 @media (max-width: 720px) {
-  .appointment-layout { grid-template-columns: 1fr; }
+    .appointment-layout { grid-template-columns: 1fr; }
 }
-.times-panel { background: var(--brand-surface); border: 1px solid var(--brand-border); border-radius: var(--brand-radius-sm); padding: 1rem; box-shadow: var(--brand-shadow-sm); }
-.calendar-card { background: var(--brand-surface); border: 1px solid var(--brand-border); border-radius: var(--brand-radius-sm); padding: 1rem; margin-bottom: 0; box-shadow: var(--brand-shadow-sm); }
-.calendar-card .calendar-header { display: block; font-weight: 700; margin-bottom: 0.75rem; color: var(--brand-heading); }
-.calendar-card input[type="date"] { width: 100%; max-width: 16rem; padding: 0.6rem 0.75rem; border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); font-family: inherit; font-size: 0.95rem; color: var(--brand-text); }
-.calendar-card input[type="date"]:focus { outline: none; border-color: var(--brand-input-focus); }
-.appointment-page .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; margin-top: 0; }
-.times-panel .time-slots { margin-top: 0.25rem; }
 .time-slots { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
 .time-slot { padding: 0.5rem 0.85rem; background: var(--brand-surface); border: 1px solid var(--brand-border-soft); border-radius: var(--brand-radius-sm); font-size: 0.9rem; color: var(--brand-text); cursor: pointer; user-select: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, font-weight 0.15s ease, box-shadow 0.15s ease; }
 .time-slot:hover,
@@ -1376,7 +1973,7 @@ main.appointment-page { max-width: 900px; }
     box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35);
 }
 
-/* Időpont választás — modern (szolgáltatások / szakember mintájára) */
+
 body.appointment-booking-body main.appointment-page--modern {
     max-width: 900px;
     margin: 2.5rem auto 0;
@@ -1390,12 +1987,6 @@ body.appointment-booking-body main.appointment-page--modern {
     align-items: start;
 }
 
-@media (max-width: 720px) {
-    .appointment-page--modern .appointment-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
 .appointment-card {
     background: linear-gradient(160deg, #ffffff 0%, rgba(250, 245, 255, 0.9) 100%);
     border: 1px solid var(--services-row-border, #e8e8ec);
@@ -1407,8 +1998,7 @@ body.appointment-booking-body main.appointment-page--modern {
         0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.appointment-card__label,
-.appointment-card__heading {
+.appointment-card__label {
     display: block;
     font-weight: 700;
     font-size: 0.8rem;
@@ -1417,31 +2007,12 @@ body.appointment-booking-body main.appointment-page--modern {
     color: var(--brand-text-muted);
     margin-bottom: 0.65rem;
 }
-
 .appointment-card__heading {
+    display: block;
+    font-weight: 700;
     font-size: 0.95rem;
-    text-transform: none;
-    letter-spacing: normal;
     color: var(--brand-heading);
     margin-bottom: 0.5rem;
-}
-
-.appointment-date-input {
-    width: 100%;
-    max-width: 100%;
-    padding: 0.65rem 0.75rem;
-    border: 1px solid var(--brand-border-soft);
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 1rem;
-    color: var(--brand-text);
-    background: #fafafa;
-}
-
-.appointment-date-input:focus {
-    outline: none;
-    border-color: var(--services-accent, #14b8a6);
-    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
 }
 
 .appointment-card__hint {
@@ -1476,7 +2047,7 @@ body.appointment-booking-body main.appointment-page--modern {
     cursor: wait;
 }
 
-/* Egyedi naptár — ugyanaz a „pill” nyelv, mint az óráknál */
+
 .appointment-calendar {
     margin-top: 0.15rem;
 }
@@ -1682,7 +2253,7 @@ body.appointment-booking-body main.appointment-page--modern {
     background: var(--services-accent, #14b8a6);
 }
 
-/* Optional salon themes (customSalon) — add class on body e.g. theme-pink */
+
 body.theme-pink {
     --bg: #ffe8f0;
     --text: #5c1f6e;
@@ -1832,8 +2403,10 @@ body[class*=" theme-"] .user-profile {
 }
 body[class^="theme-"] .appointment-card,
 body[class*=" theme-"] .appointment-card,
+body[class*="theme-"] .appointment-card,
 body[class^="theme-"] .salon-landing-li,
-body[class*=" theme-"] .salon-landing-li {
+body[class*=" theme-"] .salon-landing-li,
+body[class*="theme-"] .salon-landing-li {
     background: linear-gradient(160deg, var(--surface) 0%, color-mix(in srgb, var(--surface-soft) 55%, var(--surface)) 100%);
     border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
     border-left: 4px solid var(--primary);
@@ -1875,7 +2448,7 @@ body[class^="theme-"] .subtitle,
 body[class*=" theme-"] .subtitle {
     color: var(--muted);
 }
-/* Ne a navbar logóra: a width:100% + shrink-to-fit összeomlást okozhat a felső sávban */
+
 .logo:not(.navbar-brand) {
     display: inline-block;
     max-width: 10rem;
@@ -1903,13 +2476,7 @@ body[class*=" theme-"] .subtitle {
 .form-page .subtitle { margin-bottom: 1.5rem; }
 .setup-form { max-width: 100%; }
 
-/* Owner homepage (template) */
-.owner-home-page {
-    max-width: 720px;
-    margin: 3rem auto;
-    padding: 0 1.5rem 4rem;
-    text-align: left;
-}
+
 .owner-home-header .subtitle {
     margin-bottom: 1.5rem;
 }
@@ -1924,6 +2491,8 @@ body[class*=" theme-"] .subtitle {
 }
 .owner-salons-list {
     list-style: none;
+    padding-left: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -1940,10 +2509,6 @@ body[class*=" theme-"] .subtitle {
     border-left: 4px solid #7c3aed;
     border-radius: var(--brand-radius);
     box-shadow: var(--brand-shadow-sm);
-}
-.owner-salon-card-placeholder {
-    border-style: dashed;
-    opacity: 0.92;
 }
 .owner-salon-name {
     font-size: 1.05rem;
@@ -2050,7 +2615,7 @@ a.owner-btn-primary:hover {
     border-bottom: none;
 }
 
-/* Salon dashboard (owner template) */
+
 .salon-dashboard-page {
     max-width: 900px;
     margin: 2.5rem auto 4rem;
@@ -2071,6 +2636,8 @@ a.owner-btn-primary:hover {
 }
 .salon-dash-artists {
     list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -2127,7 +2694,7 @@ a.owner-btn-primary:hover {
     min-width: 28rem;
 }
 
-/* Salon dashboard — artist schedule (template) */
+
 .salon-schedule-page {
     max-width: 1100px;
     margin: 2rem auto 4rem;
@@ -2283,15 +2850,39 @@ a.owner-btn-primary:hover {
     border: 0;
 }
 
-/* Szolgáltatások — körös választó + fix kosár sáv */
-:root {
-    --services-accent: #14b8a6;
-    --services-accent-hover: #0d9488;
-    --services-row-border: #e8e8ec;
+
+body[class*="theme-"] {
+    --services-accent: var(--primary, var(--brand-btn-primary-solid, #9333ea));
+    --services-accent-hover: var(--primary-hover, color-mix(in srgb, var(--brand-btn-primary-solid, #9333ea) 82%, #1e1b4b));
+    --services-row-border: color-mix(in srgb, var(--primary, var(--brand-btn-primary-solid)) 18%, var(--border, #e5e7eb));
 }
 
-/* Booking flow pages: same soft gradient as the rest of the guest app */
-body.services-booking-body {
+body[class*="theme-"] .service-pick-row__title {
+    color: var(--text);
+}
+body[class*="theme-"] .service-pick-row__price {
+    color: var(--text);
+}
+body[class*="theme-"] .service-pick-row__meta {
+    color: var(--muted);
+}
+body[class*="theme-"] .service-pick-toggle__face {
+    border-color: color-mix(in srgb, var(--primary) 42%, var(--border));
+    background: var(--surface);
+}
+
+body[class*="theme-"] .user-page .section-title {
+    color: var(--primary);
+}
+body[class*="theme-"] .salon-landing-intro {
+    color: var(--muted);
+}
+body[class*="theme-"] .salon-landing-li__name {
+    color: var(--primary);
+}
+
+
+body.services-booking-body:not([class*="theme-"]) {
     background: var(--brand-bg-gradient);
     background-attachment: fixed;
 }
@@ -2319,6 +2910,52 @@ body.services-booking-body main.artists-page--picker {
 
 body.services-booking-body.artist-picker-visible main.artists-page--picker {
     padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+
+@keyframes async-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.async-card-enter {
+    animation: async-card-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+    animation-delay: calc(min(var(--async-card-i, 0), 16) * 52ms);
+}
+
+.portal-salon-card.async-card-enter {
+    animation-duration: 0.48s;
+}
+
+.salon-landing-li.async-card-enter {
+    animation-duration: 0.4s;
+}
+
+@keyframes calendar-grid-in {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#calendar-grid.calendar-grid-enter {
+    animation: calendar-grid-in 0.34s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .async-card-enter,
+    #calendar-grid.calendar-grid-enter {
+        animation: none !important;
+    }
 }
 
 .services-pick-list {
@@ -2360,7 +2997,7 @@ body.services-booking-body.artist-picker-visible main.artists-page--picker {
 .service-pick-row__title {
     font-weight: 700;
     font-size: 1rem;
-    color: #111827;
+    color: var(--brand-heading, #111827);
     line-height: 1.3;
 }
 
@@ -2505,7 +3142,7 @@ body.services-booking-body.artist-picker-visible main.artists-page--picker {
     transform: scale(0.98);
 }
 
-/* --- Bootstrap 5 bridge (load Bootstrap CSS before /styles.css in HTML) --- */
+
 .salonic-navbar.navbar {
     --bs-navbar-bg: transparent;
     display: flex;
@@ -2535,7 +3172,7 @@ body.services-booking-body.artist-picker-visible main.artists-page--picker {
     border-color: var(--brand-border-soft);
 }
 
-/* Navbar brand: never let logo assets overflow the bar (inline or JS-injected <img>) */
+
 .salonic-navbar .navbar-brand.logo,
 .salonic-navbar .navbar-brand.portal-brand {
     display: inline-flex;
@@ -2613,4 +3250,48 @@ nav:not(.navbar) a.logo img {
     .salonic-page-enter {
         animation: none;
     }
+}
+
+
+body[class^="theme-"] .service-pick-toggle-input:checked + .service-pick-toggle__face,
+body[class*=" theme-"] .service-pick-toggle-input:checked + .service-pick-toggle__face,
+body[class*="theme-"] .service-pick-toggle-input:checked + .service-pick-toggle__face {
+    background: linear-gradient(145deg, var(--primary) 0%, var(--primary-hover) 100%) !important;
+    border-color: color-mix(in srgb, var(--primary) 55%, rgba(0, 0, 0, 0.12)) !important;
+    box-shadow:
+        0 4px 20px var(--theme-glow),
+        inset 0 1px 0 color-mix(in srgb, #fff 30%, transparent);
+}
+
+body[class^="theme-"] .service-pick-toggle-input:focus-visible + .service-pick-toggle__face,
+body[class*=" theme-"] .service-pick-toggle-input:focus-visible + .service-pick-toggle__face,
+body[class*="theme-"] .service-pick-toggle-input:focus-visible + .service-pick-toggle__face {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+body[class^="theme-"] .services-pick-list,
+body[class*=" theme-"] .services-pick-list,
+body[class*="theme-"] .services-pick-list {
+    background: var(--surface);
+    border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+    box-shadow: 0 4px 18px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+body[class^="theme-"] .services-cart-bar__count,
+body[class*=" theme-"] .services-cart-bar__count,
+body[class*="theme-"] .services-cart-bar__count {
+    color: var(--primary);
+}
+
+body[class^="theme-"] main.services-page--picker h1,
+body[class*=" theme-"] main.services-page--picker h1,
+body[class*="theme-"] main.services-page--picker h1 {
+    color: var(--text);
+}
+
+body[class^="theme-"] main.services-page--picker .subtitle,
+body[class*=" theme-"] main.services-page--picker .subtitle,
+body[class*="theme-"] main.services-page--picker .subtitle {
+    color: var(--muted);
 }

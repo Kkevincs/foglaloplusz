@@ -149,12 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (statusEl) statusEl.textContent = `${stamps.length} szabad időpont`;
 
-        stamps.forEach((slot) => {
+        stamps.forEach((slot, i) => {
             const raw = slot.startTime ?? slot.StartTime;
             const isoStr = typeof raw === "string" ? raw : String(raw);
             const label = isoStr.includes("T") ? isoStr.split("T")[1].slice(0, 5) : isoStr;
             const enc = encodeURIComponent(isoStr);
-            list.innerHTML += `<li class="time-slot" data-start-iso="${enc}">${label}</li>`;
+            list.innerHTML += `<li class="time-slot async-card-enter" style="--async-card-i:${i}" data-start-iso="${enc}">${label}</li>`;
         });
     }
 
@@ -249,7 +249,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        grid.classList.remove("calendar-grid-enter");
         grid.innerHTML = html;
+        requestAnimationFrame(() => {
+            grid.classList.add("calendar-grid-enter");
+        });
     }
 
     async function shiftCalendarMonth(delta) {
@@ -317,7 +321,10 @@ document.addEventListener("DOMContentLoaded", () => {
         earliestBtn.hidden = selectedServiceIds.length === 0 || selectedArtistId <= 0;
         earliestBtn.addEventListener("click", async () => {
             if (selectedServiceIds.length === 0 || selectedArtistId <= 0) {
-                alert("Hiányoznak a szolgáltatások vagy a szakember. Lépj vissza, és válassz újra.");
+                salonicShowModal("Hiányoznak a szolgáltatások vagy a szakember. Lépj vissza, és válassz újra.", {
+                    title: "Hiányzó adatok",
+                    variant: "warning",
+                });
                 return;
             }
             const prevText = earliestBtn.textContent;
@@ -326,8 +333,9 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const found = await findEarliestSlotWithinDays(90);
                 if (!found) {
-                    alert(
+                    salonicShowModal(
                         "A következő 90 napban nem található szabad időpont. Próbáld később újra, vagy másik szakembert.",
+                        { title: "Nincs szabad idő", variant: "info" },
                     );
                     return;
                 }
@@ -382,24 +390,28 @@ function redirectToGuestLoginWithPendingBooking() {
 
 window.SaveDate = async function SaveDate() {
     if (!selectedDate || !selectedSlotStartIso) {
-        alert("Válassz dátumot és időpontot.");
+        salonicShowModal("Válassz dátumot és időpontot.", { title: "Hiányzó adatok", variant: "warning" });
         return;
     }
 
     if (selectedDate < appointmentFormatLocalYMD(new Date())) {
-        alert("Válassz a mai napot vagy egy későbbi dátumot.");
+        salonicShowModal("Válassz a mai napot vagy egy későbbi dátumot.", { title: "Érvénytelen dátum", variant: "warning" });
         return;
     }
 
     if (selectedServiceIds.length === 0 || selectedArtistId <= 0) {
-        alert("Hiányoznak a szolgáltatások vagy a szakember. Lépj vissza, és válassz újra.");
+        salonicShowModal("Hiányoznak a szolgáltatások vagy a szakember. Lépj vissza, és válassz újra.", {
+            title: "Hiányzó adatok",
+            variant: "warning",
+        });
         return;
     }
 
     const token = localStorage.getItem("token");
     if (!token || !String(token).trim()) {
-        alert(
-            "A foglaláshoz előbb jelentkezz be vendégként. A bejelentkezés után a foglalás automatikusan elküldődik."
+        salonicShowModal(
+            "A foglaláshoz előbb jelentkezz be vendégként. A bejelentkezés után a foglalás automatikusan elküldődik.",
+            { title: "Bejelentkezés szükséges", variant: "info" },
         );
         redirectToGuestLoginWithPendingBooking();
         return;
@@ -407,8 +419,9 @@ window.SaveDate = async function SaveDate() {
 
     const role = typeof getRoleFromToken === "function" ? getRoleFromToken() : null;
     if (role !== "guest") {
-        alert(
-            "A foglaláshoz vendég fiókkal kell belépni. Ha tulajdonosként vagy szakemberként vagy bejelentkezve, jelentkezz ki, és jelentkezz be vendégként (vagy regisztrálj vendégként)."
+        salonicShowModal(
+            "A foglaláshoz vendég fiókkal kell belépni. Ha tulajdonosként vagy szakemberként vagy bejelentkezve, jelentkezz ki, és jelentkezz be vendégként (vagy regisztrálj vendégként).",
+            { title: "Szerepkör", variant: "warning" },
         );
         redirectToGuestLoginWithPendingBooking();
         return;
@@ -419,17 +432,21 @@ window.SaveDate = async function SaveDate() {
         guestUser = await GetLoggedInUser(token);
     } catch (err) {
         console.error(err);
-        alert(
-            "A foglaláshoz jelentkezz be vendégként. A bejelentkezés után a foglalás automatikusan elküldődik."
-        );
+        if (!err?.salonicApiShown) {
+            salonicShowModal(
+                "A foglaláshoz jelentkezz be vendégként. A bejelentkezés után a foglalás automatikusan elküldődik.",
+                { title: "Bejelentkezés szükséges", variant: "info" },
+            );
+        }
         redirectToGuestLoginWithPendingBooking();
         return;
     }
 
     const guestId = Number(guestUser?.id ?? guestUser?.Id);
     if (!Number.isFinite(guestId) || guestId < 1) {
-        alert(
-            "A foglaláshoz vendégként jelentkezz be. A bejelentkezés után a foglalás automatikusan elküldődik."
+        salonicShowModal(
+            "A foglaláshoz vendégként jelentkezz be. A bejelentkezés után a foglalás automatikusan elküldődik.",
+            { title: "Profil", variant: "warning" },
         );
         redirectToGuestLoginWithPendingBooking();
         return;
@@ -444,20 +461,24 @@ window.SaveDate = async function SaveDate() {
         notes: "",
     };
     try {
-        const result = await PostAppointment(appointment, token);
-        console.log(result);
+        await PostAppointment(appointment, token);
         const salonQ =
             selectedSalonId > 0 ? `?salonId=${encodeURIComponent(String(selectedSalonId))}` : "";
         window.location.assign(`/Salon/AppointmentCreated${salonQ}`);
     } catch (err) {
         console.error(err);
+        if (err?.salonicApiShown) return;
         const msg = String(err?.message || "");
         if (msg.includes("403") || /Forbidden/i.test(msg)) {
-            alert(
-                "A foglalás csak vendég fiókkal engedélyezett, és a vendég azonosítónak egyeznie kell a belépéssel. Jelentkezz be vendégként, majd próbáld újra."
+            salonicShowModal(
+                "A foglalás csak vendég fiókkal engedélyezett, és a vendég azonosítónak egyeznie kell a belépéssel. Jelentkezz be vendégként, majd próbáld újra.",
+                { title: "Hozzáférés megtagadva", variant: "warning" },
             );
             return;
         }
-        alert(err?.message || "Nem sikerült lefoglalni ezt az időpontot. Próbálj másik időpontot.");
+        salonicShowModal(err?.message || "Nem sikerült lefoglalni ezt az időpontot. Próbálj másik időpontot.", {
+            title: "Foglalás",
+            variant: "danger",
+        });
     }
 };
