@@ -19,6 +19,10 @@ namespace Foglaloplusz.BLL.Services
                 throw new AppValidationException("A kérés törzse kötelező.");
             if (request.Month < 1 || request.Month > 12)
                 throw new AppValidationException("A hónap 1 és 12 között lehet.");
+            if (request.Year < 1 || request.Year > 9999)
+                throw new AppValidationException("Az év érvénytelen.");
+            if (request.ArtistId <= 0)
+                throw new AppValidationException("A szakember azonosítója érvénytelen.");
 
             if (request.ServiceIds == null || request.ServiceIds.Length == 0)
                 throw new AppValidationException("Legalább egy szolgáltatást meg kell adni.");

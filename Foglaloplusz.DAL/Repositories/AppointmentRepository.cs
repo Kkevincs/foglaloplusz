@@ -35,12 +35,16 @@ namespace Foglaloplusz.DAL.Repositories
                 .OrderBy(a => a.StartTime)
                 .ToListAsync();
 
-        public Task<List<Appointment>> ListByArtistAndDateAsync(int artistId, DateTime date) =>
-            _context.Appointments
+        public Task<List<Appointment>> ListByArtistAndDateAsync(int artistId, DateTime date)
+        {
+            var dayStart = date.Date;
+            var dayEndExclusive = dayStart.AddDays(1);
+            return _context.Appointments
                 .Include(a => a.Services)
-                .Where(x => x.ArtistId == artistId && x.StartTime.Date == date.Date)
+                .Where(x => x.ArtistId == artistId && x.StartTime >= dayStart && x.StartTime < dayEndExclusive)
                 .OrderBy(x => x.StartTime)
                 .ToListAsync();
+        }
 
         public Task<List<Appointment>> ListByArtistAndDateRangeAsync(
             int artistId,
