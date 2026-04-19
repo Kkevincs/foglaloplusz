@@ -14,7 +14,7 @@ using Foglaloplusz.presentation.Filters;
 
 namespace Foglaloplusz
 {
-    public class Program
+    public partial class Program
     {
         public static void Main(string[] args)
         {
@@ -152,11 +152,15 @@ namespace Foglaloplusz
 
             var app = builder.Build();
 
-            
-            if (app.Environment.IsDevelopment())
+            // Swagger: ne csak Developmentben — Render/staging gyakran Production, különben /swagger 404.
+            // Kikapcsolás: appsettings vagy env Swagger__Enabled=false
+            if (app.Configuration.GetValue("Swagger:Enabled", true))
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "FoglalóPlusz API v1");
+                });
             }
 
             var webRoot = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
@@ -174,10 +178,14 @@ namespace Foglaloplusz
             
 
             using (var scope = app.Services.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                // Integrációs tesztek: InMemory provider — Migrate() nem hívható. Éles/PG: migráció.
+                if (db.Database.IsRelational())
                     db.Database.Migrate();
-                }
+                else
+                    db.Database.EnsureCreated();
+            }
 
             app.Run();
         }

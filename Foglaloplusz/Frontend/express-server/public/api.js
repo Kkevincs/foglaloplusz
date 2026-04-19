@@ -398,18 +398,26 @@ async function LoginWithStatus(User) {
 }
 
 async function GetArtistWorkingHoursByMonth(token, date) {
-    return salonicFetchJson(salonicApiUrl("/api/workinghours/range"), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(date),
+    const q = new URLSearchParams({
+        startDate: date.startDate,
+        endDate: date.endDate,
+    });
+    return salonicFetchJson(salonicApiUrl(`/api/workinghours/range?${q.toString()}`), {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
     });
 }
 
 async function GetAvaliableSlots(timeData) {
-    return salonicFetchJson(salonicApiUrl("/api/appointment/available"), {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(timeData),
+    const q = new URLSearchParams();
+    q.set("artistId", String(timeData.artistId));
+    q.set("date", typeof timeData.date === "string" ? timeData.date : String(timeData.date));
+    const ids = timeData.serviceIds || [];
+    for (const id of ids) {
+        q.append("serviceIds", String(id));
+    }
+    return salonicFetchJson(salonicApiUrl(`/api/appointment/available?${q.toString()}`), {
+        method: "GET",
     });
 }
 
@@ -730,6 +738,23 @@ async function createOwnerSalonService(salonId, service, token) {
         headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
         body: JSON.stringify(service),
     });
+}
+
+/** Tulaj: meglévő katalógus-szolgáltatás szerkesztése (ugyanaz a mezőkészlet, mint a szakember PUT-nál). */
+async function updateOwnerSalonService(salonId, serviceId, service, token) {
+    return salonicFetchJsonLenient(
+        salonicApiUrl(`/api/salon/${encodeURIComponent(salonId)}/services/${encodeURIComponent(serviceId)}`),
+        {
+            method: "PUT",
+            headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+            body: JSON.stringify({
+                name: service.name,
+                description: service.description ?? "",
+                price: service.price,
+                durationInMinute: service.durationInMinute,
+            }),
+        },
+    );
 }
 
 /** Tulaj: tömeges import a szalon katalógusába (ugyanaz a CSV formátum, mint a szakember importnál). */

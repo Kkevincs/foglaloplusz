@@ -829,25 +829,191 @@ function SelectArtist(){
     window.location.href = `/Salon/DateSelection?serviceids=${encodeURIComponent(serviceids)}&artistid=${encodeURIComponent(id)}${salonQuery}`;
 }
 
-async function loadServicesBySalon(id) {
-    const tbody = document.getElementById("services-table");
-    if (!tbody) return;
+function wireOwnerDashboardCatalogEdit() {
+    const list = document.getElementById("owner-dash-catalog-list");
+    if (!list || list.dataset.editWired === "1") return;
+    list.dataset.editWired = "1";
+    list.addEventListener("submit", (e) => {
+        if (e.target.closest("form.owner-catalog-edit-form")) e.preventDefault();
+    });
+    list.addEventListener("keydown", (e) => {
+        const form = e.target.closest("form.owner-catalog-edit-form");
+        if (!form) return;
+        if (e.key !== "Enter") return;
+        if (e.target.tagName === "TEXTAREA") return;
+        e.preventDefault();
+    });
+    list.addEventListener("click", async (e) => {
+        const btn = e.target.closest("button.owner-catalog-save-btn");
+        if (!btn) return;
+        const form = btn.closest("form.owner-catalog-edit-form");
+        if (!form) return;
+        await saveOwnerCatalogServiceForm(form, btn);
+    });
+}
+
+async function saveOwnerCatalogServiceForm(form, btn) {
+    const list = document.getElementById("owner-dash-catalog-list");
+    const salonId = list?.dataset?.salonId;
+    const sid = form.getAttribute("data-service-id");
+    if (!salonId || !sid) return;
     const token = localStorage.getItem("token");
-    if (!token) return;
-    tbody.innerHTML = "";
-    let services;
-    try {
-        services = await GetSalonServicesCatalog(id, token);
-    } catch {
+    if (!token) {
+        salonicShowModal("Jelentkezz be tulajdonosként.", { title: "Bejelentkezés szükséges", variant: "warning" });
         return;
     }
-    services.forEach((x) => {
-        tbody.innerHTML += `
-                        <tr>
-                            <td>${x.name}</td>
-                            <td>${x.durationInMinute} perc</td>
-                            <td>${x.price} Ft</td>
-                        </tr>
+    const msgEl = form.querySelector(".owner-catalog-edit-msg");
+    const nameEl = form.querySelector('[name="name"]');
+    const descEl = form.querySelector('[name="description"]');
+    const durEl = form.querySelector('[name="durationInMinute"]');
+    const priceEl = form.querySelector('[name="price"]');
+    const payload = {
+        name: (nameEl?.value ?? "").trim(),
+        description: descEl?.value ?? "",
+        durationInMinute: Math.max(1, parseInt(String(durEl?.value ?? "1"), 10) || 1),
+        price: Math.max(0, parseInt(String(priceEl?.value ?? "0"), 10) || 0),
+    };
+    if (!payload.name) {
+        if (msgEl) {
+            msgEl.textContent = "A megnevezés kötelező.";
+            msgEl.classList.add("text-danger");
+            msgEl.classList.remove("text-success");
+        }
+        return;
+    }
+    if (msgEl) {
+        msgEl.textContent = "";
+        msgEl.classList.remove("text-danger", "text-success");
+    }
+    if (btn) btn.disabled = true;
+    try {
+        await updateOwnerSalonService(Number(salonId), Number(sid), payload, token);
+        if (msgEl) {
+            msgEl.textContent = "Mentve.";
+            msgEl.classList.remove("text-danger");
+            msgEl.classList.add("text-success");
+        }
+        await loadServicesBySalon(salonId);
+    } catch (err) {
+        console.error(err);
+        if (!err?.salonicApiShown && msgEl) {
+            msgEl.textContent = err?.message || "Mentés sikertelen.";
+            msgEl.classList.add("text-danger");
+            msgEl.classList.remove("text-success");
+        }
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+}
+
+async function loadServicesBySalon(id) {
+    const list = document.getElementById("owner-dash-catalog-list");
+    if (!list) return;
+    const emptyEl = document.getElementById("owner-dash-catalog-empty");
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    const sid = String(id).trim();
+    list.dataset.salonId = sid;
+    list.innerHTML = '<p class="text-muted mb-0">Betöltés…</p>';
+    let services;
+    try {
+        services = await GetSalonServicesCatalog(sid, token);
+    } catch {
+        list.innerHTML = '<p class="text-danger mb-0" role="alert">Nem sikerült betölteni a katalógust.</p>';
+        return;
+    }
+    if (!Array.isArray(services) || services.length === 0) {
+        list.innerHTML = "";
+        if (emptyEl) {
+            emptyEl.hidden = false;
+        }
+        return;
+    }
+    if (emptyEl) emptyEl.hidden = true;
+    list.innerHTML = "";
+    services.forEach((x, i) => {
+        const svcId = Number(x.id ?? x.Id ?? 0);
+        const ownerIdRaw = x.ownerId ?? x.OwnerId;
+        const isOwnerCatalog = ownerIdRaw != null && Number(ownerIdRaw) > 0;
+        const nameRaw = String(x.name ?? x.Name ?? "").trim();
+        const name = escapeHtml(nameRaw);
+        const descRaw = x.description ?? x.Description ?? "";
+        const descTrim = String(descRaw ?? "").trim();
+        const descBlock = descTrim
+            ? `<div class="artist-service-desc-wrap"><span class="artist-service-desc">${escapeHtml(descTrim)}</span></div>`
+            : '<p class="artist-service-no-desc text-muted small mb-0">Nincs leírás.</p>';
+        const mins = Math.max(0, Math.round(Number(x.durationInMinute ?? x.DurationInMinute ?? 0)));
+        const price = Number(x.price ?? x.Price ?? 0);
+        const priceLine = formatPriceFt(price);
+        const nameInputVal = escapeHtml(nameRaw);
+        const descInputVal = escapeHtml(descTrim);
+        const sourceBadge = isOwnerCatalog
+            ? '<span class="badge bg-primary ms-2">Tulaj katalógus</span>'
+            : '<span class="badge bg-secondary ms-2">Szakember szolgáltatása</span>';
+        const editTabNav = isOwnerCatalog
+            ? `
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="owner-svc-tab-edit-${svcId}" data-bs-toggle="tab" data-bs-target="#owner-svc-pane-edit-${svcId}" type="button" role="tab" aria-controls="owner-svc-pane-edit-${svcId}" aria-selected="false">Szerkesztés</button>
+                    </li>`
+            : "";
+        const editTabPane = isOwnerCatalog
+            ? `
+                    <div class="tab-pane fade" id="owner-svc-pane-edit-${svcId}" role="tabpanel" aria-labelledby="owner-svc-tab-edit-${svcId}" tabindex="0">
+                        <form class="owner-catalog-edit-form" data-service-id="${svcId}">
+                            <div class="mb-3">
+                                <label class="form-label" for="owner-svc-name-${svcId}">Megnevezés</label>
+                                <input class="form-control" id="owner-svc-name-${svcId}" name="name" type="text" required maxlength="200" value="${nameInputVal}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="owner-svc-desc-${svcId}">Leírás</label>
+                                <textarea class="form-control" id="owner-svc-desc-${svcId}" name="description" rows="3" maxlength="2000">${descInputVal}</textarea>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="owner-svc-dur-${svcId}">Időtartam (perc)</label>
+                                    <input class="form-control" id="owner-svc-dur-${svcId}" name="durationInMinute" type="number" min="1" max="1440" step="1" required value="${mins}">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="owner-svc-price-${svcId}">Ár (Ft)</label>
+                                    <input class="form-control" id="owner-svc-price-${svcId}" name="price" type="number" min="0" max="10000000" step="1" required value="${Math.round(price)}">
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <button type="button" class="btn btn-primary btn-sm adservice-accent-btn owner-catalog-save-btn">Változtatások elmentése</button>
+                                <span class="owner-catalog-edit-msg small" role="status" aria-live="polite"></span>
+                            </div>
+                        </form>
+                    </div>`
+            : "";
+        list.innerHTML += `
+            <div class="service-card artist-service-card async-card-enter" style="--async-card-i:${i}" role="listitem" data-service-id="${svcId}">
+                <ul class="nav nav-tabs artist-service-nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="owner-svc-tab-view-${svcId}" data-bs-toggle="tab" data-bs-target="#owner-svc-pane-view-${svcId}" type="button" role="tab" aria-controls="owner-svc-pane-view-${svcId}" aria-selected="true">Részletek</button>
+                    </li>${editTabNav}
+                </ul>
+                <div class="tab-content artist-service-tab-content">
+                    <div class="tab-pane fade show active" id="owner-svc-pane-view-${svcId}" role="tabpanel" aria-labelledby="owner-svc-tab-view-${svcId}" tabindex="0">
+                        <div class="name">${name}${sourceBadge}</div>
+                        ${descBlock}
+                        <div class="artist-service-meta" role="group" aria-label="Időtartam és ár">
+                            <span class="artist-service-meta-item">
+                                <span class="artist-service-meta-label">Időtartam</span>
+                                <strong class="artist-service-meta-value">${mins} perc</strong>
+                            </span>
+                            <span class="artist-service-meta-item">
+                                <span class="artist-service-meta-label">Ár</span>
+                                <strong class="artist-service-meta-value">${priceLine}</strong>
+                            </span>
+                        </div>
+                        ${
+                            isOwnerCatalog
+                                ? '<p class="small text-muted mb-0 mt-2">A módosítás minden szakember listáján is megjelenik, aki felvette ezt a katalógus-tételt.</p>'
+                                : ""
+                        }
+                    </div>${editTabPane}
+                </div>
+            </div>
         `;
     });
 }
@@ -859,6 +1025,8 @@ async function loadServicesBySalon(id) {
 function initOwnerSalonDashboardServices(salonId) {
     const form = document.getElementById("owner-dash-addservice-form");
     if (!form) return;
+
+    wireOwnerDashboardCatalogEdit();
 
     const sid = String(salonId).trim();
     if (!sid) return;

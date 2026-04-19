@@ -1,0 +1,1936 @@
+{
+    "info": {
+      "name": "FoglalóPlusz API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      { "key": "baseUrl", "value": "https://localhost:7165" },
+      { "key": "ownerToken", "value": "" },
+      { "key": "guestToken", "value": "" },
+      { "key": "artistToken", "value": "" },
+      { "key": "salonId", "value": "1" },
+      { "key": "artistId", "value": "1" },
+      { "key": "serviceId", "value": "1" },
+      { "key": "appointmentId", "value": "1" },
+      { "key": "offeringId", "value": "1" }
+    ],
+    "item": [
+      {
+        "name": "Auth",
+        "item": [
+          {
+            "name": "Login - Owner (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns token', () => {",
+                    "  const token = pm.response.text().replace(/\"/g, '');",
+                    "  pm.expect(token).to.be.a('string').and.not.empty;",
+                    "  pm.collectionVariables.set('ownerToken', token);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/authentication/authenticate",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"eszter.kovacs@demo.local\",\n  \"pwd\": \"Demo123!\",\n  \"role\": \"Owner\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Login - Guest (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns token', () => {",
+                    "  const token = pm.response.text().replace(/\"/g, '');",
+                    "  pm.expect(token).to.be.a('string').and.not.empty;",
+                    "  pm.collectionVariables.set('guestToken', token);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/authentication/authenticate",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"csilla.benko@demo.local\",\n  \"pwd\": \"Demo123!\",\n  \"role\": \"Guest\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Login - Artist (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns token', () => {",
+                    "  const token = pm.response.text().replace(/\"/g, '');",
+                    "  pm.expect(token).to.be.a('string').and.not.empty;",
+                    "  pm.collectionVariables.set('artistToken', token);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/authentication/authenticate",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"lili.farkas@demo.local\",\n  \"pwd\": \"Demo123!\",\n  \"role\": \"Artist\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Login - Wrong Password (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/authentication/authenticate",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"eszter.kovacs@demo.local\",\n  \"pwd\": \"wrongpassword\",\n  \"role\": \"Owner\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Login - Non-existent Email (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/authentication/authenticate",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"notexist@demo.local\",\n  \"pwd\": \"Demo123!\",\n  \"role\": \"Owner\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Login - Wrong Role (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/authentication/authenticate",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"eszter.kovacs@demo.local\",\n  \"pwd\": \"Demo123!\",\n  \"role\": \"Guest\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Login - Empty Body (400)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 400 or 401', () => {",
+                    "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/authentication/authenticate",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"\",\n  \"pwd\": \"\",\n  \"role\": \"\"\n}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Register",
+        "item": [
+          {
+            "name": "Register Guest (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Has name and email', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.have.property('name');",
+                    "  pm.expect(json).to.have.property('email');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/register/guest",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"New Guest\",\n  \"email\": \"newguest{{$timestamp}}@demo.local\",\n  \"pwd\": \"Demo123!\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Register Guest - Duplicate Email (400)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/register/guest",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Duplicate\",\n  \"email\": \"csilla.benko@demo.local\",\n  \"pwd\": \"Demo123!\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Register Artist (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Has name and email', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.have.property('name');",
+                    "  pm.expect(json).to.have.property('email');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/register/artist",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"New Artist\",\n  \"email\": \"newartist{{$timestamp}}@demo.local\",\n  \"pwd\": \"Demo123!\",\n  \"salonId\": 1,\n  \"description\": \"Test artist\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Register Artist - Duplicate Email (400)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/register/artist",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Duplicate\",\n  \"email\": \"lili.farkas@demo.local\",\n  \"pwd\": \"Demo123!\",\n  \"salonId\": 1,\n  \"description\": \"Duplicate\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Register Owner (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Has name and email', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.have.property('name');",
+                    "  pm.expect(json).to.have.property('email');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/register/owner",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"New Owner\",\n  \"email\": \"newowner{{$timestamp}}@demo.local\",\n  \"pwd\": \"Demo123!\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Register Owner - Duplicate Email (400)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/register/owner",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Duplicate\",\n  \"email\": \"eszter.kovacs@demo.local\",\n  \"pwd\": \"Demo123!\"\n}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Salon - Public",
+        "item": [
+          {
+            "name": "Get Public Salon List (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns array with 3 salons', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(3);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/public"
+            }
+          },
+          {
+            "name": "Get Salon Directory (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns array with cards', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json[0]).to.have.property('name');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/directory"
+            }
+          },
+          {
+            "name": "Get Salon Public Profile - Salon 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Is Polished Studio', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.id).to.equal(1);",
+                    "  pm.expect(json.name).to.include('Polished');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/1/public-profile"
+            }
+          },
+          {
+            "name": "Get Salon Public Profile - Not Found (404)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/99999/public-profile"
+            }
+          },
+          {
+            "name": "Salon Exists - Salon 1 (204)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 204', () => pm.response.to.have.status(204));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/1/exists"
+            }
+          },
+          {
+            "name": "Salon Exists - Not Found (404)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/99999/exists"
+            }
+          },
+          {
+            "name": "Get Public Artists - Salon 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns 2 artists for salon 1', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.equal(2);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/1/public-artists"
+            }
+          },
+          {
+            "name": "Get Public Artists - Not Found (404)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/99999/public-artists"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Salon - Owner",
+        "item": [
+          {
+            "name": "Get My Salons - Owner 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Eszter has 1 salon', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.equal(1);",
+                    "  pm.expect(json[0].name).to.include('Polished');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon/my"
+            }
+          },
+          {
+            "name": "Get My Salons - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/my"
+            }
+          },
+          {
+            "name": "Create Salon (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Has id and name', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.have.property('id');",
+                    "  pm.expect(json.name).to.equal('New Test Salon');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon",
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  { "key": "Name", "value": "New Test Salon" },
+                  { "key": "Email", "value": "newtestsalon@demo.local" },
+                  { "key": "Theme", "value": "theme-pink" },
+                  { "key": "Description", "value": "Test salon" },
+                  { "key": "Location", "value": "Budapest" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Create Salon - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "url": "{{baseUrl}}/api/salon",
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  { "key": "Name", "value": "Test" },
+                  { "key": "Email", "value": "test@demo.local" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Edit Salon 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Name updated', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.name).to.equal('Polished Studio Updated');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon/1",
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  { "key": "Name", "value": "Polished Studio Updated" },
+                  { "key": "Email", "value": "hello@polishedstudio.demo" },
+                  { "key": "Description", "value": "Updated description" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Edit Salon - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "url": "{{baseUrl}}/api/salon/1",
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  { "key": "Name", "value": "Hacked" },
+                  { "key": "Email", "value": "hacked@demo.local" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Edit Salon - Wrong Owner (403)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 403', () => pm.response.to.have.status(403));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon/2",
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  { "key": "Name", "value": "Hacked Salon 2" },
+                  { "key": "Email", "value": "hacked@demo.local" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Get Salon 1 Artists (Owner) (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Salon 1 has 2 artists', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.equal(2);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon/1/artists"
+            }
+          },
+          {
+            "name": "Get Salon Artists - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/1/artists"
+            }
+          },
+          {
+            "name": "Get Artist 1 Week Schedule - Salon 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Has artistId and days', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.have.property('artistId');",
+                    "  pm.expect(json).to.have.property('days');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": {
+                "raw": "{{baseUrl}}/api/salon/1/artists/1/schedule?weekStart=2026-04-20T00:00:00Z",
+                "query": [{ "key": "weekStart", "value": "2026-04-20T00:00:00Z" }]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Salon Services",
+        "item": [
+          {
+            "name": "Get Salon 1 Services (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Salon 1 has services', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(4);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/1/services"
+            }
+          },
+          {
+            "name": "Get Services For Artist 1 in Salon 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Artist 1 has services', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(1);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/1/services/for-artist/1"
+            }
+          },
+          {
+            "name": "Get Salon 1 Catalog (Owner) (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns catalog array', () => {",
+                    "  pm.expect(pm.response.json()).to.be.an('array');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon/1/services/catalog"
+            }
+          },
+          {
+            "name": "Get Salon Catalog - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/salon/1/services/catalog"
+            }
+          },
+          {
+            "name": "Create Catalog Service - Salon 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Has id and correct name', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.have.property('id');",
+                    "  pm.expect(json.name).to.equal('Nail Art Deluxe');",
+                    "  pm.collectionVariables.set('serviceId', json.id);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{ownerToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/salon/1/services",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Nail Art Deluxe\",\n  \"description\": \"Full nail art package\",\n  \"price\": 9000,\n  \"durationInMinute\": 75\n}"
+              }
+            }
+          },
+          {
+            "name": "Create Catalog Service - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/salon/1/services",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Hack Service\",\n  \"description\": \"test\",\n  \"price\": 1,\n  \"durationInMinute\": 10\n}"
+              }
+            }
+          },
+          {
+            "name": "Edit Catalog Service (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Name updated', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.name).to.equal('Nail Art Deluxe Updated');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{ownerToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/salon/1/services/{{serviceId}}",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Nail Art Deluxe Updated\",\n  \"description\": \"Updated\",\n  \"price\": 9500,\n  \"durationInMinute\": 80\n}"
+              }
+            }
+          },
+          {
+            "name": "Edit Catalog Service - Not Found (404)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{ownerToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/salon/1/services/99999",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Ghost\",\n  \"description\": \"none\",\n  \"price\": 1,\n  \"durationInMinute\": 10\n}"
+              }
+            }
+          },
+          {
+            "name": "Delete Catalog Service (204)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 204', () => pm.response.to.have.status(204));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon/1/services/{{serviceId}}"
+            }
+          },
+          {
+            "name": "Delete Catalog Service - Not Found (404)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/salon/1/services/99999"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Artist",
+        "item": [
+          {
+            "name": "Get All Artists (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns 6 artists', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(6);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/Artist"
+            }
+          },
+          {
+            "name": "Get All Artists - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/Artist"
+            }
+          },
+          {
+            "name": "Get Artist Profile - Lili (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Is Lili Farkas', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.id).to.equal(1);",
+                    "  pm.expect(json.name).to.include('Lili');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{artistToken}}" }],
+              "url": "{{baseUrl}}/api/Artist/me"
+            }
+          },
+          {
+            "name": "Get Artist Profile - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/Artist/me"
+            }
+          },
+          {
+            "name": "Update Artist Profile (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Description updated', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.description).to.equal('Updated bio for Lili');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{artistToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/Artist/me",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Farkas Lili\",\n  \"email\": \"lili.farkas@demo.local\",\n  \"description\": \"Updated bio for Lili\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Get Artist Services - Lili (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Lili has 3 services', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(3);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{artistToken}}" }],
+              "url": "{{baseUrl}}/api/Artist/services"
+            }
+          },
+          {
+            "name": "Get Artist Services - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/Artist/services"
+            }
+          },
+          {
+            "name": "Create Artist Service (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Service created with correct name', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.name).to.equal('Glitter Nail Art');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{artistToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/Artist/services",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Glitter Nail Art\",\n  \"description\": \"Glitter on all nails\",\n  \"price\": 3500,\n  \"durationInMinute\": 35\n}"
+              }
+            }
+          },
+          {
+            "name": "Create Artist Service - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/Artist/services",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Hack\",\n  \"description\": \"test\",\n  \"price\": 1,\n  \"durationInMinute\": 10\n}"
+              }
+            }
+          },
+          {
+            "name": "Link Catalog Service to Artist (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{artistToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/Artist/services/link",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"serviceId\": 3\n}"
+              }
+            }
+          },
+          {
+            "name": "Delete Artist Offering - Not Found (404)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "header": [{ "key": "Authorization", "value": "Bearer {{artistToken}}" }],
+              "url": "{{baseUrl}}/api/Artist/services/offerings/99999"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Guest",
+        "item": [
+          {
+            "name": "Get Guest Profile - Csilla (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Is Csilla Benko', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.id).to.equal(1);",
+                    "  pm.expect(json.name).to.include('Csilla');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{guestToken}}" }],
+              "url": "{{baseUrl}}/api/guest/me"
+            }
+          },
+          {
+            "name": "Get Guest Profile - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/guest/me"
+            }
+          },
+          {
+            "name": "Update Guest Profile (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Name updated', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.name).to.equal('Benkő Csilla Updated');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{guestToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/guest/me",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Benkő Csilla Updated\",\n  \"email\": \"csilla.benko@demo.local\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Update Guest Profile - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/guest/me",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Hack\",\n  \"email\": \"hack@demo.local\"\n}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Owner",
+        "item": [
+          {
+            "name": "Get Owner Profile - Eszter (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Is Eszter Kovacs', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.id).to.equal(1);",
+                    "  pm.expect(json.name).to.include('Eszter');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/owner/me"
+            }
+          },
+          {
+            "name": "Get Owner Profile - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/owner/me"
+            }
+          },
+          {
+            "name": "Update Owner Profile (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Name updated', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.name).to.equal('Kovács Eszter Updated');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{ownerToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/owner/me",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Kovács Eszter Updated\",\n  \"email\": \"eszter.kovacs@demo.local\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Update Owner Profile - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/owner/me",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Hack\",\n  \"email\": \"hack@demo.local\"\n}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Appointment",
+        "item": [
+          {
+            "name": "Get Guest Appointments - Csilla (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Csilla has 1 appointment', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(1);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{guestToken}}" }],
+              "url": "{{baseUrl}}/api/appointment/guest"
+            }
+          },
+          {
+            "name": "Get Guest Appointments - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/appointment/guest"
+            }
+          },
+          {
+            "name": "Get Artist Appointments - Lili (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Lili has appointments', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(2);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{artistToken}}" }],
+              "url": "{{baseUrl}}/api/appointment/artist"
+            }
+          },
+          {
+            "name": "Get Artist Appointments - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/appointment/artist"
+            }
+          },
+          {
+            "name": "Get Salon 1 Appointments (Owner) (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Salon 1 has appointments', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.be.at.least(3);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/appointment/salon/1"
+            }
+          },
+          {
+            "name": "Get Salon Appointments - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/appointment/salon/1"
+            }
+          },
+          {
+            "name": "Get Salon Appointments - Wrong Owner (403)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 403', () => pm.response.to.have.status(403));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+              "url": "{{baseUrl}}/api/appointment/salon/2"
+            }
+          },
+          {
+            "name": "Create Appointment - Csilla books Lili (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Appointment created', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.artistId).to.equal(1);",
+                    "  pm.expect(json.salonId).to.equal(1);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{guestToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/appointment",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"guestId\": 1,\n  \"artistId\": 1,\n  \"salonId\": 1,\n  \"serviceIds\": [1],\n  \"startTime\": \"2026-05-05T09:00:00Z\",\n  \"notes\": \"Postman test appointment\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Create Appointment - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/appointment",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"guestId\": 1,\n  \"artistId\": 1,\n  \"salonId\": 1,\n  \"startTime\": \"2026-05-05T09:00:00Z\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Cancel Appointment - Not Found (404)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "header": [{ "key": "Authorization", "value": "Bearer {{guestToken}}" }],
+              "url": "{{baseUrl}}/api/appointment/guest/99999"
+            }
+          },
+          {
+            "name": "Cancel Appointment - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "url": "{{baseUrl}}/api/appointment/guest/1"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Availability",
+        "item": [
+          {
+            "name": "Get Available Slots - Lili May 5 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns array of slots', () => {",
+                    "  pm.expect(pm.response.json()).to.be.an('array');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{baseUrl}}/api/appointment/available?ArtistId=1&ServiceIds=1&Date=2026-05-05T00:00:00Z",
+                "query": [
+                  { "key": "ArtistId", "value": "1" },
+                  { "key": "ServiceIds", "value": "1" },
+                  { "key": "Date", "value": "2026-05-05T00:00:00Z" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Get Available Slots - Missing Params (400)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": "{{baseUrl}}/api/appointment/available"
+            }
+          },
+          {
+            "name": "Get Monthly Availability - Lili May 2026 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns 31 days for May', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json).to.be.an('array');",
+                    "  pm.expect(json.length).to.equal(31);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/availability/month",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"artistId\": 1,\n  \"serviceIds\": [1],\n  \"year\": 2026,\n  \"month\": 5\n}"
+              }
+            }
+          },
+          {
+            "name": "Get Monthly Availability - Invalid Month (400)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/availability/month",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"artistId\": 1,\n  \"serviceIds\": [1],\n  \"year\": 2026,\n  \"month\": 13\n}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Working Hours",
+        "item": [
+          {
+            "name": "Set Working Hours - Lili (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{artistToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/workinghours",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"date\": \"2026-05-05T00:00:00Z\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"18:00\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Set Working Hours - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/workinghours",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"date\": \"2026-05-05T00:00:00Z\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"18:00\"\n}"
+              }
+            }
+          },
+          {
+            "name": "Set Weekly Schedule - Lili (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                { "key": "Authorization", "value": "Bearer {{artistToken}}" },
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "url": "{{baseUrl}}/api/workinghours/schedule",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"startDate\": \"2026-05-04\",\n  \"days\": [\n    { \"start\": \"09:00\", \"end\": \"18:00\" },\n    { \"start\": \"09:00\", \"end\": \"18:00\" },\n    { \"start\": \"09:00\", \"end\": \"18:00\" },\n    { \"start\": \"09:00\", \"end\": \"18:00\" },\n    { \"start\": \"09:00\", \"end\": \"14:00\" },\n    { \"start\": null, \"end\": null },\n    { \"start\": null, \"end\": null }\n  ]\n}"
+              }
+            }
+          },
+          {
+            "name": "Get Working Hours Range - Lili May (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Returns array', () => {",
+                    "  pm.expect(pm.response.json()).to.be.an('array');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [{ "key": "Authorization", "value": "Bearer {{artistToken}}" }],
+              "url": {
+                "raw": "{{baseUrl}}/api/workinghours/range?StartDate=2026-05-01T00:00:00Z&EndDate=2026-05-31T00:00:00Z",
+                "query": [
+                  { "key": "StartDate", "value": "2026-05-01T00:00:00Z" },
+                  { "key": "EndDate", "value": "2026-05-31T00:00:00Z" }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Get Working Hours Range - Unauthorized (401)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{baseUrl}}/api/workinghours/range?StartDate=2026-05-01T00:00:00Z&EndDate=2026-05-31T00:00:00Z",
+                "query": [
+                  { "key": "StartDate", "value": "2026-05-01T00:00:00Z" },
+                  { "key": "EndDate", "value": "2026-05-31T00:00:00Z" }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Lookup",
+        "item": [
+          {
+            "name": "Get Booking Names - Csilla + Lili + Service 1 (200)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Has Lili and Csilla', () => {",
+                    "  const json = pm.response.json();",
+                    "  pm.expect(json.artistName).to.include('Lili');",
+                    "  pm.expect(json.guestName).to.include('Csilla');",
+                    "  pm.expect(json.services).to.be.an('array');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/lookup/names",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"artistId\": 1,\n  \"guestId\": 1,\n  \"serviceIds\": [1]\n}"
+              }
+            }
+          },
+          {
+            "name": "Get Booking Names - Not Found (400)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "url": "{{baseUrl}}/api/lookup/names",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"artistId\": 99999,\n  \"guestId\": 99999,\n  \"serviceIds\": [99999]\n}"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

@@ -47,12 +47,12 @@ public class WorkingHoursController : ApiControllerBase
     }
 
     [Authorize(Roles = "artist")]
-    [HttpPatch("range")]
-    [SwaggerOperation(Summary = "Munkaidő lekérése tartományban", Description = "Napok listája a megadott intervallumra.")]
+    [HttpGet("range")]
+    [SwaggerOperation(Summary = "Munkaidő lekérése tartományban", Description = "Napok listája a megadott intervallumra (startDate és endDate query paraméterek, pl. yyyy-MM-dd).")]
     [ProducesResponseType(typeof(List<WorkingHoursDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<List<WorkingHoursDTO>>> GetInRange([FromBody] WorkingHoursRangeRequestDTO? dto)
+    public async Task<ActionResult<List<WorkingHoursDTO>>> GetInRange([FromQuery] WorkingHoursRangeRequestDTO? dto)
     {
         if (!TryGetUserIdFromSub(out var artistId))
             return Unauthorized();

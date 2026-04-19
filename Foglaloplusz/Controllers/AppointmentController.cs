@@ -93,11 +93,11 @@ public class AppointmentController : ApiControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPatch("available")]
-    [SwaggerOperation(Summary = "Szabad idősávok", Description = "Elérhető kezdő időpontok egy napra (nyilvános).")]
+    [HttpGet("available")]
+    [SwaggerOperation(Summary = "Szabad idősávok", Description = "Elérhető kezdő időpontok egy napra (nyilvános). Query: artistId, date (pl. yyyy-MM-dd), serviceIds (többször ismétlhető).")]
     [ProducesResponseType(typeof(List<AvaliableSlotDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<List<AvaliableSlotDTO>>> GetAvailableSlots([FromBody] GetAvailableSlotsDTO? request)
+    public async Task<ActionResult<List<AvaliableSlotDTO>>> GetAvailableSlots([FromQuery] GetAvailableSlotsDTO? request)
     {
         var slots = await _appointmentService.GetAvailableSlotsFromRequestAsync(request);
         return Ok(slots);

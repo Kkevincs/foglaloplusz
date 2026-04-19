@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Foglaloplusz",
+    "\\Foglaloplusz.BLL",
+    "\\Foglaloplusz.DAL"
   ],
-  "SelectedNode": "\\Salonic.sln",
+  "SelectedNode": "\\Foglaloplusz\\Foglaloplusz.sln",
   "PreviewInSolutionExplorer": false
 }
