@@ -1,3 +1,4 @@
+using Foglaloplusz.DAL;
 using Foglaloplusz.DAL.Data;
 using Foglaloplusz.DAL.Models;
 using Foglaloplusz.DAL.Repositories.Interfaces;
@@ -15,7 +16,7 @@ namespace Foglaloplusz.DAL.Repositories
 
         public async Task<WorkingHours?> GetByArtistAndDate(int artistId, DateTime date)
         {
-            var dayStart = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+            var dayStart = date.ToUtcDate();
             var dayEnd = dayStart.AddDays(1);
 
             return await _context.WorkingHours
@@ -27,8 +28,8 @@ namespace Foglaloplusz.DAL.Repositories
 
         public async Task<List<WorkingHours>> GetByArtistAndDateRange(int artistId, DateTime startDate, DateTime endDate)
         {
-            var rangeStart = DateTime.SpecifyKind(startDate.Date, DateTimeKind.Utc);
-            var rangeEndExclusive = DateTime.SpecifyKind(endDate.Date, DateTimeKind.Utc).AddDays(1);
+            var rangeStart = startDate.ToUtcDate();
+            var rangeEndExclusive = endDate.ToUtcDate().AddDays(1);
 
             return await _context.WorkingHours
                 .Where(w =>
@@ -56,8 +57,8 @@ namespace Foglaloplusz.DAL.Repositories
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var startDt = DateTime.SpecifyKind(rangeStart.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
-                var endExclusive = DateTime.SpecifyKind(rangeEnd.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc).AddDays(1);
+                var startDt = rangeStart.ToDateTime(TimeOnly.MinValue).ToUtcDate();
+                var endExclusive = rangeEnd.ToDateTime(TimeOnly.MinValue).ToUtcDate().AddDays(1);
 
                 await _context.WorkingHours
                     .Where(w => w.ArtistId == artistId && w.Date >= startDt && w.Date < endExclusive)

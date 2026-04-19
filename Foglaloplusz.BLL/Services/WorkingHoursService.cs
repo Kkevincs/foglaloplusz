@@ -1,3 +1,4 @@
+using Foglaloplusz.DAL;
 using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
 using Foglaloplusz.BLL.Exceptions;
 using Foglaloplusz.BLL.Services.Interfaces;
@@ -22,7 +23,7 @@ public class WorkingHoursService : IWorkingHoursService
         if (dto == null)
             throw new AppValidationException("A kérés törzse kötelező.");
 
-        var workDate = DateTime.SpecifyKind(dto.Date.Date, DateTimeKind.Utc);
+        var workDate = dto.Date.ToUtcDate();
 
         var existing = await _workingHoursRepository.GetByArtistAndDate(artistId, workDate);
         if (existing != null)
@@ -82,9 +83,7 @@ public class WorkingHoursService : IWorkingHoursService
             if (start >= end)
                 throw new AppValidationException($"A(z) {i}. nap: a kezdésnek a zárás előtt kell lennie.");
 
-            var calendarDate = DateTime.SpecifyKind(
-                dto.StartDate.AddDays(i).ToDateTime(TimeOnly.MinValue),
-                DateTimeKind.Utc);
+            var calendarDate = dto.StartDate.AddDays(i).ToDateTime(TimeOnly.MinValue).ToUtcDate();
             rows.Add(new WorkingHours
             {
                 ArtistId = artistId,
@@ -113,18 +112,19 @@ public class WorkingHoursService : IWorkingHoursService
 
         var rows = await _workingHoursRepository.GetByArtistAndDateRange(
             artistId,
-            dto.StartDate.Date,
-            dto.EndDate.Date);
+            dto.StartDate,
+            dto.EndDate);
+
+        var rangeStart = dto.StartDate.ToUtcDate();
+        var rangeEnd = dto.EndDate.ToUtcDate();
 
         var existingByDate = rows
-            .GroupBy(w => DateTime.SpecifyKind(w.Date.Date, DateTimeKind.Utc))
+            .GroupBy(w => w.Date.ToUtcDate())
             .ToDictionary(
                 g => g.Key,
                 g => g.First());
 
         var result = new List<WorkingHoursDTO>();
-        var rangeStart = DateTime.SpecifyKind(dto.StartDate.Date, DateTimeKind.Utc);
-        var rangeEnd = DateTime.SpecifyKind(dto.EndDate.Date, DateTimeKind.Utc);
         for (var day = rangeStart; day <= rangeEnd; day = day.AddDays(1))
         {
             if (existingByDate.TryGetValue(day, out var row))

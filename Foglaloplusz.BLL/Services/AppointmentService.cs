@@ -1,4 +1,5 @@
 using AutoMapper;
+using Foglaloplusz.DAL;
 using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
 using Foglaloplusz.BLL.Exceptions;
 using Foglaloplusz.BLL.Services.Interfaces;
@@ -69,18 +70,19 @@ namespace Foglaloplusz.BLL.Services
                 throw new AppValidationException("A szakember nem kínálja a megadott szolgáltatások mindegyikét.");
 
             var serviceDuration = TimeSpan.FromMinutes(orderedServices.Sum(s => s.DurationInMinute));
-            var endTime = dto.StartTime + serviceDuration + BlockBufferAfterServices;
+            var startUtc = dto.StartTime.ToUtcInstant();
+            var endTime = startUtc + serviceDuration + BlockBufferAfterServices;
 
-            var workingHours = await _workingHoursRepository.GetByArtistAndDate(dto.ArtistId, dto.StartTime);
+            var workingHours = await _workingHoursRepository.GetByArtistAndDate(dto.ArtistId, startUtc);
             if (workingHours == null)
                 throw new AppValidationException("A kiválasztott napra nincs beállítva munkaidő.");
 
-            var workStart = dto.StartTime.Date + workingHours.StartTime;
-            var workEnd = dto.StartTime.Date + workingHours.EndTime;
+            var workStart = startUtc.Date + workingHours.StartTime;
+            var workEnd = startUtc.Date + workingHours.EndTime;
 
-            var isOverlapping = await _appointmentRepository.HasOverlapAsync(dto.ArtistId, dto.StartTime, endTime);
+            var isOverlapping = await _appointmentRepository.HasOverlapAsync(dto.ArtistId, startUtc, endTime);
 
-            if (dto.StartTime < workStart || endTime > workEnd)
+            if (startUtc < workStart || endTime > workEnd)
                 throw new AppValidationException("Az időpont a munkaidőn kívül esik.");
 
             if (isOverlapping)
@@ -91,7 +93,7 @@ namespace Foglaloplusz.BLL.Services
                 GuestId = dto.GuestId,
                 ArtistId = dto.ArtistId,
                 SalonId = dto.SalonId > 0 ? dto.SalonId : null,
-                StartTime = dto.StartTime,
+                StartTime = startUtc,
                 EndTime = endTime,
                 Notes = dto.Notes ?? string.Empty,
                 Services = orderedServices.ToList()
@@ -132,9 +134,9 @@ namespace Foglaloplusz.BLL.Services
 
             var existingAppointments = await _appointmentRepository.ListByArtistAndDateAsync(artistId, date);
             var availableSlots = new List<AvaliableSlotDTO>();
-            var calendarDayUtc = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
-            var current = calendarDayUtc + workingHours.StartTime;
-            var workEnd = calendarDayUtc + workingHours.EndTime;
+            var dayStart = date.ToUtcDate();
+            var current = dayStart + workingHours.StartTime;
+            var workEnd = dayStart + workingHours.EndTime;
 
             while (current + totalBlockedDuration <= workEnd)
             {

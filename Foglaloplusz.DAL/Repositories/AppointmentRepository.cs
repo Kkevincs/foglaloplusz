@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Foglaloplusz.DAL;
 using Foglaloplusz.DAL.Data;
 using Foglaloplusz.DAL.Models;
 using Foglaloplusz.DAL.Repositories.Interfaces;
@@ -37,7 +38,7 @@ namespace Foglaloplusz.DAL.Repositories
 
         public Task<List<Appointment>> ListByArtistAndDateAsync(int artistId, DateTime date)
         {
-            var dayStart = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
+            var dayStart = date.ToUtcDate();
             var dayEndExclusive = dayStart.AddDays(1);
             return _context.Appointments
                 .Include(a => a.Services)
@@ -49,21 +50,29 @@ namespace Foglaloplusz.DAL.Repositories
         public Task<List<Appointment>> ListByArtistAndDateRangeAsync(
             int artistId,
             DateTime rangeStart,
-            DateTime rangeEndExclusive) =>
-            _context.Appointments
+            DateTime rangeEndExclusive)
+        {
+            var rs = rangeStart.ToUtcDate();
+            var re = rangeEndExclusive.ToUtcDate();
+            return _context.Appointments
                 .Include(a => a.Services)
                 .Where(a =>
                     a.ArtistId == artistId &&
-                    a.StartTime < rangeEndExclusive &&
-                    a.EndTime > rangeStart)
+                    a.StartTime < re &&
+                    a.EndTime > rs)
                 .OrderBy(a => a.StartTime)
                 .ToListAsync();
+        }
 
-        public Task<bool> HasOverlapAsync(int artistId, DateTime startTime, DateTime endTime) =>
-            _context.Appointments.AnyAsync(a =>
+        public Task<bool> HasOverlapAsync(int artistId, DateTime startTime, DateTime endTime)
+        {
+            var st = startTime.ToUtcInstant();
+            var et = endTime.ToUtcInstant();
+            return _context.Appointments.AnyAsync(a =>
                 a.ArtistId == artistId &&
-                startTime < a.EndTime &&
-                endTime > a.StartTime);
+                st < a.EndTime &&
+                et > a.StartTime);
+        }
 
         public async Task AddAsync(Appointment appointment)
         {

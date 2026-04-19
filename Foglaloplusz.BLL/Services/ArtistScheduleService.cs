@@ -1,4 +1,5 @@
 using System.Globalization;
+using Foglaloplusz.DAL;
 using Foglaloplusz.BLL.DTOs.AppointmentDTOs;
 using Foglaloplusz.BLL.Services.Interfaces;
 using Foglaloplusz.DAL.Models;
@@ -43,7 +44,7 @@ namespace Foglaloplusz.BLL.Services
             if (artist == null || artist.SalonId != salonId)
                 return null;
 
-            var monday = weekStartMonday.Date;
+            var monday = weekStartMonday.ToUtcDate();
             var sunday = monday.AddDays(6);
 
             var hoursRows = await _workingHoursService.GetInRange(

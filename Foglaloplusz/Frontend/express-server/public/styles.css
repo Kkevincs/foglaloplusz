@@ -2375,6 +2375,56 @@ body[class*=" theme-"] {
     background-attachment: fixed;
     color: var(--text);
 }
+
+/* Egységes üzenetmodal (salonicShowModal): ne Bootstrap zöld/kék legyen a fejléc, hanem a szalon témaszínei */
+body[class^="theme-"] #salonic-unified-modal .salonic-u-header.bg-success,
+body[class*=" theme-"] #salonic-unified-modal .salonic-u-header.bg-success,
+body[class^="theme-"] #salonic-unified-modal .salonic-u-header.bg-primary,
+body[class*=" theme-"] #salonic-unified-modal .salonic-u-header.bg-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%) !important;
+    color: #fff !important;
+}
+body[class^="theme-"] #salonic-unified-modal .salonic-u-header.bg-info,
+body[class*=" theme-"] #salonic-unified-modal .salonic-u-header.bg-info {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent) 88%, #fff) 0%,
+        color-mix(in srgb, var(--primary) 55%, var(--accent)) 100%
+    ) !important;
+    color: var(--text) !important;
+}
+body[class^="theme-"] #salonic-unified-modal .salonic-u-header.bg-info .modal-title,
+body[class*=" theme-"] #salonic-unified-modal .salonic-u-header.bg-info .modal-title {
+    color: var(--text) !important;
+}
+body[class^="theme-"] #salonic-unified-modal .salonic-u-header.bg-warning,
+body[class*=" theme-"] #salonic-unified-modal .salonic-u-header.bg-warning {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent-soft) 92%, var(--surface)) 0%,
+        color-mix(in srgb, var(--accent) 35%, var(--surface-soft)) 100%
+    ) !important;
+    color: var(--text) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border)) !important;
+}
+body[class^="theme-"] #salonic-unified-modal .salonic-u-header.bg-warning .modal-title,
+body[class*=" theme-"] #salonic-unified-modal .salonic-u-header.bg-warning .modal-title {
+    color: var(--text) !important;
+}
+
+body[class^="theme-"] #salonic-confirm-modal .modal-header.bg-light,
+body[class*=" theme-"] #salonic-confirm-modal .modal-header.bg-light {
+    background: linear-gradient(
+        180deg,
+        var(--surface) 0%,
+        color-mix(in srgb, var(--surface-soft) 52%, var(--surface)) 100%
+    ) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
+}
+body[class^="theme-"] #salonic-confirm-modal .salonic-cf-title,
+body[class*=" theme-"] #salonic-confirm-modal .salonic-cf-title {
+    color: var(--text);
+}
 body[class^="theme-"] h1,
 body[class*=" theme-"] h1 {
     color: var(--text);
