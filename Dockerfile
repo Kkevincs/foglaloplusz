@@ -25,5 +25,8 @@ COPY --from=build /app/publish .
 EXPOSE 8080
 
 ENV ASPNETCORE_URLS=http://+:8080
+# Éles / konténer: Production, hogy appsettings.Development.json ne írja felül a beállításokat.
+# Más környezet: docker run -e ASPNETCORE_ENVIRONMENT=Staging …
+ENV ASPNETCORE_ENVIRONMENT=Production
 
 ENTRYPOINT ["dotnet", "Foglaloplusz.presentation.dll"]

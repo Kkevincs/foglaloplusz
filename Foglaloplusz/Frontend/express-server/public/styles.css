@@ -448,6 +448,38 @@ body.portal-body.owner-app-page main h1 {
     border-bottom: none;
     padding: 0;
     box-shadow: none;
+    position: relative;
+    z-index: 4;
+}
+/** Portál fejléc: márka jobbra, stabil méret (nem Bootstrap navbar). */
+.portal-top-bar {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0.65rem max(1rem, env(safe-area-inset-left)) 0 max(1rem, env(safe-area-inset-right));
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 3.35rem;
+    box-sizing: border-box;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, #f472b6, #c084fc, #22d3ee, #a78bfa) 1;
+    box-shadow: none;
+}
+.portal-top-bar__brand {
+    display: block;
+    line-height: 0;
+    flex: 0 0 auto;
+    text-decoration: none;
+    background: transparent;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
+}
+.portal-top-bar__logo-svg {
+    display: block;
+    height: 40px;
+    width: auto;
+    max-width: min(200px, 52vw);
 }
 .portal-nav-links {
     display: flex;
@@ -473,7 +505,8 @@ body.portal-body.owner-app-page main h1 {
     height: auto;
     object-fit: contain;
     display: block;
-    filter: drop-shadow(0 2px 8px rgba(168, 85, 247, 0.2));
+    background: transparent;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
 }
 .portal-page {
     max-width: 1100px;
@@ -736,24 +769,6 @@ a.portal-btn-ghost:hover {
     color: #5b21b6;
     background: #faf5ff;
     transform: translateY(-1px);
-}
-.portal-hint {
-    margin-top: 1.35rem;
-    font-size: 0.86rem;
-    color: #5b4765;
-    text-align: center;
-    padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.65);
-    border-radius: 10px;
-    border: 1px solid rgba(167, 139, 250, 0.25);
-}
-.portal-hint code {
-    font-size: 0.85em;
-    background: linear-gradient(180deg, #fae8ff 0%, #e9d5ff 100%);
-    padding: 0.15rem 0.4rem;
-    border-radius: 6px;
-    border: 1px solid #d8b4fe;
-    color: #6b21a8;
 }
 
 @media (max-width: 520px) {
@@ -1257,13 +1272,42 @@ main.salon-landing-page-shell > .salon-landing-footer--fullbleed {
     margin: 0;
     font-size: 0.88rem;
     color: var(--brand-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.35rem 0.4rem;
 }
-.salon-landing-footer__logo-text {
-    font-weight: 700;
-    color: var(--brand-heading);
+.salon-landing-footer__logo-link {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    text-decoration: none;
+    border-radius: 4px;
+    vertical-align: middle;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+.salon-landing-footer__logo-link img {
+    display: block;
+    height: 27px;
+    width: auto;
+    max-width: min(168px, 46vw);
+    object-fit: contain;
+    background: transparent !important;
+    border: none;
+    box-shadow: none;
+}
+a.salon-landing-footer__logo-link:hover img {
+    filter: brightness(1.06);
+}
+a.salon-landing-footer__logo-link:focus-visible {
+    outline: 2px solid var(--primary, #0d6efd);
+    outline-offset: 3px;
 }
 .salon-landing-footer__sep-dot {
-    margin: 0 0.35rem;
+    margin: 0;
     opacity: 0.55;
 }
 
@@ -1406,9 +1450,9 @@ body[class^="theme-"] .salon-landing-footer__brand-line,
 body[class*=" theme-"] .salon-landing-footer__brand-line {
     color: var(--muted);
 }
-body[class^="theme-"] .salon-landing-footer__logo-text,
-body[class*=" theme-"] .salon-landing-footer__logo-text {
-    color: var(--text);
+body[class^="theme-"] a.salon-landing-footer__logo-link:focus-visible,
+body[class*=" theme-"] a.salon-landing-footer__logo-link:focus-visible {
+    outline-color: var(--primary);
 }
 
 
@@ -3190,6 +3234,7 @@ body.services-booking-body.artist-picker-visible main.artists-page--picker {
     object-fit: contain;
     object-position: left center;
     display: block;
+    background: transparent;
 }
 nav:not(.navbar) a.logo {
     display: inline-block;

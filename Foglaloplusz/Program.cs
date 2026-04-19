@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Foglaloplusz.BLL.Profiles;
@@ -17,7 +18,18 @@ namespace Foglaloplusz
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            // Without this, `dotnet run --no-launch-profile` defaults to Production and skips appsettings.Development.json.
+            // Production/staging hosts should set ASPNETCORE_ENVIRONMENT (or DOTNET_ENVIRONMENT).
+            var environmentName =
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                ?? Environments.Development;
+
+            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                Args = args,
+                EnvironmentName = environmentName
+            });
             builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
             builder.Services.AddScoped<IOfferingRepository, OfferingRepository>();
             builder.Services.AddScoped<IServiceService, ServiceService>();

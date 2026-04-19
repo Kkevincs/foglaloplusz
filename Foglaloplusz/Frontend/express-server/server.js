@@ -55,6 +55,8 @@ function proxyApiToBackend(req, res) {
 }
 
 app.use("/api", proxyApiToBackend);
+/** Szalon logók és egyéb feltöltések az API wwwroot-ján (ugyanaz a host:port, mint SALONIC_API_PROXY_TARGET). */
+app.use("/uploads", proxyApiToBackend);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -245,5 +247,6 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`FoglalóPlusz UI  http://localhost:${PORT}`);
   console.log(`API proxy         /api → ${API_UPSTREAM}`);
+  console.log(`Uploads proxy     /uploads → ${API_UPSTREAM}`);
   console.log(`Start the backend: dotnet run --project Foglaloplusz.presentation.csproj`);
 });

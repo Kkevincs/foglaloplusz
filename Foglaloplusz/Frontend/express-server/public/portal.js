@@ -4,6 +4,18 @@
             ? String(window.SALONIC_API_BASE)
             : "";
 
+    /** Relatív /uploads/... → Express proxy; teljes URL változatlan. */
+    function resolveSalonLogoSrc(logo) {
+        let path = String(logo ?? "").trim();
+        if (!path) return "";
+        if (/^https?:\/\//i.test(path)) return path;
+        path = path.startsWith("/") ? path : "/" + path;
+        const base = String(API_ORIGIN || "").replace(/\/$/, "");
+        if (base) return base + path;
+        if (typeof location !== "undefined" && location.origin) return location.origin + path;
+        return path;
+    }
+
     function truncate(str, len) {
         const t = (str || "").trim().replace(/\s+/g, " ");
         if (t.length <= len) return t;
@@ -14,6 +26,30 @@
         const t = (theme || "").trim();
         if (/^theme-[a-z0-9-]+$/i.test(t)) return t;
         return "";
+    }
+
+    /** 1–2 karakteres monogram a szalon nevéből (kártya, ha nincs feltöltött logó). */
+    function initialsFromSalonName(name) {
+        const t = String(name || "").trim();
+        if (!t) return "•";
+        const parts = t.split(/\s+/).filter(Boolean);
+        const firstAlnum = (s) => {
+            const m = s.match(/[\p{L}\p{N}]/u);
+            return m ? m[0] : "";
+        };
+        if (parts.length >= 2) {
+            const a = firstAlnum(parts[0]);
+            const b = firstAlnum(parts[parts.length - 1]);
+            if (a && b) return (a + b).toUpperCase();
+        }
+        const letters = [];
+        for (const ch of parts[0] || t) {
+            if (/[\p{L}\p{N}]/u.test(ch)) {
+                letters.push(ch);
+                if (letters.length >= 2) break;
+            }
+        }
+        return letters.length ? letters.join("").toUpperCase() : "•";
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
@@ -49,7 +85,7 @@
 
                 const name = s.name ?? s.Name ?? "";
                 const description = s.description ?? s.Description ?? "";
-                const logo = s.logo ?? s.Logo ?? "";
+                const logo = s.logo ?? s.Logo ?? s.logoUrl ?? s.LogoUrl ?? "";
                 const theme = s.theme ?? s.Theme ?? "";
 
                 const card = document.createElement("article");
@@ -61,22 +97,26 @@
 
                 const media = document.createElement("div");
                 media.className = "portal-salon-card-media";
+                const monogramHtml = function () {
+                    const lab = initialsFromSalonName(name);
+                    return (
+                        '<span class="portal-salon-card-placeholder" aria-hidden="true">' +
+                        lab.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") +
+                        "</span>"
+                    );
+                };
                 if (logo && String(logo).trim()) {
-                    const src = String(logo).startsWith("http")
-                        ? logo
-                        : API_ORIGIN + (String(logo).startsWith("/") ? logo : "/" + logo);
+                    const src = resolveSalonLogoSrc(logo);
                     const img = document.createElement("img");
                     img.src = src;
-                    img.alt = "";
+                    img.alt = name ? String(name) : "Szalon logó";
                     img.loading = "lazy";
                     img.onerror = function () {
-                        media.innerHTML =
-                            '<span class="portal-salon-card-placeholder" aria-hidden="true">FP</span>';
+                        media.innerHTML = monogramHtml();
                     };
                     media.appendChild(img);
                 } else {
-                    media.innerHTML =
-                        '<span class="portal-salon-card-placeholder" aria-hidden="true">FP</span>';
+                    media.innerHTML = monogramHtml();
                 }
 
                 const body = document.createElement("div");

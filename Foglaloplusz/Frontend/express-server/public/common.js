@@ -277,7 +277,9 @@ async function applySalonPersonalLogo() {
     if (logoUrl) {
         logoEl.innerHTML = `<img src="${logoUrl}" alt="${escapeHtml(name)}">`;
     } else if (name) {
-        logoEl.textContent = name;
+        // Megtartjuk az alap FoglalóPlusz wordmark képet; csak tooltip / akadálymentes név.
+        logoEl.setAttribute("title", name);
+        logoEl.setAttribute("aria-label", name);
     }
 }
 
@@ -576,7 +578,9 @@ const SALON_SHARED_FOOTER_HTML = `
         <p class="salon-landing-footer__meta salon-landing-footer__meta--legacy" id="salon-footer-meta" hidden></p>
         <div class="salon-landing-footer__bottom">
             <p class="salon-landing-footer__brand-line">
-                <span class="salon-landing-footer__logo-text">FoglalóPlusz</span>
+                <a class="salon-landing-footer__logo-link" href="/portal" title="FoglalóPlusz" aria-label="FoglalóPlusz – kezdőlap">
+                    <img src="/img/Foglaloplusz_Logo.svg" alt="" width="168" height="27" decoding="async" />
+                </a>
                 <span class="salon-landing-footer__sep-dot" aria-hidden="true">·</span>
                 <span>Időpontfoglalás egyszerűen</span>
             </p>
