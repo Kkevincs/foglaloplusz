@@ -18,6 +18,8 @@ namespace Foglaloplusz.BLL.Services.Interfaces
         Task<ServiceWithIdDTO?> GetByIdForArtistAsync(int artistId, int salonId, int serviceId);
         Task<ServiceWithIdDTO> CreateForCurrentArtistAsync(int artistId, ServiceWithoutIdDTO? dto);
         Task<ServiceWithIdDTO> UpdateForCurrentArtistAsync(int artistId, int serviceId, ServiceWithoutIdDTO? dto);
+        /// <summary>Csak a szakember által létrehozott szolgáltatás (ArtistId egyezik, OwnerId null).</summary>
+        Task<bool> DeleteForCurrentArtistAsync(int artistId, int serviceId);
         Task<ServiceCsvImportResponseDTO> ImportServicesFromCsvAsync(int artistId, string csv);
         Task<ServiceCsvImportResponseDTO> ImportSalonOwnerServicesFromCsvAsync(int ownerId, int salonId, string csv);
 

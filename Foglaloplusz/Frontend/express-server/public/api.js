@@ -757,6 +757,22 @@ async function updateOwnerSalonService(salonId, serviceId, service, token) {
     );
 }
 
+/** Tulaj: katalógus-szolgáltatás törlése a szalonból (kapcsolódó offeringek és foglalás–szolgáltatás kapcsolatok törlődnek). */
+async function deleteOwnerSalonService(salonId, serviceId, token) {
+    await salonicFetchVoid(salonicApiUrl(`/api/salon/${encodeURIComponent(salonId)}/services/${encodeURIComponent(serviceId)}`), {
+        method: "DELETE",
+        headers: { authorization: `Bearer ${token}` },
+    });
+}
+
+/** Szakember: saját (nem tulaj katalógus) szolgáltatás törlése. */
+async function deleteArtistService(serviceId, token) {
+    await salonicFetchVoid(salonicApiUrl(`/api/Artist/services/${encodeURIComponent(serviceId)}`), {
+        method: "DELETE",
+        headers: { authorization: `Bearer ${token}` },
+    });
+}
+
 /** Tulaj: tömeges import a szalon katalógusába (ugyanaz a CSV formátum, mint a szakember importnál). */
 async function importOwnerSalonServicesFromCsv(salonId, csvText, token) {
     return salonicFetchJson(salonicApiUrl(`/api/salon/${encodeURIComponent(salonId)}/services/import`), {

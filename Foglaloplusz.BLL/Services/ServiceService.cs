@@ -124,6 +124,22 @@ namespace Foglaloplusz.BLL.Services
             return await _serviceRepository.DeleteAsync(serviceId);
         }
 
+        public async Task<bool> DeleteForCurrentArtistAsync(int artistId, int serviceId)
+        {
+            if (artistId <= 0 || serviceId <= 0)
+                return false;
+
+            var existing = await _serviceRepository.GetByIdAsync(serviceId);
+            if (existing == null)
+                return false;
+            if (existing.OwnerId != null)
+                return false;
+            if (existing.ArtistId != artistId)
+                return false;
+
+            return await _serviceRepository.DeleteAsync(serviceId);
+        }
+
         public async Task<ServiceWithIdDTO> LinkSalonServiceForArtistAsync(int artistId, int serviceId)
         {
             var artist = await _artistRepository.GetByIdAsync(artistId)

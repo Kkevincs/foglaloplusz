@@ -844,11 +844,41 @@ function wireOwnerDashboardCatalogEdit() {
         e.preventDefault();
     });
     list.addEventListener("click", async (e) => {
-        const btn = e.target.closest("button.owner-catalog-save-btn");
-        if (!btn) return;
-        const form = btn.closest("form.owner-catalog-edit-form");
-        if (!form) return;
-        await saveOwnerCatalogServiceForm(form, btn);
+        const saveBtn = e.target.closest("button.owner-catalog-save-btn");
+        if (saveBtn) {
+            const form = saveBtn.closest("form.owner-catalog-edit-form");
+            if (!form) return;
+            await saveOwnerCatalogServiceForm(form, saveBtn);
+            return;
+        }
+        const delBtn = e.target.closest("button.owner-catalog-delete-btn");
+        if (!delBtn) return;
+        const sidAttr = delBtn.getAttribute("data-service-id");
+        const salonId = list?.dataset?.salonId;
+        if (!sidAttr || !salonId) return;
+        const token = localStorage.getItem("token");
+        if (!token) {
+            salonicShowModal("Jelentkezz be tulajdonosként.", { title: "Bejelentkezés szükséges", variant: "warning" });
+            return;
+        }
+        if (
+            !confirm(
+                "Biztosan törlöd ezt a katalógus-szolgáltatást? A szakemberek listájáról is eltűnik, és a kapcsolódó offeringek törlődnek.",
+            )
+        )
+            return;
+        delBtn.disabled = true;
+        try {
+            await deleteOwnerSalonService(Number(salonId), Number(sidAttr), token);
+            await loadServicesBySalon(salonId);
+        } catch (err) {
+            console.error(err);
+            if (!err?.salonicApiShown) {
+                salonicShowModal(err?.message || "Törlés sikertelen.", { title: "Hiba", variant: "danger" });
+            }
+        } finally {
+            delBtn.disabled = false;
+        }
     });
 }
 
@@ -980,6 +1010,7 @@ async function loadServicesBySalon(id) {
                             </div>
                             <div class="d-flex flex-wrap align-items-center gap-2">
                                 <button type="button" class="btn btn-primary btn-sm adservice-accent-btn owner-catalog-save-btn">Változtatások elmentése</button>
+                                <button type="button" class="btn btn-outline-danger btn-sm owner-catalog-delete-btn" data-service-id="${svcId}">Katalógus törlése</button>
                                 <span class="owner-catalog-edit-msg small" role="status" aria-live="polite"></span>
                             </div>
                         </form>
@@ -1940,8 +1971,9 @@ async function loadServicesForArtists() {
                                     <input class="form-control" id="artist-svc-price-${svcId}" name="price" type="number" min="0" max="10000000" step="1" required value="${Math.round(price)}">
                                 </div>
                             </div>
-                            <div class="d-flex flex-wrap align-items-center gap-2">
+                            <div class="d-flex flex-wrap align-items-center gap-2 flex-wrap">
                                 <button type="button" class="btn btn-primary btn-sm adservice-accent-btn artist-service-save-btn">Változtatások elmentése</button>
+                                <button type="button" class="btn btn-outline-danger btn-sm artist-service-delete-btn" data-service-id="${svcId}">Szolgáltatás törlése</button>
                                 <span class="artist-service-edit-msg small" role="status" aria-live="polite"></span>
                             </div>
                         </form>
@@ -1986,6 +2018,30 @@ async function loadServicesForArtists() {
                 console.error(err);
                 if (!err?.salonicApiShown) {
                     salonicShowModal(err?.message || "Nem sikerült leválasztani.", { title: "Hiba", variant: "danger" });
+                }
+                btn.disabled = false;
+            }
+        });
+    });
+
+    list.querySelectorAll(".artist-service-delete-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const sid = btn.getAttribute("data-service-id");
+            if (!sid || !token) return;
+            if (
+                !confirm(
+                    "Véglegesen törlöd ezt a saját szolgáltatásodat? A foglalásokról lekerül a hivatkozás; a művelet nem vonható vissza.",
+                )
+            )
+                return;
+            btn.disabled = true;
+            try {
+                await deleteArtistService(Number(sid), token);
+                await loadServicesForArtists();
+            } catch (err) {
+                console.error(err);
+                if (!err?.salonicApiShown) {
+                    salonicShowModal(err?.message || "Törlés sikertelen.", { title: "Hiba", variant: "danger" });
                 }
                 btn.disabled = false;
             }

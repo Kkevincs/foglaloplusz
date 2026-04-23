@@ -96,6 +96,22 @@ public class ArtistController : ApiControllerBase
     }
 
     [Authorize(Roles = "artist")]
+    [HttpDelete("services/{serviceId:int}")]
+    [SwaggerOperation(Summary = "Saját szolgáltatás törlése", Description = "Csak a szakember által létrehozott szolgáltatás törölhető; a tulaj katalógus tételeihez a „Leválasztás” használható.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteMyService(int serviceId)
+    {
+        if (!TryGetUserIdFromSub(out var artistId))
+            return Unauthorized();
+        var ok = await _serviceService.DeleteForCurrentArtistAsync(artistId, serviceId);
+        if (!ok)
+            return NotFound();
+        return NoContent();
+    }
+
+    [Authorize(Roles = "artist")]
     [HttpPost("services/link")]
     [SwaggerOperation(Summary = "Katalógus-szolgáltatás felvétele", Description = "Tulaj által létrehozott szalonkatalógus-szolgáltatás hozzárendelése.")]
     [ProducesResponseType(typeof(ServiceWithIdDTO), StatusCodes.Status200OK)]
