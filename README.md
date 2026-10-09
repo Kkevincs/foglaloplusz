@@ -1,42 +1,37 @@
 # FoglalóPlusz
 
-Szalon-alapú **időpontfoglaló** alkalmazás: vendégek, szakemberek és tulajdonosok számára regisztráció, bejelentkezés, szolgáltatások, munkaidő és foglalások kezelése böngészőből.
+Salon-based **appointment booking** app: guests, professionals, and owners can register, sign in, and manage services, working hours, and bookings from the browser.
 
-## Működés röviden
+## How it works
 
-- **Backend:** ASP.NET Core 8 **REST API**, **JWT** Bearer hitelesítés, **Entity Framework Core** + **PostgreSQL**, induláskor **migráció** (éles/PG esetén). Statikus feltöltések (pl. szalon logó) a `wwwroot/uploads` alá kerülnek.
-- **Frontend:** **Node.js** + **Express** kiszolgálja a HTML/JS/CSS nézeteket, és **proxyként** továbbítja a `/api` és `/uploads` kéréseket a .NET API felé — így a böngésző egy porton (alapértelmezés: **3000**) kommunikál.
-- **Rétegek:** `Foglaloplusz` (presentation), `Foglaloplusz.BLL`, `Foglaloplusz.DAL`, tesztek: `Foglaloplusz.Tests`.
+- **Backend:** ASP.NET Core 8 **REST API**, **JWT** Bearer authentication, **Entity Framework Core** + **PostgreSQL**, with **migrations** applied on startup (production / PostgreSQL). Static uploads (for example salon logos) are stored under `wwwroot/uploads`.
+- **Frontend:** **Node.js** + **Express** serves the HTML/JS/CSS views and **proxies** `/api` and `/uploads` requests to the .NET API, so the browser talks to a single port (default: **3000**).
+- **Layers:** `Foglaloplusz` (presentation), `Foglaloplusz.BLL`, `Foglaloplusz.DAL`, tests: `Foglaloplusz.Tests`.
 
-## Közreműködők (összefoglalva)
+## Author
 
-| Név | Főbb terület (commitok alapján) |
-|-----|--------------------------------|
-| **Sátori Kázmér Kevin** | Backend és API, auth (JWT), Express proxy, frontend integráció, Docker/élesítési finomítások, merge-ök és javítások. |
-| **Magyar Dóra Brigitta** | Adatmodell, migrációk, szalon/tulaj funkciók, témák és űrlapok, UI részletek (stílus, animációk), hibajavítások. |
+**Sátori Kázmér Kevin** — backend and API, authentication (JWT), Express proxy, frontend integration, Docker and production setup, data model, migrations, salon and owner features, themes and forms, and UI.
 
-*(A részletes bemutatkozások a `docs/leadando-dokumentaciok/` mappában találhatók.)*
-
-## Előfeltételek
+## Prerequisites
 
 - [.NET SDK 8](https://dotnet.microsoft.com/download)
-- [Node.js](https://nodejs.org/) (LTS ajánlott)
-- **PostgreSQL** (helyi vagy távoli példány)
-- Opcionális: Docker (backend konténerhez)
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- **PostgreSQL** (local or remote)
+- Optional: Docker (for the backend container)
 
-## Helyi futtatás
+## Run locally
 
-1. **Adatbázis:** állítsd be a `Foglaloplusz/appsettings.Development.json` (vagy környezeti változók) **`ConnectionStrings:DefaultConnection`** értékét a saját PostgreSQL példányodra. Ne commitolj jelszót — éles titkok környezeti változóból jöjjenek.
+1. **Database:** set `ConnectionStrings:DefaultConnection` in `Foglaloplusz/appsettings.Development.json` (or via environment variables) to your PostgreSQL instance. Do not commit passwords — production secrets should come from environment variables.
 
-2. **API** (a repó gyökeréből):
+2. **API** (from the repo root):
 
    ```bash
    dotnet run --project Foglaloplusz/Foglaloplusz.presentation.csproj
    ```
 
-   Alap profil szerint HTTP: **http://localhost:5181** — **Swagger:** `/swagger`.
+   Default HTTP profile: **http://localhost:5181** — **Swagger:** `/swagger`.
 
-3. **Böngészős felület** (külön terminálban):
+3. **Browser UI** (separate terminal):
 
    ```bash
    cd Foglaloplusz/Frontend/express-server
@@ -44,9 +39,9 @@ Szalon-alapú **időpontfoglaló** alkalmazás: vendégek, szakemberek és tulaj
    npm start
    ```
 
-   Nyisd meg: **http://localhost:3000** (vagy a `PORT` env szerint).
+   Open: **http://localhost:3000** (or the port set by the `PORT` environment variable).
 
-4. **Proxy cél:** ha az API nem a `127.0.0.1:5181`-en fut, állítsd:
+4. **Proxy target:** if the API is not on `127.0.0.1:5181`, set:
 
    ```bash
    set SALONIC_API_PROXY_TARGET=http://127.0.0.1:5181
@@ -55,21 +50,21 @@ Szalon-alapú **időpontfoglaló** alkalmazás: vendégek, szakemberek és tulaj
 
    (Linux/macOS: `export SALONIC_API_PROXY_TARGET=...`)
 
-## Tesztek
+## Tests
 
 ```bash
 dotnet test Foglaloplusz.Tests/Foglaloplusz.Tests.csproj
 ```
 
-## Docker (csak backend)
+## Docker (backend only)
 
-A repó gyökerében lévő `Dockerfile` a .NET API-t publikálja (pl. **8080**). A PostgreSQL-t külön kell biztosítani; a kapcsolati sztringet futtatáskor add át (env / `appsettings`).
+The `Dockerfile` at the repo root publishes the .NET API (for example on **8080**). PostgreSQL must be provided separately; pass the connection string at runtime (environment variable or `appsettings`).
 
-## Dokumentáció
+## Documentation
 
-- Részletes leírások, UML, leadandó Word anyagok: **`docs/`** (Markdown, PlantUML, `leadando-dokumentaciok/`).
-- API próba: **Swagger UI** (fejlesztői profilban alapból megnyílik).
+- Detailed descriptions, UML, and written materials: **`docs/`** (Markdown, PlantUML).
+- API exploration: **Swagger UI** (opens by default in the development profile).
 
-## Licenc / státusz
+## License / status
 
-Egyetemi / vizsgaremek jellegű projekt; a licenc nincs külön megadva.
+University / exam-project style codebase; no separate license is specified.
